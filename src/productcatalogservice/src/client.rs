@@ -1,5 +1,4 @@
 pub mod hipstershop {
-    // demo.protoのpackageを指定
     tonic::include_proto!("hipstershop");
 }
 

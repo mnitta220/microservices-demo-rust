@@ -25,7 +25,6 @@ async fn read_catalog_file() -> Vec<Product> {
 #[derive(Default)]
 pub struct ProductCatalogServiceImpl {}
 
-// サーバ用のコードを実装
 #[tonic::async_trait]
 impl ProductCatalogService for ProductCatalogServiceImpl {
     async fn list_products(

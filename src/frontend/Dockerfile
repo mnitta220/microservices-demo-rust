@@ -1,5 +1,5 @@
 FROM rust:1.76-alpine3.19 as builder
-RUN apk add --no-cache gcc libc-dev
+RUN apk update && apk add --no-cache gcc libc-dev make protobuf-dev
 WORKDIR /src
 COPY . .
 RUN cargo build --release

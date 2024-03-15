@@ -7,8 +7,14 @@
       "path": "../microservices-demo"
     },
     {
-      "path": "../microservices-demo-rust"
+      "path": "../rust/axum"
     }
   ],
-  "settings": {}
+  "settings": {
+    "rust-analyzer.linkedProjects": [
+      "D:\\dev\\microservices-demo-rust\\src\\frontend\\Cargo.toml",
+      "D:\\dev\\microservices-demo-rust\\src\\productcatalogservice\\Cargo.toml",
+      ".\\src\\frontend\\Cargo.toml"
+    ]
+  }
 }
