@@ -21,7 +21,6 @@ resources:
 - service-account-currencyservice.yaml
 - service-account-emailservice.yaml
 - service-account-frontend.yaml
-- service-account-loadgenerator.yaml
 - service-account-paymentservice.yaml
 - service-account-productcatalogservice.yaml
 - service-account-recommendationservice.yaml
@@ -69,13 +68,6 @@ patches:
     - op: replace
       path: /spec/template/spec/serviceAccountName
       value: frontend
-- target:
-    kind: Deployment
-    name: loadgenerator
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/serviceAccountName
-      value: loadgenerator
 - target:
     kind: Deployment
     name: paymentservice

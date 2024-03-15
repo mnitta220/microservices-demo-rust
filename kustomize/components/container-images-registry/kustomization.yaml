@@ -27,8 +27,6 @@ images:
   newName: CONTAINER_IMAGES_REGISTRY/emailservice
 - name: gcr.io/google-samples/microservices-demo/frontend
   newName: CONTAINER_IMAGES_REGISTRY/frontend
-- name: gcr.io/google-samples/microservices-demo/loadgenerator
-  newName: CONTAINER_IMAGES_REGISTRY/loadgenerator
 - name: gcr.io/google-samples/microservices-demo/paymentservice
   newName: CONTAINER_IMAGES_REGISTRY/paymentservice
 - name: gcr.io/google-samples/microservices-demo/productcatalogservice

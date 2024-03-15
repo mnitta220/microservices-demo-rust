@@ -3,7 +3,7 @@
 You can use [Istio](https://istio.io) to enable [service mesh features](https://cloud.google.com/service-mesh/docs/overview) such as traffic management, observability, and security. Istio can be provisioned using Anthos Service Mesh (ASM), the Open Source Software (OSS) istioctl tool, or via other Istio providers. You can then label individual namespaces for sidecar injection and configure an Istio gateway to replace the frontend-external load balancer.
 
 # Provision a GKE Cluster
- 
+
 Create a GKE cluster with at least 4 nodes, machine type `e2-standard-4`, [GKE Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity), and the [Kubernetes Gateway API resources](https://cloud.google.com/kubernetes-engine/docs/how-to/deploying-gateways):
 
 _Note: using the classic `istio-ingressgateway` instead of Gateway API is another option not covered in this component._
@@ -55,6 +55,7 @@ gcloud container fleet mesh update --project ${PROJECT_ID} \
 # Enable sidecar injection for Kubernetes namespace where workload is deployed
 kubectl label namespace default istio-injection- istio.io/rev=asm-managed --overwrite
 ```
+
 _Note: You can ignore any label "istio-injection" not found errors. The istio-injection=enabled annotation would also work but ASM prefers revision labels._
 
 Follow the [Managed ASM Verification](https://cloud.google.com/service-mesh/docs/managed/provision-managed-anthos-service-mesh#verify_the_control_plane_has_been_provisioned) steps to confirm it is working.
@@ -71,8 +72,8 @@ istioctl install --set profile=minimal -y
 kubectl label namespace default istio-injection=enabled
 
 # Make sure the istiod injection webhook port 15017 is accessible via GKE master nodes
-# Otherwise your replicaset-controller may be blocked when trying to create new pods with: 
-#   Error creating: Internal error occurred: failed calling 
+# Otherwise your replicaset-controller may be blocked when trying to create new pods with:
+#   Error creating: Internal error occurred: failed calling
 #     webhook "namespace.sidecar-injector.istio.io" ... context deadline exceeded
 gcloud compute firewall-rules list --filter="name~gke-[0-9a-z-]*-master"
 NAME                          NETWORK  DIRECTION  PRIORITY  ALLOW              DENY  DISABLED
@@ -90,20 +91,22 @@ gcloud compute firewall-rules update gke-onlineboutique-c94d71e8-master \
 Once the service mesh and namespace injection are configured, you can then deploy the Istio manifests using Kustomize. You should also include the [service-accounts component](../service-accounts) if you plan on using AuthorizationPolicies.
 
 From the `kustomize/` folder at the root level of this repository, execute these commands:
+
 ```bash
 kustomize edit add component components/service-accounts
 kustomize edit add component components/service-mesh-istio
 ```
 
 This will update the `kustomize/kustomization.yaml` file which could be similar to:
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- base
+  - base
 components:
-- components/service-accounts
-- components/service-mesh-istio
+  - components/service-accounts
+  - components/service-mesh-istio
 ```
 
 _Note: `service-mesh-istio` component includes the same delete patch as the `non-public-frontend` component. Trying to use both those components in your kustomization.yaml file will result in an error._
@@ -111,6 +114,7 @@ _Note: `service-mesh-istio` component includes the same delete patch as the `non
 You can locally render these manifests by running `kubectl kustomize .` or deploying them by running `kubectl apply -k .`
 
 The output should be similar to:
+
 ```
 serviceaccount/adservice created
 serviceaccount/cartservice created
@@ -118,7 +122,6 @@ serviceaccount/checkoutservice created
 serviceaccount/currencyservice created
 serviceaccount/emailservice created
 serviceaccount/frontend created
-serviceaccount/loadgenerator created
 serviceaccount/paymentservice created
 serviceaccount/productcatalogservice created
 serviceaccount/recommendationservice created
@@ -140,7 +143,6 @@ deployment.apps/checkoutservice created
 deployment.apps/currencyservice created
 deployment.apps/emailservice created
 deployment.apps/frontend created
-deployment.apps/loadgenerator created
 deployment.apps/paymentservice created
 deployment.apps/productcatalogservice created
 deployment.apps/recommendationservice created
@@ -158,6 +160,7 @@ virtualservice.networking.istio.io/frontend created
 Run `kubectl get pods,gateway,svc` to see pods and gateway are in a healthy and ready state.
 
 The output should be similar to:
+
 ```
 NAME                                         READY   STATUS    RESTARTS   AGE
 pod/adservice-6cbd9794f9-8c4gv               2/2     Running   0          47s
@@ -167,7 +170,6 @@ pod/currencyservice-6bd8885d9c-2cszv         2/2     Running   0          47s
 pod/emailservice-64997dcf97-8fpsd            2/2     Running   0          47s
 pod/frontend-c54778dcf-wbgmr                 2/2     Running   0          46s
 pod/istio-gateway-istio-8577b948c6-cxl8j     1/1     Running   0          45s
-pod/loadgenerator-ccfd4d598-jh6xj            2/2     Running   0          46s
 pod/paymentservice-79b77cd7c-6hth7           2/2     Running   0          46s
 pod/productcatalogservice-5f75795545-nk5wv   2/2     Running   0          46s
 pod/recommendationservice-56dd4c7df5-gnwwr   2/2     Running   0          46s
@@ -193,6 +195,7 @@ service/redis-cart              ClusterIP      10.68.189.126   <none>           
 service/shippingservice         ClusterIP      10.68.221.62    <none>           50051/TCP                      48s
 
 ```
+
 Find the IP address of your Istio gateway and visit the application frontend in a web browser.
 
 ```sh
@@ -201,7 +204,7 @@ INGRESS_HOST="$(kubectl get gateway istio-gateway \
 curl -v "http://$INGRESS_HOST"
 ```
 
-# Additional service mesh demos using Online Boutique 
+# Additional service mesh demos using Online Boutique
 
 - [Canary deployment](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/istio-canary-gke)
 - [Security (mTLS, JWT, Authorization)](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/security-intro)

@@ -22,7 +22,6 @@ resources:
 - network-policy-currencyservice.yaml
 - network-policy-emailservice.yaml
 - network-policy-frontend.yaml
-- network-policy-loadgenerator.yaml
 - network-policy-paymentservice.yaml
 - network-policy-productcatalogservice.yaml
 - network-policy-recommendationservice.yaml

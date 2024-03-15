@@ -173,9 +173,6 @@ spec:
   - {}
   {{- else }}
   - from:
-    - podSelector:
-        matchLabels:
-          app: {{ .Values.loadGenerator.name }}
     {{- if .Values.frontend.virtualService.create }}
     - namespaceSelector:
         matchLabels:
@@ -234,11 +231,7 @@ spec:
   - from:
     - source:
         principals:
-        {{- if .Values.serviceAccounts.create }}
-        - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.loadGenerator.name }}
-        {{- else }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/default
-        {{- end }}
         {{- if .Values.frontend.virtualService.create }}
         - cluster.local/ns/{{ .Values.frontend.virtualService.gateway.namespace }}/sa/{{ .Values.frontend.virtualService.gateway.name }}
         {{- end }}

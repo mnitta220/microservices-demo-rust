@@ -20,9 +20,9 @@ This will update the `kustomize/kustomization.yaml` file which could be similar 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- base
+  - base
 components:
-- components/service-accounts
+  - components/service-accounts
 ```
 
 You can locally render these manifests by running `kubectl kustomize .` as well as deploying them by running `kubectl apply -k .`.
@@ -44,7 +44,6 @@ checkoutservice         1           2m58s
 currencyservice         1           2m58s
 emailservice            1           2m58s
 frontend                1           2m58s
-loadgenerator           1           2m58s
 paymentservice          1           2m58s
 productcatalogservice   1           2m58s
 recommendationservice   1           2m58s

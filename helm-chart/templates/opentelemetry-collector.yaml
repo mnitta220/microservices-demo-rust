@@ -136,7 +136,7 @@ data:
   collector-gateway-config-template.yaml: |
     receivers:
       otlp:
-        protocols: 
+        protocols:
           grpc:
     processors:
     exporters:
@@ -186,9 +186,6 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ .Values.frontend.name }}
-    - podSelector:
-        matchLabels:
-          app: {{ .Values.loadGenerator.name }}
     - podSelector:
         matchLabels:
           app: {{ .Values.paymentService.name }}
@@ -244,7 +241,6 @@ spec:
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.currencyService.name }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.emailService.name }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.frontend.name }}
-        - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.loadGenerator.name }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.paymentService.name }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.productCatalogService.name }}
         - cluster.local/ns/{{ .Release.Namespace }}/sa/{{ .Values.recommendationService.name }}

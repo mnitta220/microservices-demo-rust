@@ -103,14 +103,14 @@ function generateProject(){
     GOOGLE_APPLICATION_CREDENTIALS=.deploystack/creds.json
 
     gcloud projects create "$PROJECTID" --labels="deploystack-disposable-test-project=$__DATELABEL" --folder="155265971980"
-    
+
     gcloud auth activate-service-account --project="$PROJECTID" --key-file=.deploystack/creds.json -q
     gcloud config set account test-runner@ds-tester-helper.iam.gserviceaccount.com -q
 
     gcloud beta billing projects link "$PROJECTID" --billing-account="$__BA" -q
     gcloud config set account "$current" -q
     eval "$__resultvar"="'$PROJECTID'"
-    
+
 }
 
 # END DON'T REMOVE FROM test script.
@@ -156,7 +156,6 @@ section_open "Testing Online Boutique's services are running"
     evalTest "kubectl get deployment checkoutservice --no-headers -o=name 2> /dev/null"  "deployment.apps/checkoutservice"
     evalTest "kubectl get deployment currencyservice --no-headers -o=name 2> /dev/null"  "deployment.apps/currencyservice"
     evalTest "kubectl get deployment emailservice --no-headers -o=name 2> /dev/null"  "deployment.apps/emailservice"
-    evalTest "kubectl get deployment loadgenerator --no-headers -o=name 2> /dev/null"  "deployment.apps/loadgenerator"
     evalTest "kubectl get deployment paymentservice --no-headers -o=name 2> /dev/null"  "deployment.apps/paymentservice"
     evalTest "kubectl get deployment productcatalogservice --no-headers -o=name 2> /dev/null"  "deployment.apps/productcatalogservice"
     evalTest "kubectl get deployment recommendationservice --no-headers -o=name 2> /dev/null"  "deployment.apps/recommendationservice"

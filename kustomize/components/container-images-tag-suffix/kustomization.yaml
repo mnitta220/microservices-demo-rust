@@ -27,8 +27,6 @@ images:
   tagSuffix: CONTAINER_IMAGES_TAG_SUFFIX
 - name: gcr.io/google-samples/microservices-demo/frontend
   tagSuffix: CONTAINER_IMAGES_TAG_SUFFIX
-- name: gcr.io/google-samples/microservices-demo/loadgenerator
-  tagSuffix: CONTAINER_IMAGES_TAG_SUFFIX
 - name: gcr.io/google-samples/microservices-demo/paymentservice
   tagSuffix: CONTAINER_IMAGES_TAG_SUFFIX
 - name: gcr.io/google-samples/microservices-demo/productcatalogservice

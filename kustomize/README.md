@@ -16,54 +16,53 @@ You need to have a Kubernetes cluster where you will deploy the Online Boutique'
 
 1. From the root folder of this repository, navigate to the `kustomize/` directory.
 
-    ```bash
-    cd kustomize/
-    ```
+   ```bash
+   cd kustomize/
+   ```
 
 1. See what the default Kustomize configuration defined by `kustomize/kustomization.yaml` will generate (without actually deploying them yet).
 
-    ```bash
-    kubectl kustomize .
-    ```
+   ```bash
+   kubectl kustomize .
+   ```
 
 1. Apply the default Kustomize configuration (`kustomize/kustomization.yaml`).
 
-    ```bash
-    kubectl apply -k .
-    ```
+   ```bash
+   kubectl apply -k .
+   ```
 
 1. Wait for all Pods to show `STATUS` of `Running`.
 
-    ```bash
-    kubectl get pods
-    ```
+   ```bash
+   kubectl get pods
+   ```
 
-    The output should be similar to the following:
+   The output should be similar to the following:
 
-    ```terminal
-    NAME                                     READY   STATUS    RESTARTS   AGE
-    adservice-76bdd69666-ckc5j               1/1     Running   0          2m58s
-    cartservice-66d497c6b7-dp5jr             1/1     Running   0          2m59s
-    checkoutservice-666c784bd6-4jd22         1/1     Running   0          3m1s
-    currencyservice-5d5d496984-4jmd7         1/1     Running   0          2m59s
-    emailservice-667457d9d6-75jcq            1/1     Running   0          3m2s
-    frontend-6b8d69b9fb-wjqdg                1/1     Running   0          3m1s
-    loadgenerator-665b5cd444-gwqdq           1/1     Running   0          3m
-    paymentservice-68596d6dd6-bf6bv          1/1     Running   0          3m
-    productcatalogservice-557d474574-888kr   1/1     Running   0          3m
-    recommendationservice-69c56b74d4-7z8r5   1/1     Running   0          3m1s
-    shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
-    ```
+   ```terminal
+   NAME                                     READY   STATUS    RESTARTS   AGE
+   adservice-76bdd69666-ckc5j               1/1     Running   0          2m58s
+   cartservice-66d497c6b7-dp5jr             1/1     Running   0          2m59s
+   checkoutservice-666c784bd6-4jd22         1/1     Running   0          3m1s
+   currencyservice-5d5d496984-4jmd7         1/1     Running   0          2m59s
+   emailservice-667457d9d6-75jcq            1/1     Running   0          3m2s
+   frontend-6b8d69b9fb-wjqdg                1/1     Running   0          3m1s
+   paymentservice-68596d6dd6-bf6bv          1/1     Running   0          3m
+   productcatalogservice-557d474574-888kr   1/1     Running   0          3m
+   recommendationservice-69c56b74d4-7z8r5   1/1     Running   0          3m1s
+   shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
+   ```
 
-    _Note: It may take 2-3 minutes before the changes are reflected on the deployment._
+   _Note: It may take 2-3 minutes before the changes are reflected on the deployment._
 
 1. Access the web frontend in a browser using the frontend's `EXTERNAL_IP`.
 
-    ```bash
-    kubectl get service frontend-external | awk '{print $4}'
-    ```
+   ```bash
+   kubectl get service frontend-external | awk '{print $4}'
+   ```
 
-    Note: you may see `<pending>` while GCP provisions the load balancer. If this happens, wait a few minutes and re-run the command.
+   Note: you may see `<pending>` while GCP provisions the load balancer. If this happens, wait a few minutes and re-run the command.
 
 ## Deploy Online Boutique variations with Kustomize
 
@@ -79,7 +78,7 @@ Here is the list of the variations available as Kustomize components that you co
   - The default Online Boutique deployment uses the in-cluster `redis` database for storing the contents of its shopping cart. The Spanner deployment variation overrides the default database with its own Spanner database. These changes directly affect `cartservice`.
 - [**Integrate with AlloyDB**](components/alloydb)
   - The default Online Boutique deployment uses the in-cluster `redis` database for storing the contents of its shopping cart. The AlloyDB deployment variation overrides the default database with its own AlloyDB database.
-These changes directly affect `cartservice`.
+    These changes directly affect `cartservice`.
 - [**Secure with Network Policies**](components/network-policies)
   - Deploy fine granular `NetworkPolicies` for Online Boutique.
 - [**Create Kubernetes Service Accounts**](components/service-accounts)
@@ -119,10 +118,10 @@ So for example, the associated `kustomization.yaml` could look like:
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- base
+  - base
 components:
-- components/cymbal-branding
-- components/google-cloud-operations
+  - components/cymbal-branding
+  - components/google-cloud-operations
 ```
 
 ### Use remote Kustomize targets
@@ -133,10 +132,10 @@ Kustomize allows you to reference public remote resources so the `kustomization.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- github.com/GoogleCloudPlatform/microservices-demo/kustomize/base
+  - github.com/GoogleCloudPlatform/microservices-demo/kustomize/base
 components:
-- github.com/GoogleCloudPlatform/microservices-demo/kustomize/components/cymbal-branding
-- github.com/GoogleCloudPlatform/microservices-demo/kustomize/components/google-cloud-operations
+  - github.com/GoogleCloudPlatform/microservices-demo/kustomize/components/cymbal-branding
+  - github.com/GoogleCloudPlatform/microservices-demo/kustomize/components/google-cloud-operations
 ```
 
 Learn more about [Kustomize remote targets](https://github.com/kubernetes-sigs/kustomize/blob/master/examples/remoteBuild.md).

@@ -4,7 +4,7 @@ You can use [Network Policies](https://kubernetes.io/docs/concepts/services-netw
 
 To use `NetworkPolicies` in Google Kubernetes Engine (GKE), you will need a GKE cluster with network policy enforcement enabled, the recommended approach is to use [GKE Dataplane V2](https://cloud.google.com/kubernetes-engine/docs/how-to/dataplane-v2).
 
-To use `NetworkPolicies` on a local cluster such as [minikube](https://minikube.sigs.k8s.io/docs/start/), you will need to use an alternative CNI that supports `NetworkPolicies` like [Calico](https://projectcalico.docs.tigera.io/getting-started/kubernetes/minikube). To run a minikube cluster with Calico, run `minikube start --cni=calico`. By design, the minikube default CNI [Kindnet](https://github.com/aojea/kindnet) does not support it.  
+To use `NetworkPolicies` on a local cluster such as [minikube](https://minikube.sigs.k8s.io/docs/start/), you will need to use an alternative CNI that supports `NetworkPolicies` like [Calico](https://projectcalico.docs.tigera.io/getting-started/kubernetes/minikube). To run a minikube cluster with Calico, run `minikube start --cni=calico`. By design, the minikube default CNI [Kindnet](https://github.com/aojea/kindnet) does not support it.
 
 ## Deploy Online Boutique with `NetworkPolicies` via Kustomize
 
@@ -22,9 +22,9 @@ This will update the `kustomize/kustomization.yaml` file which could be similar 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- base
+  - base
 components:
-- components/network-policies
+  - components/network-policies
 ```
 
 You can locally render these manifests by running `kubectl kustomize .` as well as deploying them by running `kubectl apply -k .`.
@@ -46,7 +46,6 @@ currencyservice         app=currencyservice         2m58s
 deny-all                <none>                      2m58s
 emailservice            app=emailservice            2m58s
 frontend                app=frontend                2m58s
-loadgenerator           app=loadgenerator           2m58s
 paymentservice          app=paymentservice          2m58s
 productcatalogservice   app=productcatalogservice   2m58s
 recommendationservice   app=recommendationservice   2m58s

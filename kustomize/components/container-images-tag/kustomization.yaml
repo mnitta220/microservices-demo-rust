@@ -27,8 +27,6 @@ images:
   newTag: CONTAINER_IMAGES_TAG
 - name: gcr.io/google-samples/microservices-demo/frontend
   newTag: CONTAINER_IMAGES_TAG
-- name: gcr.io/google-samples/microservices-demo/loadgenerator
-  newTag: CONTAINER_IMAGES_TAG
 - name: gcr.io/google-samples/microservices-demo/paymentservice
   newTag: CONTAINER_IMAGES_TAG
 - name: gcr.io/google-samples/microservices-demo/productcatalogservice
