@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../microservices-demo"
+    },
+    {
+      "path": "../microservices-demo-rust"
+    }
+  ],
+  "settings": {}
+}
