@@ -34,7 +34,7 @@ async fn main() {
 
 async fn home_handler() -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
-    let mut buf = String::new();
+    let mut buf = String::with_capacity(100000);
     let home_page = components::home::HomePage {};
     match home_page.write_page(&mut buf).await {
         Ok(_) => Ok(Html(buf)),
