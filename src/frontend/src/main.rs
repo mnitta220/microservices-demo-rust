@@ -35,10 +35,17 @@ async fn main() {
 async fn home_handler() -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
     let mut buf = String::new();
+    let home_page = components::home::HomePage {};
+    match home_page.write_page(&mut buf).await {
+        Ok(_) => Ok(Html(buf)),
+        Err(e) => Err(AppError::ServerError(e)),
+    }
+    /*
     match components::home::generate_page(&mut buf).await {
         Ok(_) => Ok(Html(buf)),
         Err(e) => Err(AppError::ServerError(e)),
     }
+    */
     //components::home::generate_page(&mut buf).await?;
     //Ok(Html(buf))
 }

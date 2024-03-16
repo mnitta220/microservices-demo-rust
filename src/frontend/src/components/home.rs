@@ -1,5 +1,28 @@
-use super::super::rpc::products;
+//use super::super::rpc::products;
 
+use super::body;
+use super::head;
+
+pub struct HomePage {}
+
+impl HomePage {
+    pub async fn write_page(&self, buf: &mut String) -> Result<(), &'static str> {
+        buf.push_str(r#"<!DOCTYPE html>"#);
+        buf.push_str(r#"<html lang="en">"#);
+        let head = head::Head {};
+        if let Err(e) = head.write(buf) {
+            return Err(e);
+        }
+        let body = body::Body {};
+        if let Err(e) = body.write(buf).await {
+            return Err(e);
+        }
+        buf.push_str(r#"</html>"#);
+        Ok(())
+    }
+}
+
+/*
 pub async fn generate_page(buf: &mut String) -> Result<(), &'static str> {
     let head = r#"
     <!DOCTYPE html>
@@ -101,41 +124,14 @@ pub async fn generate_page(buf: &mut String) -> Result<(), &'static str> {
                 </div>
               </div>
             </div>
-            "#;
+            </div>
+            </div>
+          </main>
+        </body>
+        </html>
+                    "#;
     buf.push_str(contents);
 
-    let footer = r#"
-          </div>
-        </div>
-      </main>
-      <div class="d-lg-none">
-        <footer class="py-5">
-          <div class="footer-top">
-            <div class="container footer-social">
-              <p class="footer-text">This website is hosted for demo purposes only. It is not an actual shop. This is not a
-                Google product.</p>
-              <p class="footer-text">© 2020 Google Inc (<a
-                  href="https://github.com/GoogleCloudPlatform/microservices-demo">Source Code</a>)</p>
-              <p class="footer-text">
-                <small>
-                  session-id: c6400be8-95e4-4719-9300-d86712a76acf —
-                  request-id: ff5c663c-d516-4aab-b5a3-5af7197df163
-                </small>
-                <br />
-                <small>
-                  <b>Pod: </b>frontend-55dc66b9dd-hc7vm
-                </small>
-              </p>
-            </div>
-          </div>
-        </footer>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-          integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous">
-          </script>
-      </div>
-    </body>
-    </html>
-    "#;
-    buf.push_str(footer);
     Ok(())
 }
+*/

@@ -56,18 +56,18 @@ pub async fn get_products(buf: &mut String) -> Result<(), &'static str> {
         }
     };
     //println!("RESPONSE={:?}\n", response1.get_ref());
-    let hot_products_head = r#"
-              <div class="row hot-products-row px-xl-6">
-                <div class="col-12">
-                  <h3>Hot Products</h3>
-                </div>
-                "#;
 
-    buf.push_str(hot_products_head);
-
-    for product in response.get_ref().products.iter() {
-        //println!("{}: {}", product.id, product.name);
-        product.write_hot_products_html(buf);
+    buf.push_str(r#"<div class="row hot-products-row px-xl-6">"#);
+    {
+        buf.push_str(r#"<div class="col-12">"#);
+        {
+            buf.push_str(r#"<h3>Hot Products</h3>"#);
+        }
+        buf.push_str(r#"</div>"#);
+        for product in response.get_ref().products.iter() {
+            //println!("{}: {}", product.id, product.name);
+            product.write_hot_products_html(buf);
+        }
     }
     buf.push_str(r#"</div>"#);
 
