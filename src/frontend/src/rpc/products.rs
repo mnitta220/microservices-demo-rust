@@ -3,7 +3,7 @@ pub mod hipstershop {
 }
 
 use hipstershop::product_catalog_service_client::ProductCatalogServiceClient;
-use hipstershop::{Empty, GetProductRequest, Product, SearchProductsRequest};
+use hipstershop::{Empty, Product};
 use std::env;
 
 impl Product {
@@ -42,20 +42,20 @@ pub async fn get_products(buf: &mut String) -> Result<(), &'static str> {
             return Err("Failed to get PRODUCT_CATALOG_SERVICE_ADDR");
         }
     };
-    //println!("product_catalog_service_addr={}", addr);
+
     let mut client = match ProductCatalogServiceClient::connect(format!("http://{}", addr)).await {
         Ok(client) => client,
         Err(_) => {
             return Err("get_products: connect failed");
         }
     };
+
     let response = match client.list_products(Empty {}).await {
         Ok(response) => response,
         Err(_) => {
             return Err("get_products: list_products failed");
         }
     };
-    //println!("RESPONSE={:?}\n", response1.get_ref());
 
     buf.push_str(r#"<div class="row hot-products-row px-xl-6">"#);
     {
@@ -65,7 +65,6 @@ pub async fn get_products(buf: &mut String) -> Result<(), &'static str> {
         }
         buf.push_str(r#"</div>"#);
         for product in response.get_ref().products.iter() {
-            //println!("{}: {}", product.id, product.name);
             product.write_hot_products_html(buf);
         }
     }

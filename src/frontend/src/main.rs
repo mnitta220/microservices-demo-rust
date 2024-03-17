@@ -1,16 +1,21 @@
 use axum::{
-    extract::FromRequest,
+    extract::{Form, FromRequest},
     http::StatusCode,
-    response::{Html, IntoResponse, Response},
-    routing::get,
+    response::{Html, IntoResponse, Redirect, Response},
+    routing::{get, post},
     Router,
 };
-use serde::Serialize;
+use axum_extra::extract::cookie::{Cookie, CookieJar};
+use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod components;
 mod rpc;
+
+pub struct PageProps {
+    pub user_currency: String,
+}
 
 #[tokio::main]
 async fn main() {
@@ -24,6 +29,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(home_handler))
+        .route("/setCurrency", post(set_currency_handler))
         .route("/_healthz", get(health_handler))
         .nest_service("/static", ServeDir::new("static"));
 
@@ -32,22 +38,49 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn home_handler() -> Result<Html<String>, AppError> {
+async fn home_handler(jar: CookieJar) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
+
+    let cur: Option<String> = jar
+        .get("shop_currency")
+        .map(|cookie| cookie.value().to_owned());
+    let cur = match cur {
+        Some(c) => c,
+        None => "USD".to_string(),
+    };
+    let mut page_props = PageProps { user_currency: cur };
+
     let mut buf = String::with_capacity(100000);
     let home_page = components::home::HomePage {};
-    match home_page.write_page(&mut buf).await {
+    match home_page.write_page(&mut buf, &mut page_props).await {
         Ok(_) => Ok(Html(buf)),
         Err(e) => Err(AppError::ServerError(e)),
     }
-    /*
-    match components::home::generate_page(&mut buf).await {
-        Ok(_) => Ok(Html(buf)),
-        Err(e) => Err(AppError::ServerError(e)),
-    }
-    */
-    //components::home::generate_page(&mut buf).await?;
-    //Ok(Html(buf))
+}
+
+#[derive(Deserialize, Debug)]
+#[allow(dead_code)]
+struct Input {
+    currency_code: String,
+}
+
+async fn set_currency_handler(
+    jar: CookieJar,
+    Form(input): Form<Input>,
+) -> Result<(CookieJar, Redirect), StatusCode> {
+    tracing::debug!("POST /setCurrency {}", input.currency_code);
+
+    Ok((
+        jar.add(
+            Cookie::parse(format!(
+                "shop_currency={}; Max-Age={}",
+                input.currency_code,
+                60 * 60 * 48
+            ))
+            .unwrap(),
+        ),
+        Redirect::to("/"),
+    ))
 }
 
 async fn health_handler() -> &'static str {

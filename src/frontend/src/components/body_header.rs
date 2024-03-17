@@ -1,7 +1,14 @@
+use super::super::rpc::currency;
+use crate::PageProps;
+
 pub struct BodyHeader {}
 
 impl BodyHeader {
-    pub fn write(&self, buf: &mut String) -> Result<(), &'static str> {
+    pub async fn write(
+        &self,
+        buf: &mut String,
+        page_props: &mut PageProps,
+    ) -> Result<(), &'static str> {
         buf.push_str(r#"<header>"#);
         {
             buf.push_str(r#"<div class="navbar sub-navbar">"#);
@@ -20,22 +27,11 @@ impl BodyHeader {
                         {
                             buf.push_str(r#"<div class="h-control">"#);
                             {
-                                buf.push_str(r#"<span class="icon currency-icon"> $</span>"#);
-
-                                buf.push_str(r#"<form method="POST" class="controls-form" action="/setCurrency" id="currency_form">"#);
+                                if let Err(e) =
+                                    currency::select_currency_form(buf, page_props).await
                                 {
-                                    buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
-                                    {
-                                        buf.push_str(r#"<option value="EUR">EUR</option>"#);
-                                        buf.push_str(r#"<option value="USD" selected="selected">USD</option>"#);
-                                        buf.push_str(r#"<option value="JPY">JPY</option>"#);
-                                        buf.push_str(r#"<option value="GBP">GBP</option>"#);
-                                        buf.push_str(r#"<option value="TRY">TRY</option>"#);
-                                        buf.push_str(r#"<option value="CAD">CAD</option>"#);
-                                    }
-                                    buf.push_str(r#"</select>"#);
+                                    return Err(e);
                                 }
-                                buf.push_str(r#"</form>"#);
 
                                 buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="icon arrow" />"#);
                             }
