@@ -2,6 +2,7 @@ pub mod hipstershop {
     tonic::include_proto!("hipstershop");
 }
 
+use super::super::CURRENCY_LOGO;
 use hipstershop::product_catalog_service_client::ProductCatalogServiceClient;
 use hipstershop::{Empty, Product};
 use std::env;
@@ -26,8 +27,19 @@ impl Product {
                 buf.push_str(r#"<div class="hot-product-card-name">"#);
                 buf.push_str(&self.name);
                 buf.push_str(r#"</div>"#);
-                // TODO: change currency
-                buf.push_str(r#"<div class="hot-product-card-price">$19.99</div>"#);
+
+                buf.push_str(r#"<div class="hot-product-card-price">"#);
+                if let Some(m) = &self.price_usd {
+                    if let Some(c) = CURRENCY_LOGO.get(m.currency_code.as_str()) {
+                        buf.push_str(c);
+                    } else {
+                        buf.push_str("$");
+                    }
+                    buf.push_str(m.units.to_string().as_str());
+                    buf.push_str(".");
+                    buf.push_str(format!("{:.2}", m.nanos / 10000000).as_str());
+                }
+                buf.push_str(r#"</div>"#);
             }
             buf.push_str(r#"</div>"#);
         }

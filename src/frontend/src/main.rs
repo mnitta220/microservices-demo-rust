@@ -6,12 +6,38 @@ use axum::{
     Router,
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar};
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
 mod components;
 mod rpc;
+
+lazy_static! {
+    static ref CURRENCY_LOGO: HashMap<&'static str, &'static str> = {
+        let currency_logo = HashMap::from([
+            ("USD", "$"),
+            ("EUR", "€"),
+            ("CAD", "$"),
+            ("JPY", "¥"),
+            ("GBP", "£"),
+            ("TRY", "₺"),
+        ]);
+        currency_logo
+    };
+    static ref WHITELISTED_CURRENCIES: HashMap<&'static str, bool> = {
+        let whitelisted_currencies = std::collections::HashMap::from([
+            ("USD", true),
+            ("EUR", true),
+            ("CAD", true),
+            ("JPY", true),
+            ("GBP", true),
+            ("TRY", true),
+        ]);
+        whitelisted_currencies
+    };
+}
 
 pub struct PageProps {
     pub user_currency: String,

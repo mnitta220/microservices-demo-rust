@@ -2,6 +2,7 @@ pub mod hipstershop {
     tonic::include_proto!("hipstershop");
 }
 
+use super::super::{CURRENCY_LOGO, WHITELISTED_CURRENCIES};
 use crate::PageProps;
 use hipstershop::currency_service_client::CurrencyServiceClient;
 use hipstershop::Empty;
@@ -32,26 +33,8 @@ pub async fn select_currency_form(
         }
     };
 
-    let whitelisted_currencies = std::collections::HashMap::from([
-        ("USD", true),
-        ("EUR", true),
-        ("CAD", true),
-        ("JPY", true),
-        ("GBP", true),
-        ("TRY", true),
-    ]);
-
-    let render_currency_logo = std::collections::HashMap::from([
-        ("USD", "$"),
-        ("EUR", "€"),
-        ("CAD", "$"),
-        ("JPY", "¥"),
-        ("GBP", "£"),
-        ("TRY", "₺"),
-    ]);
-
     buf.push_str(r#"<span class="icon currency-icon"> "#);
-    if let Some(c) = render_currency_logo.get(page_props.user_currency.as_str()) {
+    if let Some(c) = CURRENCY_LOGO.get(page_props.user_currency.as_str()) {
         buf.push_str(c);
     } else {
         buf.push_str("$");
@@ -64,7 +47,7 @@ pub async fn select_currency_form(
     {
         buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
         for currency_code in response.get_ref().currency_codes.iter() {
-            if let Some(c) = whitelisted_currencies.get(currency_code.as_str()) {
+            if let Some(c) = WHITELISTED_CURRENCIES.get(currency_code.as_str()) {
                 if *c == true {
                     buf.push_str(r#"<option value=""#);
                     buf.push_str(currency_code);
