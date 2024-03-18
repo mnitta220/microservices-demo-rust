@@ -26,7 +26,7 @@ impl Body {
             buf.push_str(r#"</div>"#);
 
             let main = body_main::BodyMain {};
-            if let Err(e) = main.write(buf).await {
+            if let Err(e) = main.write(buf, page_props).await {
                 return Err(e);
             }
         }

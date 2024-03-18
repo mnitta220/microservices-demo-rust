@@ -7,6 +7,7 @@ RUN cargo build --release
 FROM alpine:3.19
 WORKDIR /src
 COPY --from=builder /src/target/release/frontend /src/frontend
+COPY ./static /src/static
 
 EXPOSE 8080
 ENTRYPOINT [ "/src/frontend" ]

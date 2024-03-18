@@ -23,9 +23,7 @@ impl Head {
             buf.push_str(
                 r#"<link rel="stylesheet" type="text/css" href="/static/styles/order.css">"#,
             );
-            buf.push_str(
-                r#"<link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />"#,
-            );
+            buf.push_str(r#"<link rel="icon" type="image/x-icon" href="/static/favicon.ico">"#);
         }
         buf.push_str(r#"</head>"#);
 

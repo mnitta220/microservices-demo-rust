@@ -1,7 +1,9 @@
+use crate::PageProps;
+
 pub struct BodyFooter {}
 
 impl BodyFooter {
-    pub fn write(&self, buf: &mut String) -> Result<(), &'static str> {
+    pub fn write(&self, buf: &mut String, page_props: &mut PageProps) -> Result<(), &'static str> {
         buf.push_str(r#"<footer class="py-5">"#);
         {
             buf.push_str(r#"<div class="footer-top">"#);
@@ -31,10 +33,15 @@ impl BodyFooter {
                     {
                         buf.push_str(r#"<small>"#);
                         {
-                            buf.push_str(r#"session-id: c6400be8-95e4-4719-9300-d86712a76acf — "#);
-                            buf.push_str(r#"request-id: ff5c663c-d516-4aab-b5a3-5af7197df163"#);
+                            if let Some(s) = &page_props.session_id {
+                                buf.push_str(r#"session-id: "#);
+                                buf.push_str(s.as_str());
+                            }
+                            // don't get request-id
+                            //buf.push_str(r#" — request-id: ff5c663c-d516-4aab-b5a3-5af7197df163"#);
                         }
                         buf.push_str(r#"</small>"#);
+                        /* don't get hostname
                         buf.push_str(r#"<br />"#);
                         buf.push_str(r#"<small>"#);
                         {
@@ -42,6 +49,7 @@ impl BodyFooter {
                             buf.push_str(r#"frontend-55dc66b9dd-hc7vm"#);
                         }
                         buf.push_str(r#"</small>"#);
+                        */
                     }
                     buf.push_str(r#"</p>"#);
                 }

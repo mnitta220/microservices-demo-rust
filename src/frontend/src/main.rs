@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::Uuid;
 mod components;
 mod rpc;
 
@@ -40,6 +41,7 @@ lazy_static! {
 }
 
 pub struct PageProps {
+    pub session_id: Option<String>,
     pub user_currency: String,
 }
 
@@ -64,7 +66,7 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn home_handler(jar: CookieJar) -> Result<Html<String>, AppError> {
+async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
     tracing::debug!("GET /");
 
     let cur: Option<String> = jar
@@ -74,12 +76,43 @@ async fn home_handler(jar: CookieJar) -> Result<Html<String>, AppError> {
         Some(c) => c,
         None => "USD".to_string(),
     };
-    let mut page_props = PageProps { user_currency: cur };
+    let session_id: Option<String> = jar
+        .get("shop_session-id")
+        .map(|cookie| cookie.value().to_owned());
+    let (session_id, is_new_session) = match session_id {
+        Some(s) => (s, false),
+        None => {
+            let id = Uuid::now_v7().to_string();
+
+            (id, true)
+        }
+    };
+
+    let mut page_props = PageProps {
+        session_id: Some(session_id),
+        user_currency: cur,
+    };
 
     let mut buf = String::with_capacity(100000);
     let home_page = components::home::HomePage {};
     match home_page.write_page(&mut buf, &mut page_props).await {
-        Ok(_) => Ok(Html(buf)),
+        Ok(_) => {
+            if is_new_session {
+                Ok((
+                    jar.add(
+                        Cookie::parse(format!(
+                            "shop_session-id={}; Max-Age={}",
+                            page_props.session_id.unwrap(),
+                            60 * 60 * 48
+                        ))
+                        .unwrap(),
+                    ),
+                    Html(buf),
+                ))
+            } else {
+                Ok((jar, Html(buf)))
+            }
+        }
         Err(e) => Err(AppError::ServerError(e)),
     }
 }
