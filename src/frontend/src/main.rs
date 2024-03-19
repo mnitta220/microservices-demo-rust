@@ -1,6 +1,6 @@
 use axum::{
     error_handling::HandleErrorLayer,
-    extract::Form,
+    extract::{Form, Path},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect, Response},
     routing::{get, post},
@@ -42,10 +42,17 @@ lazy_static! {
     };
 }
 
+pub enum PageType {
+    Home,
+    Product,
+}
+
 pub struct PageProps {
+    pub page_type: PageType,
     pub session_id: String,
     pub request_id: String,
     pub user_currency: String,
+    pub product_id: Option<String>,
 }
 
 #[tokio::main]
@@ -60,6 +67,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(home_handler))
+        .route("/product/:id", get(product_handler))
         .route("/setCurrency", post(set_currency_handler))
         .route("/_healthz", get(health_handler))
         .nest_service("/static", ServeDir::new("static"))
@@ -89,6 +97,23 @@ async fn main() {
 async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
     tracing::debug!("GET /");
 
+    handler_sub(jar, PageType::Home, None).await
+}
+
+async fn product_handler(
+    jar: CookieJar,
+    Path(id): Path<String>,
+) -> Result<(CookieJar, Html<String>), AppError> {
+    tracing::debug!("GET /product {}", id);
+
+    handler_sub(jar, PageType::Product, Some(id)).await
+}
+
+async fn handler_sub(
+    jar: CookieJar,
+    page_type: PageType,
+    product_id: Option<String>,
+) -> Result<(CookieJar, Html<String>), AppError> {
     let cur: Option<String> = jar
         .get("shop_currency")
         .map(|cookie| cookie.value().to_owned());
@@ -109,9 +134,11 @@ async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppEr
     };
 
     let mut page_props = PageProps {
+        page_type: page_type,
         session_id: session_id,
         request_id: Uuid::new_v4().to_string(),
         user_currency: cur,
+        product_id: product_id,
     };
 
     let mut buf = String::with_capacity(100000);
