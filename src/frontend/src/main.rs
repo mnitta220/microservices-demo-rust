@@ -1,5 +1,6 @@
 use axum::{
-    extract::{Form, FromRequest},
+    error_handling::HandleErrorLayer,
+    extract::Form,
     http::StatusCode,
     response::{Html, IntoResponse, Redirect, Response},
     routing::{get, post},
@@ -7,9 +8,10 @@ use axum::{
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar};
 use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use tower_http::services::ServeDir;
+use serde::Deserialize;
+use std::{collections::HashMap, time::Duration};
+use tower::{BoxError, ServiceBuilder};
+use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 mod components;
@@ -41,7 +43,8 @@ lazy_static! {
 }
 
 pub struct PageProps {
-    pub session_id: Option<String>,
+    pub session_id: String,
+    pub request_id: String,
     pub user_currency: String,
 }
 
@@ -59,7 +62,24 @@ async fn main() {
         .route("/", get(home_handler))
         .route("/setCurrency", post(set_currency_handler))
         .route("/_healthz", get(health_handler))
-        .nest_service("/static", ServeDir::new("static"));
+        .nest_service("/static", ServeDir::new("static"))
+        // Add middleware to all routes
+        .layer(
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|error: BoxError| async move {
+                    if error.is::<tower::timeout::error::Elapsed>() {
+                        Ok(StatusCode::REQUEST_TIMEOUT)
+                    } else {
+                        Err((
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            format!("Unhandled internal error: {error}"),
+                        ))
+                    }
+                }))
+                .timeout(Duration::from_secs(10))
+                .layer(TraceLayer::new_for_http())
+                .into_inner(),
+        );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
@@ -82,38 +102,39 @@ async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppEr
     let (session_id, is_new_session) = match session_id {
         Some(s) => (s, false),
         None => {
-            let id = Uuid::now_v7().to_string();
+            let id = Uuid::new_v4().to_string();
 
             (id, true)
         }
     };
 
     let mut page_props = PageProps {
-        session_id: Some(session_id),
+        session_id: session_id,
+        request_id: Uuid::new_v4().to_string(),
         user_currency: cur,
     };
 
     let mut buf = String::with_capacity(100000);
     let home_page = components::home::HomePage {};
-    match home_page.write_page(&mut buf, &mut page_props).await {
-        Ok(_) => {
-            if is_new_session {
-                Ok((
-                    jar.add(
-                        Cookie::parse(format!(
-                            "shop_session-id={}; Max-Age={}",
-                            page_props.session_id.unwrap(),
-                            60 * 60 * 48
-                        ))
-                        .unwrap(),
-                    ),
-                    Html(buf),
+
+    if let Err(e) = home_page.write_page(&mut buf, &mut page_props).await {
+        return Err(AppError(anyhow::anyhow!(e)));
+    }
+
+    if is_new_session {
+        Ok((
+            jar.add(
+                Cookie::parse(format!(
+                    "shop_session-id={}; Max-Age={}",
+                    page_props.session_id,
+                    60 * 60 * 48
                 ))
-            } else {
-                Ok((jar, Html(buf)))
-            }
-        }
-        Err(e) => Err(AppError::ServerError(e)),
+                .unwrap(),
+            ),
+            Html(buf),
+        ))
+    } else {
+        Ok((jar, Html(buf)))
     }
 }
 
@@ -146,47 +167,27 @@ async fn health_handler() -> &'static str {
     "OK"
 }
 
-// Create our own JSON extractor by wrapping `axum::Json`. This makes it easy to override the
-// rejection and provide our own which formats errors to match our application.
-//
-// `axum::Json` responds with plain text if the input is invalid.
-#[derive(FromRequest)]
-#[from_request(via(axum::Json), rejection(AppError))]
-struct AppJson<T>(T);
+// Make our own error that wraps `anyhow::Error`.
+struct AppError(anyhow::Error);
 
-impl<T> IntoResponse for AppJson<T>
-where
-    axum::Json<T>: IntoResponse,
-{
+// Tell axum how to convert `AppError` into a response.
+impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        axum::Json(self.0).into_response()
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Something went wrong: {}", self.0),
+        )
+            .into_response()
     }
 }
 
-// The kinds of errors we can hit in our application.
-enum AppError {
-    // The request body contained invalid JSON
-    ServerError(&'static str),
-}
-
-// Tell axum how `AppError` should be converted into a response.
-//
-// This is also a convenient place to log errors.
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        // How we want errors responses to be serialized
-        #[derive(Serialize)]
-        struct ErrorResponse {
-            message: String,
-        }
-
-        let (status, message) = match self {
-            AppError::ServerError(rejection) => {
-                // This error is caused by bad user input so don't log it
-                (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_owned())
-            }
-        };
-
-        (status, AppJson(ErrorResponse { message })).into_response()
+// This enables using `?` on functions that return `Result<_, anyhow::Error>` to turn them into
+// `Result<_, AppError>`. That way you don't need to do that manually.
+impl<E> From<E> for AppError
+where
+    E: Into<anyhow::Error>,
+{
+    fn from(err: E) -> Self {
+        Self(err.into())
     }
 }

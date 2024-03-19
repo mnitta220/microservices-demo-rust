@@ -33,12 +33,10 @@ impl BodyFooter {
                     {
                         buf.push_str(r#"<small>"#);
                         {
-                            if let Some(s) = &page_props.session_id {
-                                buf.push_str(r#"session-id: "#);
-                                buf.push_str(s.as_str());
-                            }
-                            // don't get request-id
-                            //buf.push_str(r#" — request-id: ff5c663c-d516-4aab-b5a3-5af7197df163"#);
+                            buf.push_str(r#"session-id: "#);
+                            buf.push_str(&page_props.session_id);
+                            buf.push_str(r#" — request-id: "#);
+                            buf.push_str(&page_props.request_id);
                         }
                         buf.push_str(r#"</small>"#);
                         /* don't get hostname

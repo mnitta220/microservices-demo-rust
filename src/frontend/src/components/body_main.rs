@@ -22,7 +22,9 @@ impl BodyMain {
                     );
                     buf.push_str(r#"<div class="col-12 col-lg-8">"#);
                     {
-                        if let Err(e) = products::get_products(buf).await {
+                        if let Err(e) =
+                            products::get_products(buf, page_props.user_currency.clone()).await
+                        {
                             return Err(e);
                         }
                         buf.push_str(

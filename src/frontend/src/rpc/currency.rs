@@ -12,21 +12,25 @@ pub async fn select_currency_form(
     buf: &mut String,
     page_props: &mut PageProps,
 ) -> Result<(), &'static str> {
-    let addr = match env::var("CURRENCY_SERVICE_ADDR") {
+    let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
             return Err("Failed to get CURRENCY_SERVICE_ADDR");
         }
     };
 
-    let mut client = match CurrencyServiceClient::connect(format!("http://{}", addr)).await {
-        Ok(client) => client,
-        Err(_) => {
-            return Err("get_currencies: connect failed");
-        }
-    };
+    let mut currency_service_client =
+        match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {
+            Ok(client) => client,
+            Err(_) => {
+                return Err("get_currencies: connect failed");
+            }
+        };
 
-    let response = match client.get_supported_currencies(Empty {}).await {
+    let currencies = match currency_service_client
+        .get_supported_currencies(Empty {})
+        .await
+    {
         Ok(response) => response,
         Err(_) => {
             return Err("get_currencies: get_supported_currencies failed");
@@ -46,7 +50,7 @@ pub async fn select_currency_form(
     );
     {
         buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
-        for currency_code in response.get_ref().currency_codes.iter() {
+        for currency_code in currencies.get_ref().currency_codes.iter() {
             if let Some(c) = WHITELISTED_CURRENCIES.get(currency_code.as_str()) {
                 if *c == true {
                     buf.push_str(r#"<option value=""#);
