@@ -33,6 +33,7 @@ pub async fn write(buf: &mut String, page_props: &PageProps) -> Result<(), &'sta
                     buf.push_str(r#"<a href="/cart" class="cart-link">"#);
                     {
                         buf.push_str(r#"<img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />"#);
+                        buf.push_str(r#"<span class="cart-size-circle">5</span>"#);
                     }
                     buf.push_str(r#"</a>"#);
                 }

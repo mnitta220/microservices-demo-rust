@@ -21,6 +21,7 @@ mod rpc;
 pub enum PageType {
     Home,
     Product,
+    Cart,
 }
 
 pub struct PageProps {
@@ -45,9 +46,9 @@ async fn main() {
         .route("/", get(home_handler))
         .route("/product/:id", get(product_handler))
         .route("/setCurrency", post(set_currency_handler))
+        .route("/cart", get(view_cart_handler).post(add_to_cart_handler))
         .route("/_healthz", get(health_handler))
         .nest_service("/static", ServeDir::new("static"))
-        // Add middleware to all routes
         .layer(
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(|error: BoxError| async move {
@@ -83,6 +84,12 @@ async fn product_handler(
     tracing::debug!("GET /product {}", id);
 
     handler_sub(jar, PageType::Product, Some(id)).await
+}
+
+async fn view_cart_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
+    tracing::debug!("GET /cart");
+
+    handler_sub(jar, PageType::Cart, None).await
 }
 
 async fn handler_sub(
@@ -142,14 +149,13 @@ async fn handler_sub(
 }
 
 #[derive(Deserialize, Debug)]
-#[allow(dead_code)]
-struct Input {
+struct SetCurrencyInput {
     currency_code: String,
 }
 
 async fn set_currency_handler(
     jar: CookieJar,
-    Form(input): Form<Input>,
+    Form(input): Form<SetCurrencyInput>,
 ) -> Result<(CookieJar, Redirect), StatusCode> {
     tracing::debug!("POST /setCurrency {}", input.currency_code);
 
@@ -164,6 +170,18 @@ async fn set_currency_handler(
         ),
         Redirect::to("/"),
     ))
+}
+
+#[derive(Deserialize, Debug)]
+struct AddToCartInput {
+    product_id: String,
+    quantity: String,
+}
+
+async fn add_to_cart_handler(Form(input): Form<AddToCartInput>) -> Result<Redirect, StatusCode> {
+    tracing::debug!("POST /cart {}, {}", input.product_id, input.quantity);
+
+    Ok(Redirect::to("/cart"))
 }
 
 async fn health_handler() -> &'static str {

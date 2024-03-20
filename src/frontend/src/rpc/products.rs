@@ -43,7 +43,7 @@ impl Product {
     }
 }
 
-async fn get_product_catalog_service_client(
+pub async fn get_product_catalog_service_client(
 ) -> Result<ProductCatalogServiceClient<tonic::transport::Channel>, &'static str> {
     let product_catalog_service_addr = match env::var("PRODUCT_CATALOG_SERVICE_ADDR") {
         Ok(addr) => addr,
@@ -103,7 +103,7 @@ pub async fn get_products(buf: &mut String, page_props: &PageProps) -> Result<()
     };
 
     let products = match product_catalog_service_client.list_products(Empty {}).await {
-        Ok(response) => response,
+        Ok(response) => response.into_inner(),
         Err(_) => {
             return Err("get_products: list_products failed");
         }
@@ -116,7 +116,7 @@ pub async fn get_products(buf: &mut String, page_props: &PageProps) -> Result<()
             buf.push_str(r#"<h3>Hot Products</h3>"#);
         }
         buf.push_str(r#"</div>"#);
-        for product in products.get_ref().products.iter() {
+        for product in products.products.iter() {
             if product.price_usd.as_ref().unwrap().currency_code != page_props.user_currency {
                 let request = CurrencyConversionRequest {
                     from: product.price_usd.clone(),

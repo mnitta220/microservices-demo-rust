@@ -25,10 +25,31 @@ fn whitelisted_currencies(currency: &str) -> bool {
     }
 }
 
+pub async fn get_currency_service_client(
+) -> Result<CurrencyServiceClient<tonic::transport::Channel>, &'static str> {
+    let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err("Failed to get CURRENCY_SERVICE_ADDR");
+        }
+    };
+
+    let currency_service_client =
+        match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {
+            Ok(client) => client,
+            Err(_) => {
+                return Err("get_currencies: connect failed");
+            }
+        };
+
+    Ok(currency_service_client)
+}
+
 pub async fn select_currency_form(
     buf: &mut String,
     page_props: &PageProps,
 ) -> Result<(), &'static str> {
+    /*
     let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
@@ -43,6 +64,14 @@ pub async fn select_currency_form(
                 return Err("get_currencies: connect failed");
             }
         };
+        */
+
+    let mut currency_service_client = match get_currency_service_client().await {
+        Ok(client) => client,
+        Err(_) => {
+            return Err("get_currencies: connect failed");
+        }
+    };
 
     let currencies = match currency_service_client
         .get_supported_currencies(Empty {})

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>
+    Online Boutique
+  </title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/static/styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="/static/styles/cart.css">
+  <link rel="stylesheet" type="text/css" href="/static/styles/order.css">
+  <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
+</head>
+<body>
+  <header>
+    <div class="navbar sub-navbar">
+      <div class="container d-flex justify-content-between">
+        <a href="/" class="navbar-brand d-flex align-items-center">
+          <img src="/static/icons/Hipster_NavLogo.svg" alt="" class="top-left-logo" />
+        </a>
+        <div class="controls">
+          <div class="h-controls">
+            <div class="h-control">
+              <span class="icon currency-icon"> ₺</span>
+              <form method="POST" class="controls-form" action="/setCurrency" id="currency_form">
+                <select name="currency_code" onchange="document.getElementById('currency_form').submit();">
+                  <option value="EUR">EUR</option>
+                  <option value="USD">USD</option>
+                  <option value="JPY">JPY</option>
+                  <option value="GBP">GBP</option>
+                  <option value="TRY" selected="selected">TRY</option>
+                  <option value="CAD">CAD</option>
+                </select>
+              </form>
+              <img src="/static/icons/Hipster_DownArrow.svg" alt="" class="icon arrow" />
+            </div>
+          </div>
+          <a href="/cart" class="cart-link">
+            <img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />
+            <span class="cart-size-circle">5</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="local">
+    <span class="platform-flag">
+      local
+    </span>
+  </div>
+  <main role="main" class="cart-sections">
+    <section class="container">
+      <div class="row">
+        <div class="col-lg-6 col-xl-5 offset-xl-1 cart-summary-section">
+          <div class="row mb-3 py-2">
+            <div class="col-4 pl-md-0">
+              <h3>Cart (5)</h3>
+            </div>
+            <div class="col-8 pr-md-0 text-right">
+              <form method="POST" action="/cart/empty">
+                <button class="cymbal-button-secondary cart-summary-empty-cart-button" type="submit">
+                  Empty Cart
+                </button>
+                <a class="cymbal-button-primary" href="/" role="button">
+                  Continue Shopping
+                </a>
+              </form>
+            </div>
+          </div>
+          <div class="row cart-summary-item-row">
+            <div class="col-md-4 pl-md-0">
+              <a href="/product/2ZYFJ3GM2N">
+                <img class="img-fluid" alt="" src="/static/img/products/hairdryer.jpg" />
+              </a>
+            </div>
+            <div class="col-md-8 pr-md-0">
+              <div class="row">
+                <div class="col">
+                  <h4>Hairdryer</h4>
+                </div>
+              </div>
+              <div class="row cart-summary-item-row-item-id-row">
+                <div class="col">
+                  SKU #2ZYFJ3GM2N
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Quantity: 3
+                </div>
+                <div class="col pr-md-0 text-right">
+                  <strong>
+                    ₺406.16
+                  </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row cart-summary-item-row">
+            <div class="col-md-4 pl-md-0">
+              <a href="/product/OLJCESPC7Z">
+                <img class="img-fluid" alt="" src="/static/img/products/sunglasses.jpg" />
+              </a>
+            </div>
+            <div class="col-md-8 pr-md-0">
+              <div class="row">
+                <div class="col">
+                  <h4>Sunglasses1</h4>
+                </div>
+              </div>
+              <div class="row cart-summary-item-row-item-id-row">
+                <div class="col">
+                  SKU #OLJCESPC7Z
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Quantity: 2
+                </div>
+                <div class="col pr-md-0 text-right">
+                  <strong>
+                    ₺216.59
+                  </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row cart-summary-shipping-row">
+            <div class="col pl-md-0">Shipping</div>
+            <div class="col pr-md-0 text-right">₺48.70</div>
+          </div>
+          <div class="row cart-summary-total-row">
+            <div class="col pl-md-0">Total</div>
+            <div class="col pr-md-0 text-right">₺671.46</div>
+          </div>
+        </div>
+        <div class="col-lg-5 offset-lg-1 col-xl-4">
+          <form class="cart-checkout-form" action="/cart/checkout" method="POST">
+            <div class="row">
+              <div class="col">
+                <h3>Shipping Address</h3>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col cymbal-form-field">
+                <label for="email">E-mail Address</label>
+                <input type="email" id="email" name="email" value="someone@example.com" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col cymbal-form-field">
+                <label for="street_address">Street Address</label>
+                <input type="text" name="street_address" id="street_address" value="1600 Amphitheatre Parkway" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col cymbal-form-field">
+                <label for="zip_code">Zip Code</label>
+                <input type="text" name="zip_code" id="zip_code" value="94043" required pattern="\d{4,5}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col cymbal-form-field">
+                <label for="city">City</label>
+                <input type="text" name="city" id="city" value="Mountain View" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-5 cymbal-form-field">
+                <label for="state">State</label>
+                <input type="text" name="state" id="state" value="CA" required>
+              </div>
+              <div class="col-md-7 cymbal-form-field">
+                <label for="country">Country</label>
+                <input type="text" id="country" placeholder="Country Name" name="country" value="United States"
+                  required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <h3 class="payment-method-heading">Payment Method</h3>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col cymbal-form-field">
+                <label for="credit_card_number">Credit Card Number</label>
+                <input type="text" id="credit_card_number" name="credit_card_number" placeholder="0000-0000-0000-0000"
+                  value="4432-8015-6152-0454" required pattern="\d{4}-\d{4}-\d{4}-\d{4}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-5 cymbal-form-field">
+                <label for="credit_card_expiration_month">Month</label>
+                <select name="credit_card_expiration_month" id="credit_card_expiration_month">
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">January</option>
+                </select>
+                <img src="/static/icons/Hipster_DownArrow.svg" alt="" class="cymbal-dropdown-chevron">
+              </div>
+              <div class="col-md-4 cymbal-form-field">
+                <label for="credit_card_expiration_year">Year</label>
+                <select name="credit_card_expiration_year" id="credit_card_expiration_year">
+                  <option value="2024">2024</option>
+                  <option value="2025" selected="selected">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                </select>
+                <img src="/static/icons/Hipster_DownArrow.svg" alt="" class="cymbal-dropdown-chevron">
+              </div>
+              <div class="col-md-3 cymbal-form-field">
+                <label for="credit_card_cvv">CVV</label>
+                <input type="password" id="credit_card_cvv" name="credit_card_cvv" value="672" required pattern="\d{3}">
+              </div>
+            </div>
+            <div class="form-row justify-content-center">
+              <div class="col text-center">
+                <button class="cymbal-button-primary" type="submit">
+                  Place Order
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <section class="recommendations">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-10 offset-xl-1">
+          <h2>You May Also Like</h2>
+          <div class="row">
+            <div class="col-md-3">
+              <div>
+                <a href="/product/1YMWWN1N4O">
+                  <img alt="" src="/static/img/products/watch.jpg">
+                </a>
+                <div>
+                  <h5>
+                    Watch3
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div>
+                <a href="/product/66VCHSJNUP">
+                  <img alt="" src="/static/img/products/tank-top.jpg">
+                </a>
+                <div>
+                  <h5>
+                    Tank Top2
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div>
+                <a href="/product/LS4PSXUNUM">
+                  <img alt="" src="/static/img/products/salt-and-pepper-shakers.jpg">
+                </a>
+                <div>
+                  <h5>
+                    Salt &amp; Pepper Shakers
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div>
+                <a href="/product/9SIQT8TOJO">
+                  <img alt="" src="/static/img/products/bamboo-glass-jar.jpg">
+                </a>
+                <div>
+                  <h5>
+                    Bamboo Glass Jar
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="py-5">
+    <div class="footer-top">
+      <div class="container footer-social">
+        <p class="footer-text">This website is hosted for demo purposes only. It is not an actual shop. This is not a
+          Google product.</p>
+        <p class="footer-text">© 2020 Google Inc (<a
+            href="https://github.com/GoogleCloudPlatform/microservices-demo">Source Code</a>)</p>
+        <p class="footer-text">
+          <small>
+            session-id: c8d51f9e-2bb6-4f89-a9f6-53111739f472 —
+            request-id: 07ceed2d-5944-4e56-9e47-ca538516c67a
+          </small>
+          <br />
+          <small>
+            <b>Pod: </b>frontend-75b945f9d9-mlvt2
+          </small>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous">
+    </script>
+</body>
+</html>
