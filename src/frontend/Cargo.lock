@@ -333,7 +333,6 @@ dependencies = [
  "anyhow",
  "axum 0.7.4",
  "axum-extra",
- "lazy_static",
  "prost",
  "serde",
  "tokio",

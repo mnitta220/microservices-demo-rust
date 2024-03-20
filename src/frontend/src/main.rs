@@ -7,40 +7,16 @@ use axum::{
     Router,
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar};
-use lazy_static::lazy_static;
 use serde::Deserialize;
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
-mod components;
-mod rpc;
 
-lazy_static! {
-    static ref CURRENCY_LOGO: HashMap<&'static str, &'static str> = {
-        let currency_logo = HashMap::from([
-            ("USD", "$"),
-            ("EUR", "€"),
-            ("CAD", "$"),
-            ("JPY", "¥"),
-            ("GBP", "£"),
-            ("TRY", "₺"),
-        ]);
-        currency_logo
-    };
-    static ref WHITELISTED_CURRENCIES: HashMap<&'static str, bool> = {
-        let whitelisted_currencies = std::collections::HashMap::from([
-            ("USD", true),
-            ("EUR", true),
-            ("CAD", true),
-            ("JPY", true),
-            ("GBP", true),
-            ("TRY", true),
-        ]);
-        whitelisted_currencies
-    };
-}
+mod components;
+mod pages;
+mod rpc;
 
 pub enum PageType {
     Home,
@@ -114,10 +90,10 @@ async fn handler_sub(
     page_type: PageType,
     product_id: Option<String>,
 ) -> Result<(CookieJar, Html<String>), AppError> {
-    let cur: Option<String> = jar
+    let currency: Option<String> = jar
         .get("shop_currency")
         .map(|cookie| cookie.value().to_owned());
-    let cur = match cur {
+    let currency = match currency {
         Some(c) => c,
         None => "USD".to_string(),
     };
@@ -133,33 +109,33 @@ async fn handler_sub(
         }
     };
 
-    let mut page_props = PageProps {
+    let page_props = PageProps {
         page_type: page_type,
         session_id: session_id,
         request_id: Uuid::new_v4().to_string(),
-        user_currency: cur,
+        user_currency: currency,
         product_id: product_id,
     };
 
     let mut buf = String::with_capacity(100000);
-    let home_page = components::home::HomePage {};
 
-    if let Err(e) = home_page.write_page(&mut buf, &mut page_props).await {
+    if let Err(e) = pages::page_writer::write(&mut buf, &page_props).await {
         return Err(AppError(anyhow::anyhow!(e)));
     }
 
     if is_new_session {
-        Ok((
-            jar.add(
-                Cookie::parse(format!(
-                    "shop_session-id={}; Max-Age={}",
-                    page_props.session_id,
-                    60 * 60 * 48
-                ))
-                .unwrap(),
-            ),
-            Html(buf),
-        ))
+        let cookie = match Cookie::parse(format!(
+            "shop_session-id={}; Max-Age={}",
+            page_props.session_id,
+            60 * 60 * 48
+        )) {
+            Ok(c) => c,
+            Err(_) => {
+                return Err(AppError(anyhow::anyhow!("Cookie parse error")));
+            }
+        };
+
+        Ok((jar.add(cookie), Html(buf)))
     } else {
         Ok((jar, Html(buf)))
     }

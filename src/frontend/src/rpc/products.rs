@@ -2,7 +2,7 @@ pub mod hipstershop {
     tonic::include_proto!("hipstershop");
 }
 
-use super::super::CURRENCY_LOGO;
+use super::currency;
 use crate::PageProps;
 use hipstershop::currency_service_client::CurrencyServiceClient;
 use hipstershop::product_catalog_service_client::ProductCatalogServiceClient;
@@ -31,11 +31,7 @@ impl Product {
                 buf.push_str(r#"</div>"#);
 
                 buf.push_str(r#"<div class="hot-product-card-price">"#);
-                if let Some(c) = CURRENCY_LOGO.get(money.currency_code.as_str()) {
-                    buf.push_str(c);
-                } else {
-                    buf.push_str("$");
-                }
+                buf.push_str(currency::currency_logo(money.currency_code.as_str()));
                 buf.push_str(money.units.to_string().as_str());
                 buf.push_str(".");
                 buf.push_str(format!("{:.2}", money.nanos / 10000000).as_str());
@@ -91,10 +87,7 @@ async fn get_currency_service_client(
     Ok(currency_service_client)
 }
 
-pub async fn get_products(
-    buf: &mut String,
-    page_props: &mut PageProps,
-) -> Result<(), &'static str> {
+pub async fn get_products(buf: &mut String, page_props: &PageProps) -> Result<(), &'static str> {
     let mut product_catalog_service_client = match get_product_catalog_service_client().await {
         Ok(client) => client,
         Err(e) => {
@@ -146,7 +139,7 @@ pub async fn get_products(
     Ok(())
 }
 
-pub async fn get_product(buf: &mut String, page_props: &mut PageProps) -> Result<(), &'static str> {
+pub async fn get_product(buf: &mut String, page_props: &PageProps) -> Result<(), &'static str> {
     let product_id = match page_props.product_id.clone() {
         Some(id) => id,
         None => return Err("product id not specified"),
@@ -212,11 +205,7 @@ pub async fn get_product(buf: &mut String, page_props: &mut PageProps) -> Result
                     buf.push_str(&product.name);
                     buf.push_str(r#"</h2>"#);
                     buf.push_str(r#"<p class="product-price">"#);
-                    if let Some(c) = CURRENCY_LOGO.get(price.currency_code.as_str()) {
-                        buf.push_str(c);
-                    } else {
-                        buf.push_str("$");
-                    }
+                    buf.push_str(currency::currency_logo(price.currency_code.as_str()));
                     buf.push_str(price.units.to_string().as_str());
                     buf.push_str(".");
                     buf.push_str(format!("{:.2}", price.nanos / 10000000).as_str());

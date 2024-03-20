@@ -16,7 +16,6 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 tonic = "0.11"
 prost = "0.12"
 serde = { version = "1.0.197", features = ["derive"] }
-lazy_static = "1.4.0"
 uuid = { version = "1.7.0", features = ["serde", "v4"] }
 anyhow = { version = "1.0", default-features = false }
 
