@@ -4,7 +4,7 @@ use crate::Page;
 use crate::PageProps;
 use anyhow::Result;
 
-pub async fn create_home_page(props: &PageProps) -> Result<Page> {
+pub async fn build_home_page(props: &PageProps) -> Result<Page> {
     let currencies = match currency::get_supported_currencies().await {
         Ok(response) => response,
         Err(e) => {
@@ -41,7 +41,7 @@ pub async fn create_home_page(props: &PageProps) -> Result<Page> {
     Ok(page)
 }
 
-pub async fn create_product_page(props: &PageProps) -> Result<Page> {
+pub async fn build_product_page(props: &PageProps) -> Result<Page> {
     let currencies = match currency::get_supported_currencies().await {
         Ok(response) => response,
         Err(e) => {
@@ -56,7 +56,7 @@ pub async fn create_product_page(props: &PageProps) -> Result<Page> {
         }
     };
 
-    let recommendations = match recommendation::get_recommendations(&props).await {
+    let recommendation_list = match recommendation::get_recommendations(&props).await {
         Ok(response) => response,
         Err(e) => {
             return Err(anyhow::anyhow!(e));
@@ -70,12 +70,55 @@ pub async fn create_product_page(props: &PageProps) -> Result<Page> {
     let body_header = components::body_header::BodyHeader {
         currency_form: Box::new(currency_form),
     };
+    let recommendations = components::recommendations::Recommendations {
+        recommendation_list,
+    };
     let footer = components::body_footer::Footer {};
     let body = components::product_body::ProductBody {
         body_header: Box::new(body_header),
         footer: Box::new(footer),
         product,
-        recommendation_list: recommendations,
+        recommendations: Box::new(recommendations),
+    };
+    let page = crate::Page {
+        lang: Some("en".to_string()),
+        head: Box::new(head),
+        body: Box::new(body),
+    };
+
+    Ok(page)
+}
+
+pub async fn build_cart_page(props: &PageProps) -> Result<Page> {
+    let currencies = match currency::get_supported_currencies().await {
+        Ok(response) => response,
+        Err(e) => {
+            return Err(anyhow::anyhow!(e));
+        }
+    };
+
+    let recommendation_list = match recommendation::get_recommendations(&props).await {
+        Ok(response) => response,
+        Err(e) => {
+            return Err(anyhow::anyhow!(e));
+        }
+    };
+
+    let head = components::head::Head {};
+    let currency_form = components::currency_form::CurrencyForm {
+        currency_codes: currencies,
+    };
+    let body_header = components::body_header::BodyHeader {
+        currency_form: Box::new(currency_form),
+    };
+    let recommendations = components::recommendations::Recommendations {
+        recommendation_list,
+    };
+    let footer = components::body_footer::Footer {};
+    let body = components::cart_body::CartBody {
+        body_header: Box::new(body_header),
+        footer: Box::new(footer),
+        recommendations: Box::new(recommendations),
     };
     let page = crate::Page {
         lang: Some("en".to_string()),

@@ -1,11 +1,8 @@
-use crate::PageProps;
-
 use crate::Component;
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct CurrencyForm {
-    //pub props: &'a super::super::pages::PageProps,
-    //pub user_currency: String,
     pub currency_codes: Vec<String>,
 }
 

@@ -26,41 +26,6 @@ pub enum PageType {
     Cart,
 }
 
-pub trait Component {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()>;
-}
-
-pub struct Page {
-    pub lang: Option<String>,
-    pub head: Box<dyn Component>,
-    pub body: Box<dyn Component>,
-}
-
-impl Component for Page {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
-        buf.push_str(r#"<!DOCTYPE html>"#);
-        if let Some(lang) = &self.lang {
-            buf.push_str(r#"<html lang=""#);
-            buf.push_str(lang);
-            buf.push_str(r#"">"#);
-        } else {
-            buf.push_str(r#"<html>"#);
-        }
-
-        if let Err(e) = self.head.write(props, buf) {
-            return Err(e);
-        }
-
-        if let Err(e) = self.body.write(props, buf) {
-            return Err(e);
-        }
-
-        buf.push_str(r#"</html>"#);
-
-        Ok(())
-    }
-}
-
 pub struct PageProps {
     pub page_type: PageType,
     pub session_id: String,
@@ -107,78 +72,13 @@ async fn main() {
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
 }
-/*
+
 async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
     tracing::debug!("GET /");
 
-    let currency: Option<String> = jar
-        .get("shop_currency")
-        .map(|cookie| cookie.value().to_owned());
-    let currency = match currency {
-        Some(c) => c,
-        None => "USD".to_string(),
-    };
-    let session_id: Option<String> = jar
-        .get("shop_session-id")
-        .map(|cookie| cookie.value().to_owned());
-    let (session_id, is_new_session) = match session_id {
-        Some(s) => (s, false),
-        None => {
-            let id = Uuid::new_v4().to_string();
-
-            (id, true)
-        }
-    };
-
-    let props = PageProps {
-        page_type: PageType::None,
-        session_id: session_id.clone(),
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: None,
-    };
-
-    let page = pages::page_builder::create_home_page(&props).await?;
-
-    let mut buf = String::with_capacity(100000);
-
-    if let Err(e) = page.write(&props, &mut buf) {
-        return Err(AppError(anyhow::anyhow!(e)));
-    }
-
-    if is_new_session {
-        let cookie = match Cookie::parse(format!(
-            "shop_session-id={}; Max-Age={}",
-            session_id,
-            60 * 60 * 48
-        )) {
-            Ok(c) => c,
-            Err(_) => {
-                return Err(AppError(anyhow::anyhow!("Cookie parse error")));
-            }
-        };
-
-        Ok((jar.add(cookie), Html(buf)))
-    } else {
-        Ok((jar, Html(buf)))
-    }
-}
-*/
-async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /");
-
-    handler_sub2(jar, PageType::Home, None).await
+    handler_sub(jar, PageType::Home, None).await
 }
 
-async fn product_handler(
-    jar: CookieJar,
-    Path(id): Path<String>,
-) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /product {}", id);
-
-    handler_sub2(jar, PageType::Product, Some(id)).await
-}
-/*
 async fn product_handler(
     jar: CookieJar,
     Path(id): Path<String>,
@@ -187,7 +87,6 @@ async fn product_handler(
 
     handler_sub(jar, PageType::Product, Some(id)).await
 }
-*/
 
 async fn view_cart_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
     tracing::debug!("GET /cart");
@@ -196,62 +95,6 @@ async fn view_cart_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), 
 }
 
 async fn handler_sub(
-    jar: CookieJar,
-    page_type: PageType,
-    product_id: Option<String>,
-) -> Result<(CookieJar, Html<String>), AppError> {
-    let currency: Option<String> = jar
-        .get("shop_currency")
-        .map(|cookie| cookie.value().to_owned());
-    let currency = match currency {
-        Some(c) => c,
-        None => "USD".to_string(),
-    };
-    let session_id: Option<String> = jar
-        .get("shop_session-id")
-        .map(|cookie| cookie.value().to_owned());
-    let (session_id, is_new_session) = match session_id {
-        Some(s) => (s, false),
-        None => {
-            let id = Uuid::new_v4().to_string();
-
-            (id, true)
-        }
-    };
-
-    let page_props = PageProps {
-        page_type: page_type,
-        session_id: session_id,
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: product_id,
-    };
-
-    let mut buf = String::with_capacity(100000);
-
-    if let Err(e) = pages::page_writer::write(&mut buf, &page_props).await {
-        return Err(AppError(anyhow::anyhow!(e)));
-    }
-
-    if is_new_session {
-        let cookie = match Cookie::parse(format!(
-            "shop_session-id={}; Max-Age={}",
-            page_props.session_id,
-            60 * 60 * 48
-        )) {
-            Ok(c) => c,
-            Err(_) => {
-                return Err(AppError(anyhow::anyhow!("Cookie parse error")));
-            }
-        };
-
-        Ok((jar.add(cookie), Html(buf)))
-    } else {
-        Ok((jar, Html(buf)))
-    }
-}
-
-async fn handler_sub2(
     jar: CookieJar,
     page_type: PageType,
     product_id: Option<String>,
@@ -286,8 +129,9 @@ async fn handler_sub2(
     };
 
     let page = match page_type {
-        PageType::Product => pages::page_builder::create_product_page(&props).await?,
-        _ => pages::page_builder::create_home_page(&props).await?,
+        PageType::Home => pages::page_builder::build_home_page(&props).await?,
+        PageType::Product => pages::page_builder::build_product_page(&props).await?,
+        PageType::Cart => pages::page_builder::build_cart_page(&props).await?,
     };
 
     let mut buf = String::with_capacity(100000);
@@ -352,6 +196,41 @@ async fn add_to_cart_handler(Form(input): Form<AddToCartInput>) -> Result<Redire
 
 async fn health_handler() -> &'static str {
     "OK"
+}
+
+pub trait Component {
+    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()>;
+}
+
+pub struct Page {
+    pub lang: Option<String>,
+    pub head: Box<dyn Component>,
+    pub body: Box<dyn Component>,
+}
+
+impl Component for Page {
+    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+        buf.push_str(r#"<!DOCTYPE html>"#);
+        if let Some(lang) = &self.lang {
+            buf.push_str(r#"<html lang=""#);
+            buf.push_str(lang);
+            buf.push_str(r#"">"#);
+        } else {
+            buf.push_str(r#"<html>"#);
+        }
+
+        if let Err(e) = self.head.write(props, buf) {
+            return Err(e);
+        }
+
+        if let Err(e) = self.body.write(props, buf) {
+            return Err(e);
+        }
+
+        buf.push_str(r#"</html>"#);
+
+        Ok(())
+    }
 }
 
 // Make our own error that wraps `anyhow::Error`.
