@@ -111,3 +111,31 @@ pub async fn select_currency_form(
 
     Ok(())
 }
+
+pub async fn get_supported_currencies() -> Result<Vec<String>, &'static str> {
+    let mut currency_service_client = match get_currency_service_client().await {
+        Ok(client) => client,
+        Err(_) => {
+            return Err("get_currencies: connect failed");
+        }
+    };
+
+    let currencies = match currency_service_client
+        .get_supported_currencies(Empty {})
+        .await
+    {
+        Ok(response) => response,
+        Err(_) => {
+            return Err("get_currencies: get_supported_currencies failed");
+        }
+    };
+
+    let mut list: Vec<String> = Vec::new();
+    for currency_code in currencies.get_ref().currency_codes.iter() {
+        if whitelisted_currencies(currency_code.as_str()) {
+            list.push(currency_code.to_string());
+        }
+    }
+
+    Ok(list)
+}

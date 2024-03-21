@@ -56,11 +56,11 @@ async fn write_main_home(buf: &mut String, page_props: &PageProps) -> Result<(),
 async fn write_main_product(buf: &mut String, page_props: &PageProps) -> Result<(), &'static str> {
     buf.push_str(r#"<main role="main">"#);
     {
-        if let Err(e) = products::get_product(buf, page_props).await {
+        if let Err(e) = products::write_product(buf, page_props).await {
             return Err(e);
         }
         buf.push_str(r#"<div>"#);
-        if let Err(e) = recommendation::get_recommendations(buf, page_props).await {
+        if let Err(e) = recommendation::write_recommendations(buf, page_props).await {
             return Err(e);
         }
         buf.push_str(r#"</div>"#);
@@ -416,7 +416,7 @@ async fn write_main_cart(buf: &mut String, page_props: &PageProps) -> Result<(),
         buf.push_str(r#"</section>"#);
     }
     buf.push_str(r#"</main>"#);
-    if let Err(e) = recommendation::get_recommendations(buf, page_props).await {
+    if let Err(e) = recommendation::write_recommendations(buf, page_props).await {
         return Err(e);
     }
     if let Err(e) = body_footer::write(buf, page_props) {
