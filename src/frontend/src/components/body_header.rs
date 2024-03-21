@@ -1,5 +1,4 @@
-use crate::Component;
-use crate::PageProps;
+use crate::{Component, PageProps};
 use anyhow::Result;
 
 pub struct BodyHeader {

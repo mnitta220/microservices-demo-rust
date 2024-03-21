@@ -1,7 +1,4 @@
-use crate::rpc::currency;
-use crate::rpc::products::hipstershop::Product;
-use crate::Component;
-use crate::PageProps;
+use crate::{rpc::hipstershop::Product, Component, PageProps};
 use anyhow::Result;
 
 pub struct ProductBody {
@@ -47,10 +44,13 @@ impl Component for ProductBody {
                                 buf.push_str(&self.product.name);
                                 buf.push_str(r#"</h2>"#);
                                 buf.push_str(r#"<p class="product-price">"#);
+                                buf.push_str(&money.money_for_display());
+                                /*
                                 buf.push_str(currency::currency_logo(money.currency_code.as_str()));
                                 buf.push_str(money.units.to_string().as_str());
                                 buf.push_str(".");
                                 buf.push_str(format!("{:.2}", money.nanos / 10000000).as_str());
+                                */
                                 buf.push_str(r#"</p>"#);
                                 buf.push_str(r#"<p>"#);
                                 buf.push_str(&self.product.description);

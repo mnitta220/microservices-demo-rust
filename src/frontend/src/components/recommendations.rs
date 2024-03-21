@@ -1,6 +1,4 @@
-use crate::rpc::products::hipstershop::Product;
-use crate::Component;
-use crate::PageProps;
+use crate::{rpc::hipstershop::Product, Component, PageProps};
 use anyhow::Result;
 
 pub struct Recommendations {

@@ -1,10 +1,15 @@
-pub mod hipstershop {
-    tonic::include_proto!("hipstershop");
-}
-
-use hipstershop::currency_service_client::CurrencyServiceClient;
-use hipstershop::Empty;
 use std::env;
+
+impl super::Money {
+    pub fn money_for_display(&self) -> String {
+        format!(
+            "{}{}.{:.2}",
+            currency_logo(&self.currency_code),
+            self.units,
+            self.nanos / 10000000
+        )
+    }
+}
 
 pub fn currency_logo(currency: &str) -> &'static str {
     match currency {
@@ -25,7 +30,7 @@ fn whitelisted_currencies(currency: &str) -> bool {
 }
 
 pub async fn get_currency_service_client(
-) -> Result<CurrencyServiceClient<tonic::transport::Channel>, &'static str> {
+) -> Result<super::CurrencyServiceClient<tonic::transport::Channel>, &'static str> {
     let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
@@ -34,10 +39,12 @@ pub async fn get_currency_service_client(
     };
 
     let currency_service_client =
-        match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {
+        match super::CurrencyServiceClient::connect(format!("http://{}", currency_service_addr))
+            .await
+        {
             Ok(client) => client,
             Err(_) => {
-                return Err("get_currencies: connect failed");
+                return Err("get_currency_service_client failed");
             }
         };
 
@@ -53,7 +60,7 @@ pub async fn get_supported_currencies() -> Result<Vec<String>, &'static str> {
     };
 
     let currencies = match currency_service_client
-        .get_supported_currencies(Empty {})
+        .get_supported_currencies(super::Empty {})
         .await
     {
         Ok(response) => response,

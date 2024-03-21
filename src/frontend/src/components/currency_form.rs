@@ -1,5 +1,4 @@
-use crate::Component;
-use crate::PageProps;
+use crate::{Component, PageProps};
 use anyhow::Result;
 
 pub struct CurrencyForm {
@@ -32,7 +31,7 @@ impl Component for CurrencyForm {
 
         buf.push_str(
           r#"<form method="POST" class="controls-form" action="/setCurrency" id="currency_form">"#,
-      );
+        );
         {
             buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
             for currency_code in self.currency_codes.iter() {

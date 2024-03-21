@@ -1,25 +1,21 @@
 use anyhow::Result;
 use axum::{
     error_handling::HandleErrorLayer,
-    extract::{Form, Path},
     http::StatusCode,
-    response::{Html, IntoResponse, Redirect, Response},
+    response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
-use axum_extra::extract::cookie::{Cookie, CookieJar};
-use serde::Deserialize;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use uuid::Uuid;
 
 mod components;
-mod pages;
+mod handlers;
+mod page_builder;
 mod rpc;
 
-#[derive(Clone)]
 pub enum PageType {
     Home,
     Product,
@@ -27,11 +23,16 @@ pub enum PageType {
 }
 
 pub struct PageProps {
-    pub page_type: PageType,
     pub session_id: String,
     pub request_id: String,
     pub user_currency: String,
     pub product_id: Option<String>,
+    pub cart_items: Vec<CartItem>,
+}
+
+pub struct CartItem {
+    pub product: rpc::hipstershop::Product,
+    pub quantity: i32,
 }
 
 #[tokio::main]
@@ -45,11 +46,14 @@ async fn main() {
         .init();
 
     let app = Router::new()
-        .route("/", get(home_handler))
-        .route("/product/:id", get(product_handler))
-        .route("/setCurrency", post(set_currency_handler))
-        .route("/cart", get(view_cart_handler).post(add_to_cart_handler))
-        .route("/_healthz", get(health_handler))
+        .route("/", get(handlers::home_handler))
+        .route("/product/:id", get(handlers::product_handler))
+        .route("/setCurrency", post(handlers::set_currency_handler))
+        .route(
+            "/cart",
+            get(handlers::view_cart_handler).post(handlers::add_to_cart_handler),
+        )
+        .route("/_healthz", get(handlers::health_handler))
         .nest_service("/static", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()
@@ -71,131 +75,6 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
-}
-
-async fn home_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /");
-
-    handler_sub(jar, PageType::Home, None).await
-}
-
-async fn product_handler(
-    jar: CookieJar,
-    Path(id): Path<String>,
-) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /product {}", id);
-
-    handler_sub(jar, PageType::Product, Some(id)).await
-}
-
-async fn view_cart_handler(jar: CookieJar) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /cart");
-
-    handler_sub(jar, PageType::Cart, None).await
-}
-
-async fn handler_sub(
-    jar: CookieJar,
-    page_type: PageType,
-    product_id: Option<String>,
-) -> Result<(CookieJar, Html<String>), AppError> {
-    tracing::debug!("GET /");
-
-    let currency: Option<String> = jar
-        .get("shop_currency")
-        .map(|cookie| cookie.value().to_owned());
-    let currency = match currency {
-        Some(c) => c,
-        None => "USD".to_string(),
-    };
-    let session_id: Option<String> = jar
-        .get("shop_session-id")
-        .map(|cookie| cookie.value().to_owned());
-    let (session_id, is_new_session) = match session_id {
-        Some(s) => (s, false),
-        None => {
-            let id = Uuid::new_v4().to_string();
-
-            (id, true)
-        }
-    };
-
-    let props = PageProps {
-        page_type: page_type.clone(),
-        session_id: session_id.clone(),
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: product_id,
-    };
-
-    let page = match page_type {
-        PageType::Home => pages::page_builder::build_home_page(&props).await?,
-        PageType::Product => pages::page_builder::build_product_page(&props).await?,
-        PageType::Cart => pages::page_builder::build_cart_page(&props).await?,
-    };
-
-    let mut buf = String::with_capacity(100000);
-
-    if let Err(e) = page.write(&props, &mut buf) {
-        return Err(AppError(anyhow::anyhow!(e)));
-    }
-
-    if is_new_session {
-        let cookie = match Cookie::parse(format!(
-            "shop_session-id={}; Max-Age={}",
-            session_id,
-            60 * 60 * 48
-        )) {
-            Ok(c) => c,
-            Err(_) => {
-                return Err(AppError(anyhow::anyhow!("Cookie parse error")));
-            }
-        };
-
-        Ok((jar.add(cookie), Html(buf)))
-    } else {
-        Ok((jar, Html(buf)))
-    }
-}
-
-#[derive(Deserialize, Debug)]
-struct SetCurrencyInput {
-    currency_code: String,
-}
-
-async fn set_currency_handler(
-    jar: CookieJar,
-    Form(input): Form<SetCurrencyInput>,
-) -> Result<(CookieJar, Redirect), StatusCode> {
-    tracing::debug!("POST /setCurrency {}", input.currency_code);
-
-    Ok((
-        jar.add(
-            Cookie::parse(format!(
-                "shop_currency={}; Max-Age={}",
-                input.currency_code,
-                60 * 60 * 48
-            ))
-            .unwrap(),
-        ),
-        Redirect::to("/"),
-    ))
-}
-
-#[derive(Deserialize, Debug)]
-struct AddToCartInput {
-    product_id: String,
-    quantity: String,
-}
-
-async fn add_to_cart_handler(Form(input): Form<AddToCartInput>) -> Result<Redirect, StatusCode> {
-    tracing::debug!("POST /cart {}, {}", input.product_id, input.quantity);
-
-    Ok(Redirect::to("/cart"))
-}
-
-async fn health_handler() -> &'static str {
-    "OK"
 }
 
 pub trait Component {
@@ -234,7 +113,7 @@ impl Component for Page {
 }
 
 // Make our own error that wraps `anyhow::Error`.
-struct AppError(anyhow::Error);
+pub struct AppError(anyhow::Error);
 
 // Tell axum how to convert `AppError` into a response.
 impl IntoResponse for AppError {

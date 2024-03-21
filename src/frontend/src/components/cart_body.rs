@@ -1,11 +1,12 @@
-use crate::Component;
-use crate::PageProps;
+use crate::{Component, PageProps};
 use anyhow::Result;
 
 pub struct CartBody {
     pub body_header: Box<dyn Component>,
     pub footer: Box<dyn Component>,
     pub recommendations: Box<dyn Component>,
+    pub shipping_cost: String,
+    pub total_cost: String,
 }
 
 impl Component for CartBody {
@@ -56,124 +57,90 @@ impl Component for CartBody {
                                 buf.push_str(r#"</div>"#);
                             }
                             buf.push_str(r#"</div>"#);
-                            buf.push_str(r#"<div class="row cart-summary-item-row">"#);
-                            {
-                                buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
-                                {
-                                    buf.push_str(r#"<a href="/product/2ZYFJ3GM2N">"#);
+
+                            for item in props.cart_items.iter() {
+                                if let Some(m) = &item.product.price_usd {
+                                    buf.push_str(r#"<div class="row cart-summary-item-row">"#);
                                     {
-                                        buf.push_str(r#"<img class="img-fluid" alt="" src="/static/img/products/hairdryer.jpg" />"#);
+                                        buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
+                                        {
+                                            buf.push_str(r#"<a href="/product/"#);
+                                            buf.push_str(&item.product.id);
+                                            buf.push_str(r#"">"#);
+                                            {
+                                                buf.push_str(
+                                                    r#"<img class="img-fluid" alt="" src=""#,
+                                                );
+                                                buf.push_str(&item.product.picture);
+                                                buf.push_str(r#"" />"#);
+                                            }
+                                            buf.push_str(r#"</a>"#);
+                                        }
+                                        buf.push_str(r#"</div>"#);
+                                        buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
+                                        {
+                                            buf.push_str(r#"<div class="row">"#);
+                                            {
+                                                buf.push_str(r#"<div class="col">"#);
+                                                {
+                                                    buf.push_str(r#"<h4>"#);
+                                                    buf.push_str(&item.product.name);
+                                                    buf.push_str(r#"</h4>"#);
+                                                }
+                                                buf.push_str(r#"</div>"#);
+                                            }
+                                            buf.push_str(r#"</div>"#);
+                                            buf.push_str(
+                                                r#"<div class="row cart-summary-item-row-item-id-row">"#,
+                                            );
+                                            {
+                                                buf.push_str(r#"<div class="col">"#);
+                                                {
+                                                    buf.push_str(r#"SKU #"#);
+                                                    buf.push_str(&item.product.id);
+                                                }
+                                                buf.push_str(r#"</div>"#);
+                                            }
+                                            buf.push_str(r#"</div>"#);
+                                            buf.push_str(r#"<div class="row">"#);
+                                            {
+                                                buf.push_str(r#"<div class="col">"#);
+                                                {
+                                                    buf.push_str(r#"Quantity: "#);
+                                                    buf.push_str(&item.quantity.to_string());
+                                                }
+                                                buf.push_str(r#"</div>"#);
+                                                buf.push_str(
+                                                    r#"<div class="col pr-md-0 text-right">"#,
+                                                );
+                                                {
+                                                    buf.push_str(r#"<strong>"#);
+                                                    buf.push_str(&m.money_for_display());
+                                                    buf.push_str(r#"</strong>"#);
+                                                }
+                                                buf.push_str(r#"</div>"#);
+                                            }
+                                            buf.push_str(r#"</div>"#);
+                                        }
+                                        buf.push_str(r#"</div>"#);
                                     }
-                                    buf.push_str(r#"</a>"#);
+                                    buf.push_str(r#"</div>"#);
                                 }
-                                buf.push_str(r#"</div>"#);
-                                buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
-                                {
-                                    buf.push_str(r#"<div class="row">"#);
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"<h4>Hairdryer</h4>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                    buf.push_str(
-                                        r#"<div class="row cart-summary-item-row-item-id-row">"#,
-                                    );
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"SKU #2ZYFJ3GM2N"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                    buf.push_str(r#"<div class="row">"#);
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"Quantity: 3"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                        buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
-                                        {
-                                            buf.push_str(r#"<strong>"#);
-                                            buf.push_str(r#"₺406.16"#);
-                                            buf.push_str(r#"</strong>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                }
-                                buf.push_str(r#"</div>"#);
                             }
-                            buf.push_str(r#"</div>"#);
-                            buf.push_str(r#"<div class="row cart-summary-item-row">"#);
-                            {
-                                buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
-                                {
-                                    buf.push_str(r#"<a href="/product/OLJCESPC7Z">"#);
-                                    {
-                                        buf.push_str(r#"<img class="img-fluid" alt="" src="/static/img/products/sunglasses.jpg" />"#);
-                                    }
-                                    buf.push_str(r#"</a>"#);
-                                }
-                                buf.push_str(r#"</div>"#);
-                                buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
-                                {
-                                    buf.push_str(r#"<div class="row">"#);
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"<h4>Sunglasses1</h4>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                    buf.push_str(
-                                        r#"<div class="row cart-summary-item-row-item-id-row">"#,
-                                    );
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"SKU #OLJCESPC7Z"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                    buf.push_str(r#"<div class="row">"#);
-                                    {
-                                        buf.push_str(r#"<div class="col">"#);
-                                        {
-                                            buf.push_str(r#"Quantity: 2"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                        buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
-                                        {
-                                            buf.push_str(r#"<strong>"#);
-                                            buf.push_str(r#"₺216.59"#);
-                                            buf.push_str(r#"</strong>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
-                                }
-                                buf.push_str(r#"</div>"#);
-                            }
-                            buf.push_str(r#"</div>"#);
                             buf.push_str(r#"<div class="row cart-summary-shipping-row">"#);
                             {
                                 buf.push_str(r#"<div class="col pl-md-0">Shipping</div>"#);
-                                buf.push_str(r#"<div class="col pr-md-0 text-right">₺48.70</div>"#);
+                                buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
+                                buf.push_str(&self.shipping_cost);
+                                buf.push_str(r#"</div>"#);
                             }
                             buf.push_str(r#"</div>"#);
                             buf.push_str(r#"<div class="row cart-summary-total-row">"#);
                             {
                                 buf.push_str(r#"<div class="col pl-md-0">Total</div>"#);
-                                buf.push_str(
-                                    r#"<div class="col pr-md-0 text-right">₺671.46</div>"#,
-                                );
+                                buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
+                                buf.push_str(&self.total_cost);
+                                buf.push_str(r#"</div>"#);
                             }
                             buf.push_str(r#"</div>"#);
                         }

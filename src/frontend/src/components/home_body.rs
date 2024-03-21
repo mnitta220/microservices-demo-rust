@@ -1,13 +1,10 @@
-use crate::rpc::currency;
-use crate::rpc::products::hipstershop::Product;
-use crate::Component;
-use crate::PageProps;
+use crate::{Component, PageProps};
 use anyhow::Result;
 
 pub struct HomeBody {
     pub body_header: Box<dyn Component>,
     pub footer: Box<dyn Component>,
-    pub product_list: Vec<Product>,
+    pub product_list: Vec<crate::rpc::hipstershop::Product>,
 }
 
 impl Component for HomeBody {
@@ -64,6 +61,8 @@ impl Component for HomeBody {
                                             buf.push_str(r#"</div>"#);
 
                                             buf.push_str(r#"<div class="hot-product-card-price">"#);
+                                            buf.push_str(&money.money_for_display());
+                                            /*
                                             buf.push_str(currency::currency_logo(
                                                 money.currency_code.as_str(),
                                             ));
@@ -72,6 +71,7 @@ impl Component for HomeBody {
                                             buf.push_str(
                                                 format!("{:.2}", money.nanos / 10000000).as_str(),
                                             );
+                                            */
                                             buf.push_str(r#"</div>"#);
                                         }
                                         buf.push_str(r#"</div>"#);

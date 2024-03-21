@@ -1,15 +1,9 @@
-pub mod hipstershop {
-    tonic::include_proto!("hipstershop");
-}
-
+use super::currency;
 use crate::PageProps;
-use hipstershop::currency_service_client::CurrencyServiceClient;
-use hipstershop::product_catalog_service_client::ProductCatalogServiceClient;
-use hipstershop::{CurrencyConversionRequest, Empty, GetProductRequest, Money, Product};
 use std::env;
 
 pub async fn get_product_catalog_service_client(
-) -> Result<ProductCatalogServiceClient<tonic::transport::Channel>, &'static str> {
+) -> Result<super::ProductCatalogServiceClient<tonic::transport::Channel>, &'static str> {
     let product_catalog_service_addr = match env::var("PRODUCT_CATALOG_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
@@ -17,7 +11,7 @@ pub async fn get_product_catalog_service_client(
         }
     };
 
-    let product_catalog_service_client = match ProductCatalogServiceClient::connect(format!(
+    let product_catalog_service_client = match super::ProductCatalogServiceClient::connect(format!(
         "http://{}",
         product_catalog_service_addr
     ))
@@ -25,34 +19,14 @@ pub async fn get_product_catalog_service_client(
     {
         Ok(client) => client,
         Err(_) => {
-            return Err("get_products: connect failed");
+            return Err("get_product_catalog_service_client failed");
         }
     };
 
     Ok(product_catalog_service_client)
 }
 
-async fn get_currency_service_client(
-) -> Result<CurrencyServiceClient<tonic::transport::Channel>, &'static str> {
-    let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err("Failed to get CURRENCY_SERVICE_ADDR");
-        }
-    };
-
-    let currency_service_client =
-        match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {
-            Ok(client) => client,
-            Err(_) => {
-                return Err("get_currencies: connect failed");
-            }
-        };
-
-    Ok(currency_service_client)
-}
-
-pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'static str> {
+pub async fn get_product_list(user_currency: &String) -> Result<Vec<super::Product>, &'static str> {
     let mut product_catalog_service_client = match get_product_catalog_service_client().await {
         Ok(client) => client,
         Err(e) => {
@@ -60,25 +34,28 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'
         }
     };
 
-    let mut currency_service_client = match get_currency_service_client().await {
+    let mut currency_service_client = match currency::get_currency_service_client().await {
         Ok(client) => client,
         Err(e) => {
             return Err(e);
         }
     };
 
-    let products = match product_catalog_service_client.list_products(Empty {}).await {
+    let products = match product_catalog_service_client
+        .list_products(super::Empty {})
+        .await
+    {
         Ok(response) => response.into_inner(),
         Err(_) => {
             return Err("get_products: list_products failed");
         }
     };
 
-    let mut list: Vec<Product> = Vec::new();
+    let mut list: Vec<super::Product> = Vec::new();
     for product in products.products.iter() {
         let mut p = product.clone();
         if product.price_usd.as_ref().unwrap().currency_code != *user_currency {
-            let request = CurrencyConversionRequest {
+            let request = super::CurrencyConversionRequest {
                 from: product.price_usd.clone(),
                 to_code: user_currency.clone(),
             };
@@ -96,7 +73,7 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'
     Ok(list)
 }
 
-pub async fn get_product(page_props: &PageProps) -> Result<Product, &'static str> {
+pub async fn get_product(page_props: &PageProps) -> Result<super::Product, &'static str> {
     let product_id = match page_props.product_id.clone() {
         Some(id) => id,
         None => return Err("product id not specified"),
@@ -112,14 +89,14 @@ pub async fn get_product(page_props: &PageProps) -> Result<Product, &'static str
         }
     };
 
-    let mut currency_service_client = match get_currency_service_client().await {
+    let mut currency_service_client = match currency::get_currency_service_client().await {
         Ok(client) => client,
         Err(e) => {
             return Err(e);
         }
     };
 
-    let request = GetProductRequest { id: product_id };
+    let request = super::GetProductRequest { id: product_id };
 
     let mut product = match product_catalog_service_client.get_product(request).await {
         Ok(response) => response.into_inner(),
@@ -127,9 +104,9 @@ pub async fn get_product(page_props: &PageProps) -> Result<Product, &'static str
             return Err("get_product failed");
         }
     };
-    let price: Money;
+    let price: super::Money;
     if product.price_usd.as_ref().unwrap().currency_code != page_props.user_currency {
-        let request = CurrencyConversionRequest {
+        let request = super::CurrencyConversionRequest {
             from: product.price_usd.clone(),
             to_code: page_props.user_currency.clone(),
         };

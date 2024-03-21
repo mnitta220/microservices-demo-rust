@@ -1,7 +1,8 @@
-use super::super::components;
-use super::super::rpc::{currency, products, recommendation};
-use crate::Page;
-use crate::PageProps;
+use crate::{
+    components,
+    rpc::{currency, product, recommendation, shipping},
+    Page, PageProps,
+};
 use anyhow::Result;
 
 pub async fn build_home_page(props: &PageProps) -> Result<Page> {
@@ -12,7 +13,7 @@ pub async fn build_home_page(props: &PageProps) -> Result<Page> {
         }
     };
 
-    let product_list = match products::get_product_list(&props.user_currency).await {
+    let product_list = match product::get_product_list(&props.user_currency).await {
         Ok(response) => response,
         Err(e) => {
             return Err(anyhow::anyhow!(e));
@@ -49,7 +50,7 @@ pub async fn build_product_page(props: &PageProps) -> Result<Page> {
         }
     };
 
-    let product = match products::get_product(&props).await {
+    let product = match product::get_product(&props).await {
         Ok(response) => response,
         Err(e) => {
             return Err(anyhow::anyhow!(e));
@@ -104,6 +105,13 @@ pub async fn build_cart_page(props: &PageProps) -> Result<Page> {
         }
     };
 
+    let quote = match shipping::get_quote(&props.cart_items, &props.user_currency).await {
+        Ok(res) => res,
+        Err(e) => {
+            return Err(anyhow::anyhow!(e));
+        }
+    };
+
     let head = components::head::Head {};
     let currency_form = components::currency_form::CurrencyForm {
         currency_codes: currencies,
@@ -119,6 +127,8 @@ pub async fn build_cart_page(props: &PageProps) -> Result<Page> {
         body_header: Box::new(body_header),
         footer: Box::new(footer),
         recommendations: Box::new(recommendations),
+        shipping_cost: quote.money_for_display(),
+        total_cost: "100yen".to_string(),
     };
     let page = crate::Page {
         lang: Some("en".to_string()),

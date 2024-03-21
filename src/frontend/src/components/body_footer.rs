@@ -1,5 +1,4 @@
-use crate::Component;
-use crate::PageProps;
+use crate::{Component, PageProps};
 use anyhow::Result;
 
 pub struct Footer {}
@@ -28,7 +27,7 @@ impl Component for Footer {
                         buf.push_str(r#"© 2020 Google Inc ("#);
                         buf.push_str(
                           r#"<a href="https://github.com/GoogleCloudPlatform/microservices-demo">"#,
-                      );
+                        );
                         {
                             buf.push_str(r#"Source Code"#);
                         }
