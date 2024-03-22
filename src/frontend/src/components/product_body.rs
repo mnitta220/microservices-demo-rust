@@ -1,4 +1,8 @@
-use crate::{rpc::hipstershop::Product, Component, PageProps};
+use crate::{
+    components,
+    rpc::{hipstershop::Product, product, recommendation},
+    Component, PageProps,
+};
 use anyhow::Result;
 
 pub struct ProductBody {
@@ -8,20 +12,51 @@ pub struct ProductBody {
     pub recommendations: Box<dyn Component>,
 }
 
+impl ProductBody {
+    pub async fn load(props: &PageProps) -> Result<Self> {
+        let product = match product::get_product(&props).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let recommendation_list = match recommendation::get_recommendations(&props).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let body_header = match components::body_header::BodyHeader::load(props).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let recommendations = components::recommendations::Recommendations {
+            recommendation_list,
+        };
+        let footer = components::body_footer::Footer {};
+
+        let body = components::product_body::ProductBody {
+            body_header: Box::new(body_header),
+            footer: Box::new(footer),
+            product,
+            recommendations: Box::new(recommendations),
+        };
+
+        Ok(body)
+    }
+}
+
 impl Component for ProductBody {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
         let money = self.product.price_usd.as_ref().unwrap();
         buf.push_str(r#"<body>"#);
         {
             self.body_header.write(props, buf)?;
-
-            buf.push_str(r#"<div class="local">"#);
-            {
-                buf.push_str(r#"<span class="platform-flag">"#);
-                buf.push_str(r#"local"#);
-                buf.push_str(r#"</span>"#);
-            }
-            buf.push_str(r#"</div>"#);
 
             buf.push_str(r#"<main role="main">"#);
             {
@@ -45,12 +80,6 @@ impl Component for ProductBody {
                                 buf.push_str(r#"</h2>"#);
                                 buf.push_str(r#"<p class="product-price">"#);
                                 buf.push_str(&money.money_for_display());
-                                /*
-                                buf.push_str(currency::currency_logo(money.currency_code.as_str()));
-                                buf.push_str(money.units.to_string().as_str());
-                                buf.push_str(".");
-                                buf.push_str(format!("{:.2}", money.nanos / 10000000).as_str());
-                                */
                                 buf.push_str(r#"</p>"#);
                                 buf.push_str(r#"<p>"#);
                                 buf.push_str(&self.product.description);

@@ -34,7 +34,7 @@ impl Component for Footer {
                         buf.push_str(r#"</a>)<br/>"#);
                         buf.push_str(r#"<small>"#);
                         {
-                            buf.push_str(r#"Rewrite in Rust : &nbsp;&nbsp;"#);
+                            buf.push_str(r#"Front-end rewrote in Rust : &nbsp;&nbsp;"#);
                         }
                         buf.push_str(r#"</small>"#);
                         buf.push_str(r#"© 2024 Masahiro Nitta ("#);

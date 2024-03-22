@@ -1,8 +1,25 @@
-use crate::{Component, PageProps};
+use crate::{components, Component, PageProps};
 use anyhow::Result;
 
 pub struct BodyHeader {
     pub currency_form: Box<dyn Component>,
+}
+
+impl BodyHeader {
+    pub async fn load(props: &PageProps) -> Result<Self> {
+        let currency_form = match components::currency_form::CurrencyForm::load(props).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let body_header = components::body_header::BodyHeader {
+            currency_form: Box::new(currency_form),
+        };
+
+        Ok(body_header)
+    }
 }
 
 impl Component for BodyHeader {
@@ -36,7 +53,12 @@ impl Component for BodyHeader {
                         buf.push_str(r#"<a href="/cart" class="cart-link">"#);
                         {
                             buf.push_str(r#"<img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />"#);
-                            buf.push_str(r#"<span class="cart-size-circle">5</span>"#);
+                            let cart_size = props.cart_info.cart_size();
+                            if cart_size > 0 {
+                                buf.push_str(r#"<span class="cart-size-circle">"#);
+                                buf.push_str(&cart_size.to_string());
+                                buf.push_str(r#"</span>"#);
+                            }
                         }
                         buf.push_str(r#"</a>"#);
                     }
@@ -47,6 +69,13 @@ impl Component for BodyHeader {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</header>"#);
+        buf.push_str(r#"<div class="local">"#);
+        {
+            buf.push_str(r#"<span class="platform-flag">"#);
+            buf.push_str(r#"local"#);
+            buf.push_str(r#"</span>"#);
+        }
+        buf.push_str(r#"</div>"#);
 
         Ok(())
     }

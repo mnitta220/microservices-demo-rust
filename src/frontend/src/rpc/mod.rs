@@ -7,8 +7,8 @@ use hipstershop::{
     product_catalog_service_client::ProductCatalogServiceClient,
     recommendation_service_client::RecommendationServiceClient,
     shipping_service_client::ShippingServiceClient, AddItemRequest, CartItem,
-    CurrencyConversionRequest, Empty, GetCartRequest, GetProductRequest, GetQuoteRequest,
-    ListRecommendationsRequest, Money, Product,
+    CurrencyConversionRequest, Empty, EmptyCartRequest, GetCartRequest, GetProductRequest,
+    GetQuoteRequest, ListRecommendationsRequest, Money, Product,
 };
 pub mod cart;
 pub mod currency;

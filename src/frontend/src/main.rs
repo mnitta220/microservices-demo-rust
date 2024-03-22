@@ -27,12 +27,30 @@ pub struct PageProps {
     pub request_id: String,
     pub user_currency: String,
     pub product_id: Option<String>,
-    pub cart_items: Vec<CartItem>,
+    pub cart_info: CartInfo,
 }
 
-pub struct CartItem {
+pub struct CartItemView {
     pub product: rpc::hipstershop::Product,
     pub quantity: i32,
+    pub price: rpc::hipstershop::Money,
+}
+
+pub struct CartInfo {
+    pub cart_items: Vec<CartItemView>,
+    pub shipping_cost: rpc::hipstershop::Money,
+    pub total_price: rpc::hipstershop::Money,
+    pub total_quantity: i32,
+}
+
+impl CartInfo {
+    pub fn cart_size(&self) -> i32 {
+        let mut size = 0;
+        for item in &self.cart_items {
+            size += item.quantity;
+        }
+        size
+    }
 }
 
 #[tokio::main]
@@ -53,6 +71,8 @@ async fn main() {
             "/cart",
             get(handlers::view_cart_handler).post(handlers::add_to_cart_handler),
         )
+        .route("/cart/empty", post(handlers::empty_cart_handler))
+        .route("/cart/checkout", post(handlers::place_order_handler))
         .route("/_healthz", get(handlers::health_handler))
         .nest_service("/static", ServeDir::new("static"))
         .layer(

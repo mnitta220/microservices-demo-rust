@@ -1,9 +1,5 @@
-use crate::{Component, PageProps};
+use crate::{components, rpc::currency, Component, PageProps};
 use anyhow::Result;
-
-pub struct CurrencyForm {
-    pub currency_codes: Vec<String>,
-}
 
 pub fn currency_logo(currency: &str) -> &'static str {
     match currency {
@@ -20,6 +16,27 @@ fn whitelisted_currencies(currency: &str) -> bool {
     match currency {
         "USD" | "EUR" | "CAD" | "JPY" | "GBP" | "TRY" => true,
         _ => false,
+    }
+}
+
+pub struct CurrencyForm {
+    pub currency_codes: Vec<String>,
+}
+
+impl CurrencyForm {
+    pub async fn load(_props: &PageProps) -> Result<Self> {
+        let currencies = match currency::get_supported_currencies().await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let currency_form = components::currency_form::CurrencyForm {
+            currency_codes: currencies,
+        };
+
+        Ok(currency_form)
     }
 }
 

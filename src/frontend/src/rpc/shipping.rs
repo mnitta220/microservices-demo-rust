@@ -23,9 +23,8 @@ async fn get_shipping_service_client(
     Ok(shipping_service_client)
 }
 
-#[allow(dead_code)]
 pub async fn get_quote(
-    items: &Vec<crate::CartItem>,
+    items: &Vec<crate::CartItemView>,
     user_currency: &String,
 ) -> Result<super::Money, &'static str> {
     let mut shipping_service_client = match get_shipping_service_client().await {

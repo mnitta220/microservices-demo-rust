@@ -1,4 +1,4 @@
-use crate::{Component, PageProps};
+use crate::{components, rpc::product, Component, PageProps};
 use anyhow::Result;
 
 pub struct HomeBody {
@@ -7,19 +7,38 @@ pub struct HomeBody {
     pub product_list: Vec<crate::rpc::hipstershop::Product>,
 }
 
+impl HomeBody {
+    pub async fn load(props: &PageProps) -> Result<Self> {
+        let product_list = match product::get_product_list(&props.user_currency).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let body_header = match components::body_header::BodyHeader::load(props).await {
+            Ok(response) => response,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e));
+            }
+        };
+
+        let footer = components::body_footer::Footer {};
+        let body = components::home_body::HomeBody {
+            body_header: Box::new(body_header),
+            footer: Box::new(footer),
+            product_list,
+        };
+
+        Ok(body)
+    }
+}
+
 impl Component for HomeBody {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<body>"#);
         {
             self.body_header.write(props, buf)?;
-
-            buf.push_str(r#"<div class="local">"#);
-            {
-                buf.push_str(r#"<span class="platform-flag">"#);
-                buf.push_str(r#"local"#);
-                buf.push_str(r#"</span>"#);
-            }
-            buf.push_str(r#"</div>"#);
 
             buf.push_str(r#"<main role="main" class="home">"#);
             {
@@ -62,16 +81,6 @@ impl Component for HomeBody {
 
                                             buf.push_str(r#"<div class="hot-product-card-price">"#);
                                             buf.push_str(&money.money_for_display());
-                                            /*
-                                            buf.push_str(currency::currency_logo(
-                                                money.currency_code.as_str(),
-                                            ));
-                                            buf.push_str(money.units.to_string().as_str());
-                                            buf.push_str(".");
-                                            buf.push_str(
-                                                format!("{:.2}", money.nanos / 10000000).as_str(),
-                                            );
-                                            */
                                             buf.push_str(r#"</div>"#);
                                         }
                                         buf.push_str(r#"</div>"#);

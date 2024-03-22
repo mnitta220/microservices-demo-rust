@@ -57,7 +57,7 @@ async fn handler_sub(
         }
     };
 
-    let cart_items = match rpc::cart::get_cart(session_id.clone(), currency.clone()).await {
+    let cart_info = match rpc::cart::get_cart_info(session_id.clone(), currency.clone()).await {
         Ok(r) => r,
         Err(e) => {
             return Err(AppError(anyhow::anyhow!(e)));
@@ -69,7 +69,7 @@ async fn handler_sub(
         request_id: Uuid::new_v4().to_string(),
         user_currency: currency,
         product_id: product_id,
-        cart_items,
+        cart_info,
     };
 
     let page = match page_type {
@@ -133,6 +133,45 @@ pub struct AddToCartInput {
 }
 
 pub async fn add_to_cart_handler(
+    jar: CookieJar,
+    Form(input): Form<AddToCartInput>,
+) -> Result<Redirect, AppError> {
+    tracing::debug!("POST /cart {}, {}", input.product_id, input.quantity);
+    let session_id = jar
+        .get("shop_session-id")
+        .map(|cookie| cookie.value().to_owned());
+    let session_id = match session_id {
+        Some(s) => s,
+        None => {
+            return Err(AppError(anyhow::anyhow!("failed to get session_id")));
+        }
+    };
+    if let Err(e) = rpc::cart::add_to_cart(session_id, input.product_id, input.quantity).await {
+        return Err(AppError(anyhow::anyhow!(e)));
+    }
+
+    Ok(Redirect::to("/cart"))
+}
+
+pub async fn empty_cart_handler(jar: CookieJar) -> Result<Redirect, AppError> {
+    tracing::debug!("POST /cart/empty");
+    let session_id = jar
+        .get("shop_session-id")
+        .map(|cookie| cookie.value().to_owned());
+    let session_id = match session_id {
+        Some(s) => s,
+        None => {
+            return Err(AppError(anyhow::anyhow!("failed to get session_id")));
+        }
+    };
+    if let Err(e) = rpc::cart::empty_cart(session_id).await {
+        return Err(AppError(anyhow::anyhow!(e)));
+    }
+
+    Ok(Redirect::to("/"))
+}
+
+pub async fn place_order_handler(
     jar: CookieJar,
     Form(input): Form<AddToCartInput>,
 ) -> Result<Redirect, AppError> {
