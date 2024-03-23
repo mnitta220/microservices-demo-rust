@@ -2,7 +2,7 @@ use crate::{components, Component, PageProps};
 use anyhow::Result;
 
 pub struct BodyHeader {
-    pub currency_form: Box<dyn Component>,
+    pub currency_form: Box<dyn Component + Send>,
 }
 
 impl BodyHeader {

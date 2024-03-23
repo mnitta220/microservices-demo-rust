@@ -6,28 +6,22 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use pages::page::PageProps;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
+use tower_cookies::CookieManagerLayer;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod components;
 mod handlers;
-mod page_builder;
+mod pages;
 mod rpc;
 
 pub enum PageType {
     Home,
     Product,
     Cart,
-}
-
-pub struct PageProps {
-    pub session_id: String,
-    pub request_id: String,
-    pub user_currency: String,
-    pub product_id: Option<String>,
-    pub cart_info: CartInfo,
 }
 
 pub struct CartItemView {
@@ -87,6 +81,7 @@ async fn main() {
                         ))
                     }
                 }))
+                .layer(CookieManagerLayer::new())
                 .timeout(Duration::from_secs(10))
                 .layer(TraceLayer::new_for_http())
                 .into_inner(),
@@ -101,35 +96,8 @@ pub trait Component {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()>;
 }
 
-pub struct Page {
-    pub lang: Option<String>,
-    pub head: Box<dyn Component>,
-    pub body: Box<dyn Component>,
-}
-
-impl Component for Page {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
-        buf.push_str(r#"<!DOCTYPE html>"#);
-        if let Some(lang) = &self.lang {
-            buf.push_str(r#"<html lang=""#);
-            buf.push_str(lang);
-            buf.push_str(r#"">"#);
-        } else {
-            buf.push_str(r#"<html>"#);
-        }
-
-        if let Err(e) = self.head.write(props, buf) {
-            return Err(e);
-        }
-
-        if let Err(e) = self.body.write(props, buf) {
-            return Err(e);
-        }
-
-        buf.push_str(r#"</html>"#);
-
-        Ok(())
-    }
+pub trait Body {
+    fn load(props: &PageProps) -> impl std::future::Future<Output = Result<Box<Self>>> + Send;
 }
 
 // Make our own error that wraps `anyhow::Error`.

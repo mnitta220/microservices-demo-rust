@@ -1,15 +1,15 @@
-use crate::{components, rpc::recommendation, Component, PageProps};
+use crate::{components, rpc::recommendation, Body, Component, PageProps};
 use anyhow::Result;
 use chrono::prelude::*;
 
 pub struct CartBody {
-    pub body_header: Box<dyn Component>,
-    pub footer: Box<dyn Component>,
-    pub recommendations: Box<dyn Component>,
+    pub body_header: Box<dyn Component + Send>,
+    pub footer: Box<dyn Component + Send>,
+    pub recommendations: Box<dyn Component + Send>,
 }
 
-impl CartBody {
-    pub async fn load(props: &PageProps) -> Result<Self> {
+impl Body for CartBody {
+    async fn load(props: &PageProps) -> Result<Box<Self>> {
         let recommendation_list = match recommendation::get_recommendations(&props).await {
             Ok(response) => response,
             Err(e) => {
@@ -27,14 +27,16 @@ impl CartBody {
         let recommendations = components::recommendations::Recommendations {
             recommendation_list,
         };
+
         let footer = components::body_footer::Footer {};
+
         let body = components::cart_body::CartBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
             recommendations: Box::new(recommendations),
         };
 
-        Ok(body)
+        Ok(Box::new(body))
     }
 }
 

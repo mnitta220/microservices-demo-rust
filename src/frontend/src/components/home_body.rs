@@ -1,14 +1,14 @@
-use crate::{components, rpc::product, Component, PageProps};
+use crate::{components, rpc::product, Body, Component, PageProps};
 use anyhow::Result;
 
 pub struct HomeBody {
-    pub body_header: Box<dyn Component>,
-    pub footer: Box<dyn Component>,
+    pub body_header: Box<dyn Component + Send>,
+    pub footer: Box<dyn Component + Send>,
     pub product_list: Vec<crate::rpc::hipstershop::Product>,
 }
 
-impl HomeBody {
-    pub async fn load(props: &PageProps) -> Result<Self> {
+impl Body for HomeBody {
+    async fn load(props: &PageProps) -> Result<Box<Self>> {
         let product_list = match product::get_product_list(&props.user_currency).await {
             Ok(response) => response,
             Err(e) => {
@@ -24,13 +24,14 @@ impl HomeBody {
         };
 
         let footer = components::body_footer::Footer {};
+
         let body = components::home_body::HomeBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
             product_list,
         };
 
-        Ok(body)
+        Ok(Box::new(body))
     }
 }
 

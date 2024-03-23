@@ -1,19 +1,19 @@
 use crate::{
     components,
     rpc::{hipstershop::Product, product, recommendation},
-    Component, PageProps,
+    Body, Component, PageProps,
 };
 use anyhow::Result;
 
 pub struct ProductBody {
-    pub body_header: Box<dyn Component>,
-    pub footer: Box<dyn Component>,
+    pub body_header: Box<dyn Component + Send>,
+    pub footer: Box<dyn Component + Send>,
     pub product: Product,
-    pub recommendations: Box<dyn Component>,
+    pub recommendations: Box<dyn Component + Send>,
 }
 
-impl ProductBody {
-    pub async fn load(props: &PageProps) -> Result<Self> {
+impl Body for ProductBody {
+    async fn load(props: &PageProps) -> Result<Box<Self>> {
         let product = match product::get_product(&props).await {
             Ok(response) => response,
             Err(e) => {
@@ -38,6 +38,7 @@ impl ProductBody {
         let recommendations = components::recommendations::Recommendations {
             recommendation_list,
         };
+
         let footer = components::body_footer::Footer {};
 
         let body = components::product_body::ProductBody {
@@ -47,7 +48,7 @@ impl ProductBody {
             recommendations: Box::new(recommendations),
         };
 
-        Ok(body)
+        Ok(Box::new(body))
     }
 }
 
