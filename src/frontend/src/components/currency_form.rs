@@ -1,4 +1,4 @@
-use crate::{components, rpc::currency, Component, PageProps};
+use crate::{rpc::currency, Component, PageProps};
 use anyhow::Result;
 
 pub fn currency_logo(currency: &str) -> &'static str {
@@ -32,7 +32,7 @@ impl CurrencyForm {
             }
         };
 
-        let currency_form = components::currency_form::CurrencyForm {
+        let currency_form = CurrencyForm {
             currency_codes: currencies,
         };
 

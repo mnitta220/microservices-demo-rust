@@ -1,8 +1,11 @@
-use super::currency;
+use super::{
+    currency, CartItem, CurrencyConversionRequest, GetQuoteRequest, Money, ShippingServiceClient,
+};
+use crate::CartItemView;
 use std::env;
 
 async fn get_shipping_service_client(
-) -> Result<super::ShippingServiceClient<tonic::transport::Channel>, &'static str> {
+) -> Result<ShippingServiceClient<tonic::transport::Channel>, &'static str> {
     let shipping_service_addr = match env::var("SHIPPING_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
@@ -11,9 +14,7 @@ async fn get_shipping_service_client(
     };
 
     let shipping_service_client =
-        match super::ShippingServiceClient::connect(format!("http://{}", shipping_service_addr))
-            .await
-        {
+        match ShippingServiceClient::connect(format!("http://{}", shipping_service_addr)).await {
             Ok(client) => client,
             Err(_) => {
                 return Err("get_shipping_service_client failed");
@@ -24,9 +25,9 @@ async fn get_shipping_service_client(
 }
 
 pub async fn get_quote(
-    items: &Vec<crate::CartItemView>,
+    items: &Vec<CartItemView>,
     user_currency: &String,
-) -> Result<super::Money, &'static str> {
+) -> Result<Money, &'static str> {
     let mut shipping_service_client = match get_shipping_service_client().await {
         Ok(client) => client,
         Err(e) => {
@@ -41,16 +42,16 @@ pub async fn get_quote(
         }
     };
 
-    let mut cart_items: Vec<super::CartItem> = Vec::new();
+    let mut cart_items: Vec<CartItem> = Vec::new();
     for item in items.iter() {
-        let i = super::CartItem {
+        let i = CartItem {
             product_id: item.product.id.clone(),
             quantity: item.quantity,
         };
         cart_items.push(i);
     }
 
-    let request = super::GetQuoteRequest {
+    let request = GetQuoteRequest {
         address: None,
         items: cart_items,
     };
@@ -68,7 +69,7 @@ pub async fn get_quote(
     };
 
     if quote.currency_code != *user_currency {
-        let request = super::CurrencyConversionRequest {
+        let request = CurrencyConversionRequest {
             from: Some(quote),
             to_code: user_currency.clone(),
         };

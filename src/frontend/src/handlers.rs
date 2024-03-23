@@ -1,5 +1,5 @@
 use crate::{
-    pages::{cart_page, home_page, product_page},
+    pages::{cart_page::CartPage, home_page::HomePage, product_page::ProductPage},
     rpc, AppError,
 };
 use axum::{
@@ -40,7 +40,7 @@ pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
 
     let (session_id, currency) = get_set_session(cookies);
 
-    match home_page::HomePage::generate(&session_id, &currency).await {
+    match HomePage::generate(&session_id, &currency).await {
         Ok(r) => Ok(Html(r)),
         Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
     }
@@ -54,7 +54,7 @@ pub async fn product_handler(
 
     let (session_id, currency) = get_set_session(cookies);
 
-    match product_page::ProductPage::generate(&session_id, &currency, id).await {
+    match ProductPage::generate(&session_id, &currency, id).await {
         Ok(r) => Ok(Html(r)),
         Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
     }
@@ -65,7 +65,7 @@ pub async fn view_cart_handler(cookies: Cookies) -> Result<Html<String>, AppErro
 
     let (session_id, currency) = get_set_session(cookies);
 
-    let ret = match cart_page::CartPage::generate(&session_id, &currency).await {
+    let ret = match CartPage::generate(&session_id, &currency).await {
         Ok(r) => r,
         Err(e) => {
             return Err(AppError(anyhow::anyhow!(e)));

@@ -1,4 +1,4 @@
-use crate::{components, rpc, CartInfo, Component};
+use crate::{components::head::Head, rpc, CartInfo, Component};
 use anyhow::Result;
 use uuid::Uuid;
 
@@ -38,7 +38,7 @@ impl Page {
             cart_info,
         };
 
-        let head = components::head::Head {};
+        let head = Head {};
 
         let page = Page {
             props,

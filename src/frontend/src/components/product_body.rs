@@ -1,5 +1,5 @@
 use crate::{
-    components,
+    components::{body_footer::Footer, body_header::BodyHeader, recommendations::Recommendations},
     rpc::{hipstershop::Product, product, recommendation},
     Body, Component, PageProps,
 };
@@ -28,20 +28,20 @@ impl Body for ProductBody {
             }
         };
 
-        let body_header = match components::body_header::BodyHeader::load(props).await {
+        let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
             }
         };
 
-        let recommendations = components::recommendations::Recommendations {
+        let recommendations = Recommendations {
             recommendation_list,
         };
 
-        let footer = components::body_footer::Footer {};
+        let footer = Footer {};
 
-        let body = components::product_body::ProductBody {
+        let body = ProductBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
             product,

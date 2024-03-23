@@ -1,8 +1,12 @@
-use super::{currency, hipstershop::Money, product, shipping};
+use super::{
+    currency, hipstershop::Money, product, shipping, AddItemRequest, CartItem, CartServiceClient,
+    CurrencyConversionRequest, EmptyCartRequest, GetCartRequest, GetProductRequest,
+};
+use crate::{CartInfo, CartItemView};
 use std::env;
+use tonic::transport::Channel;
 
-async fn get_cart_service_client(
-) -> Result<super::CartServiceClient<tonic::transport::Channel>, &'static str> {
+async fn get_cart_service_client() -> Result<CartServiceClient<Channel>, &'static str> {
     let cart_service_addr = match env::var("CART_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
@@ -11,7 +15,7 @@ async fn get_cart_service_client(
     };
 
     let cart_service_client =
-        match super::CartServiceClient::connect(format!("http://{}", cart_service_addr)).await {
+        match CartServiceClient::connect(format!("http://{}", cart_service_addr)).await {
             Ok(client) => client,
             Err(_) => {
                 return Err("get_cart_service_client failed");
@@ -33,12 +37,12 @@ pub async fn add_to_cart(
         }
     };
 
-    let cart_item = super::CartItem {
+    let cart_item = CartItem {
         product_id,
         quantity,
     };
 
-    let request = super::AddItemRequest {
+    let request = AddItemRequest {
         user_id,
         item: Some(cart_item),
     };
@@ -77,7 +81,7 @@ pub async fn get_cart_info(
     };
 
     let cart = match cart_service_client
-        .get_cart(super::GetCartRequest { user_id })
+        .get_cart(GetCartRequest { user_id })
         .await
     {
         Ok(response) => response.into_inner(),
@@ -92,9 +96,9 @@ pub async fn get_cart_info(
         nanos: 0,
     };
     let mut total_quantity = 0;
-    let mut list: Vec<crate::CartItemView> = Vec::new();
+    let mut list: Vec<CartItemView> = Vec::new();
     for item in cart.items.iter() {
-        let request = super::GetProductRequest {
+        let request = GetProductRequest {
             id: item.product_id.clone(),
         };
 
@@ -103,7 +107,7 @@ pub async fn get_cart_info(
             if let Some(ref price) = product.price_usd {
                 let mult_price: Money;
                 if price.currency_code != currency_code {
-                    let request = super::CurrencyConversionRequest {
+                    let request = CurrencyConversionRequest {
                         from: Some(price.clone()),
                         to_code: currency_code.clone(),
                     };
@@ -124,7 +128,7 @@ pub async fn get_cart_info(
                 total_price = sum(&total_price, &mult_price)?;
                 total_quantity += item.quantity;
 
-                let ci = crate::CartItemView {
+                let ci = CartItemView {
                     product: product,
                     quantity: item.quantity,
                     price: mult_price,
@@ -138,7 +142,7 @@ pub async fn get_cart_info(
     let quote = shipping::get_quote(&list, &currency_code).await?;
     total_price = sum(&total_price, &quote)?;
 
-    let cart_info = crate::CartInfo {
+    let cart_info = CartInfo {
         cart_items: list,
         shipping_cost: quote,
         total_price: total_price,
@@ -156,7 +160,7 @@ pub async fn empty_cart(user_id: String) -> Result<(), &'static str> {
         }
     };
 
-    let request = super::EmptyCartRequest { user_id };
+    let request = EmptyCartRequest { user_id };
 
     if let Err(_e) = cart_service_client.empty_cart(request).await {
         return Err("empty cart failed");

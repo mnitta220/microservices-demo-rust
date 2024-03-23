@@ -1,4 +1,8 @@
-use crate::{components, rpc::product, Body, Component, PageProps};
+use crate::{
+    components::{body_footer::Footer, body_header::BodyHeader},
+    rpc::product,
+    Body, Component, PageProps,
+};
 use anyhow::Result;
 
 pub struct HomeBody {
@@ -16,16 +20,16 @@ impl Body for HomeBody {
             }
         };
 
-        let body_header = match components::body_header::BodyHeader::load(props).await {
+        let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
             }
         };
 
-        let footer = components::body_footer::Footer {};
+        let footer = Footer {};
 
-        let body = components::home_body::HomeBody {
+        let body = HomeBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
             product_list,

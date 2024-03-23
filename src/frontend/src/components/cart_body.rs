@@ -1,4 +1,8 @@
-use crate::{components, rpc::recommendation, Body, Component, PageProps};
+use crate::{
+    components::{body_footer::Footer, body_header::BodyHeader, recommendations::Recommendations},
+    rpc::recommendation,
+    Body, Component, PageProps,
+};
 use anyhow::Result;
 use chrono::prelude::*;
 
@@ -17,20 +21,20 @@ impl Body for CartBody {
             }
         };
 
-        let body_header = match components::body_header::BodyHeader::load(props).await {
+        let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
             }
         };
 
-        let recommendations = components::recommendations::Recommendations {
+        let recommendations = Recommendations {
             recommendation_list,
         };
 
-        let footer = components::body_footer::Footer {};
+        let footer = Footer {};
 
-        let body = components::cart_body::CartBody {
+        let body = CartBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
             recommendations: Box::new(recommendations),

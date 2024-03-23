@@ -1,4 +1,4 @@
-use crate::{components, pages::page::Page, Body};
+use crate::{components::product_body::ProductBody, pages::page::Page, Body};
 use anyhow::Result;
 
 /// Component for rendering the product page
@@ -15,7 +15,7 @@ impl ProductPage {
         let mut page = Page::generate(session_id, currency, Some(product_id)).await?;
 
         // Construct the components of the HTML <body> tag.
-        let body = match components::product_body::ProductBody::load(&page.props).await {
+        let body = match ProductBody::load(&page.props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e.to_string()));

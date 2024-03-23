@@ -1,4 +1,4 @@
-use crate::{components, pages::page::Page, Body};
+use crate::{components::home_body::HomeBody, pages::page::Page, Body};
 use anyhow::Result;
 
 /// Component for rendering the homepage
@@ -11,7 +11,7 @@ impl HomePage {
         let mut page = Page::generate(session_id, currency, None).await?;
 
         // Construct the components of the HTML <body> tag.
-        let body = match components::home_body::HomeBody::load(&page.props).await {
+        let body = match HomeBody::load(&page.props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e.to_string()));

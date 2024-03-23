@@ -1,4 +1,4 @@
-use crate::{components, Component, PageProps};
+use crate::{components::currency_form::CurrencyForm, Component, PageProps};
 use anyhow::Result;
 
 pub struct BodyHeader {
@@ -7,14 +7,14 @@ pub struct BodyHeader {
 
 impl BodyHeader {
     pub async fn load(props: &PageProps) -> Result<Self> {
-        let currency_form = match components::currency_form::CurrencyForm::load(props).await {
+        let currency_form = match CurrencyForm::load(props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
             }
         };
 
-        let body_header = components::body_header::BodyHeader {
+        let body_header = BodyHeader {
             currency_form: Box::new(currency_form),
         };
 

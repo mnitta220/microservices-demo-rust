@@ -18,35 +18,6 @@ mod handlers;
 mod pages;
 mod rpc;
 
-pub enum PageType {
-    Home,
-    Product,
-    Cart,
-}
-
-pub struct CartItemView {
-    pub product: rpc::hipstershop::Product,
-    pub quantity: i32,
-    pub price: rpc::hipstershop::Money,
-}
-
-pub struct CartInfo {
-    pub cart_items: Vec<CartItemView>,
-    pub shipping_cost: rpc::hipstershop::Money,
-    pub total_price: rpc::hipstershop::Money,
-    pub total_quantity: i32,
-}
-
-impl CartInfo {
-    pub fn cart_size(&self) -> i32 {
-        let mut size = 0;
-        for item in &self.cart_items {
-            size += item.quantity;
-        }
-        size
-    }
-}
-
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
@@ -98,6 +69,29 @@ pub trait Component {
 
 pub trait Body {
     fn load(props: &PageProps) -> impl std::future::Future<Output = Result<Box<Self>>> + Send;
+}
+
+pub struct CartItemView {
+    pub product: rpc::hipstershop::Product,
+    pub quantity: i32,
+    pub price: rpc::hipstershop::Money,
+}
+
+pub struct CartInfo {
+    pub cart_items: Vec<CartItemView>,
+    pub shipping_cost: rpc::hipstershop::Money,
+    pub total_price: rpc::hipstershop::Money,
+    pub total_quantity: i32,
+}
+
+impl CartInfo {
+    pub fn cart_size(&self) -> i32 {
+        let mut size = 0;
+        for item in &self.cart_items {
+            size += item.quantity;
+        }
+        size
+    }
 }
 
 // Make our own error that wraps `anyhow::Error`.
