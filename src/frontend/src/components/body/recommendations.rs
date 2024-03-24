@@ -1,4 +1,5 @@
-use crate::{rpc::hipstershop::Product, Component, PageProps};
+use super::super::Component;
+use crate::{rpc::hipstershop::Product, PageProps};
 use anyhow::Result;
 
 pub struct Recommendations {
@@ -17,6 +18,7 @@ impl Component for Recommendations {
                     {
                         buf.push_str(r#"<h2>You May Also Like</h2>"#);
                         buf.push_str(r#"<div class="row">"#);
+
                         for recommendation in self.recommendation_list.iter() {
                             buf.push_str(r#"<div class="col-md-3">"#);
                             {
@@ -31,6 +33,7 @@ impl Component for Recommendations {
                                         buf.push_str(r#"">"#);
                                     }
                                     buf.push_str(r#"</a>"#);
+
                                     buf.push_str(r#"<div>"#);
                                     {
                                         buf.push_str(r#"<h5>"#);

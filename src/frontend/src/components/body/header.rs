@@ -1,4 +1,6 @@
-use crate::{components::currency_form::CurrencyForm, Component, PageProps};
+use super::super::Component;
+use super::currency::CurrencyForm;
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct BodyHeader {
@@ -69,6 +71,7 @@ impl Component for BodyHeader {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</header>"#);
+
         buf.push_str(r#"<div class="local">"#);
         {
             buf.push_str(r#"<span class="platform-flag">"#);

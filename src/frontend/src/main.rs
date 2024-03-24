@@ -1,4 +1,3 @@
-use anyhow::Result;
 use axum::{
     error_handling::HandleErrorLayer,
     http::StatusCode,
@@ -7,6 +6,7 @@ use axum::{
     Router,
 };
 use pages::page::PageProps;
+use rpc::hipstershop::{Money, Product};
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_cookies::CookieManagerLayer;
@@ -63,24 +63,16 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-pub trait Component {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()>;
-}
-
-pub trait Body {
-    fn load(props: &PageProps) -> impl std::future::Future<Output = Result<Box<Self>>> + Send;
-}
-
 pub struct CartItemView {
-    pub product: rpc::hipstershop::Product,
+    pub product: Product,
     pub quantity: i32,
-    pub price: rpc::hipstershop::Money,
+    pub price: Money,
 }
 
 pub struct CartInfo {
     pub cart_items: Vec<CartItemView>,
-    pub shipping_cost: rpc::hipstershop::Money,
-    pub total_price: rpc::hipstershop::Money,
+    pub shipping_cost: Money,
+    pub total_price: Money,
     pub total_quantity: i32,
 }
 

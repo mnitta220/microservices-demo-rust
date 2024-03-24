@@ -1,4 +1,7 @@
-use crate::{components::product_body::ProductBody, pages::page::Page, Body};
+use crate::{
+    components::body::{product::ProductBody, Body},
+    pages::page::Page,
+};
 use anyhow::Result;
 
 /// Component for rendering the product page
@@ -24,14 +27,11 @@ impl ProductPage {
 
         page.body = Some(body);
 
-        // Allocate a buffer with sufficient capacity to output the HTML content.
-        let mut buf = String::with_capacity(100000);
-
         // Output the contents of the HTML page to a buffer.
-        if let Err(e) = page.write(&mut buf) {
+        if let Err(e) = page.write() {
             return Err(anyhow::anyhow!(e.to_string()));
         }
 
-        Ok(buf)
+        Ok(page.buf)
     }
 }

@@ -1,4 +1,4 @@
-use crate::{Component, PageProps};
+use crate::{components::Component, PageProps};
 use anyhow::Result;
 
 pub struct Head {}

@@ -1,4 +1,7 @@
-use crate::{components::home_body::HomeBody, pages::page::Page, Body};
+use crate::{
+    components::body::{home::HomeBody, Body},
+    pages::page::Page,
+};
 use anyhow::Result;
 
 /// Component for rendering the homepage
@@ -20,14 +23,11 @@ impl HomePage {
 
         page.body = Some(body);
 
-        // Allocate a buffer with sufficient capacity to output the HTML content.
-        let mut buf = String::with_capacity(100000);
-
         // Output the contents of the HTML page to a buffer.
-        if let Err(e) = page.write(&mut buf) {
+        if let Err(e) = page.write() {
             return Err(anyhow::anyhow!(e.to_string()));
         }
 
-        Ok(buf)
+        Ok(page.buf)
     }
 }

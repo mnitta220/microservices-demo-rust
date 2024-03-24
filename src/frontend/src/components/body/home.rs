@@ -1,14 +1,15 @@
+use super::super::Component;
+use super::{footer::Footer, header::BodyHeader, hot_product::HotProduct, Body};
 use crate::{
-    components::{body_footer::Footer, body_header::BodyHeader},
-    rpc::product,
-    Body, Component, PageProps,
+    rpc::{hipstershop::Product, product},
+    PageProps,
 };
 use anyhow::Result;
 
 pub struct HomeBody {
     pub body_header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub product_list: Vec<crate::rpc::hipstershop::Product>,
+    pub product_list: Vec<Product>,
 }
 
 impl Body for HomeBody {
@@ -65,32 +66,7 @@ impl Component for HomeBody {
                                 }
                                 buf.push_str(r#"</div>"#);
                                 for product in self.product_list.iter() {
-                                    let money = product.price_usd.as_ref().unwrap();
-                                    buf.push_str(r#"<div class="col-md-4 hot-product-card">"#);
-                                    {
-                                        buf.push_str(r#"<a href="/product/"#);
-                                        buf.push_str(&product.id);
-                                        buf.push_str(r#"">"#);
-                                        {
-                                            buf.push_str(r#"<img alt="" src=""#);
-                                            buf.push_str(&product.picture);
-                                            buf.push_str(r#"">"#);
-                                            buf.push_str(r#"<div class="hot-product-card-img-overlay"></div>"#);
-                                        }
-                                        buf.push_str(r#"</a>"#);
-                                        buf.push_str(r#"<div>"#);
-                                        {
-                                            buf.push_str(r#"<div class="hot-product-card-name">"#);
-                                            buf.push_str(&product.name);
-                                            buf.push_str(r#"</div>"#);
-
-                                            buf.push_str(r#"<div class="hot-product-card-price">"#);
-                                            buf.push_str(&money.money_for_display());
-                                            buf.push_str(r#"</div>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
-                                    buf.push_str(r#"</div>"#);
+                                    HotProduct::write(product, buf);
                                 }
                             }
                             buf.push_str(r#"</div>"#);

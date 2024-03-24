@@ -1,7 +1,14 @@
+use super::super::Component;
+use super::{
+    ad_component, footer::Footer, header::BodyHeader, recommendations::Recommendations, Body,
+};
 use crate::{
-    components::{body_footer::Footer, body_header::BodyHeader, recommendations::Recommendations},
-    rpc::{hipstershop::Product, product, recommendation},
-    Body, Component, PageProps,
+    rpc::{
+        ad,
+        hipstershop::{Ad, Product},
+        product, recommendation,
+    },
+    PageProps,
 };
 use anyhow::Result;
 
@@ -10,6 +17,7 @@ pub struct ProductBody {
     pub footer: Box<dyn Component + Send>,
     pub product: Product,
     pub recommendations: Box<dyn Component + Send>,
+    pub ad: Option<Ad>,
 }
 
 impl Body for ProductBody {
@@ -27,6 +35,8 @@ impl Body for ProductBody {
                 return Err(anyhow::anyhow!(e));
             }
         };
+
+        let ad = ad::get_ad().await;
 
         let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
@@ -46,6 +56,7 @@ impl Body for ProductBody {
             footer: Box::new(footer),
             product,
             recommendations: Box::new(recommendations),
+            ad,
         };
 
         Ok(Box::new(body))
@@ -72,6 +83,7 @@ impl Component for ProductBody {
                             buf.push_str(r#"" />"#);
                         }
                         buf.push_str(r#"</div>"#);
+
                         buf.push_str(r#"<div class="product-info col-md-5">"#);
                         {
                             buf.push_str(r#"<div class="product-wrapper">"#);
@@ -85,6 +97,7 @@ impl Component for ProductBody {
                                 buf.push_str(r#"<p>"#);
                                 buf.push_str(&self.product.description);
                                 buf.push_str(r#"</p>"#);
+
                                 buf.push_str(r#"<form method="POST" action="/cart">"#);
                                 {
                                     buf.push_str(
@@ -92,6 +105,7 @@ impl Component for ProductBody {
                                     );
                                     buf.push_str(&self.product.id);
                                     buf.push_str(r#"" />"#);
+
                                     buf.push_str(r#"<div class="product-quantity-dropdown">"#);
                                     {
                                         buf.push_str(r#"<select name="quantity" id="quantity">"#);
@@ -125,24 +139,9 @@ impl Component for ProductBody {
                 }
                 buf.push_str(r#"</div>"#);
 
-                buf.push_str(r#"<div class="ad">"#);
-                {
-                    buf.push_str(r#"<div class="container py-3 px-lg-5 py-lg-5">"#);
-                    {
-                        buf.push_str(r#"<div role="alert">"#);
-                        {
-                            buf.push_str(r#"<strong>Ad</strong>"#);
-                            buf.push_str(
-                                r#"<a href="/product/1YMWWN1N4O" rel="nofollow" target="_blank">"#,
-                            );
-                            buf.push_str(r#"Watch for sale. Buy one, get second kit for free"#);
-                            buf.push_str(r#"</a>"#);
-                        }
-                        buf.push_str(r#"</div>"#);
-                    }
-                    buf.push_str(r#"</div>"#);
+                if let Some(a) = &self.ad {
+                    ad_component::AdComponent::write(&a, buf);
                 }
-                buf.push_str(r#"</div>"#);
             }
             buf.push_str(r#"</main>"#);
             self.footer.write(props, buf)?;

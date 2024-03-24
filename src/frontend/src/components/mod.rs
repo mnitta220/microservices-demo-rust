@@ -1,8 +1,9 @@
-pub mod body_footer;
-pub mod body_header;
-pub mod cart_body;
-pub mod currency_form;
+use crate::PageProps;
+use anyhow::Result;
+
+pub mod body;
 pub mod head;
-pub mod home_body;
-pub mod product_body;
-pub mod recommendations;
+
+pub trait Component {
+    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()>;
+}

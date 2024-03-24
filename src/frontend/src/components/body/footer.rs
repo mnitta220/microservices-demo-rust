@@ -1,4 +1,5 @@
-use crate::{Component, PageProps};
+use super::super::Component;
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct Footer {}

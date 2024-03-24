@@ -1,8 +1,8 @@
-use crate::{
-    components::{body_footer::Footer, body_header::BodyHeader, recommendations::Recommendations},
-    rpc::recommendation,
-    Body, Component, PageProps,
+use super::super::Component;
+use super::{
+    cart_item, footer::Footer, header::BodyHeader, recommendations::Recommendations, Body,
 };
+use crate::{rpc::recommendation, PageProps};
 use anyhow::Result;
 use chrono::prelude::*;
 
@@ -80,6 +80,7 @@ impl Component for CartBody {
                                         buf.push_str(r#")</h3>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="col-8 pr-md-0 text-right">"#);
                                     {
                                         buf.push_str(
@@ -102,74 +103,9 @@ impl Component for CartBody {
                                 buf.push_str(r#"</div>"#);
 
                                 for item in props.cart_info.cart_items.iter() {
-                                    if let Some(m) = &item.product.price_usd {
-                                        buf.push_str(r#"<div class="row cart-summary-item-row">"#);
-                                        {
-                                            buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
-                                            {
-                                                buf.push_str(r#"<a href="/product/"#);
-                                                buf.push_str(&item.product.id);
-                                                buf.push_str(r#"">"#);
-                                                {
-                                                    buf.push_str(
-                                                        r#"<img class="img-fluid" alt="" src=""#,
-                                                    );
-                                                    buf.push_str(&item.product.picture);
-                                                    buf.push_str(r#"" />"#);
-                                                }
-                                                buf.push_str(r#"</a>"#);
-                                            }
-                                            buf.push_str(r#"</div>"#);
-                                            buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
-                                            {
-                                                buf.push_str(r#"<div class="row">"#);
-                                                {
-                                                    buf.push_str(r#"<div class="col">"#);
-                                                    {
-                                                        buf.push_str(r#"<h4>"#);
-                                                        buf.push_str(&item.product.name);
-                                                        buf.push_str(r#"</h4>"#);
-                                                    }
-                                                    buf.push_str(r#"</div>"#);
-                                                }
-                                                buf.push_str(r#"</div>"#);
-                                                buf.push_str(
-                                                r#"<div class="row cart-summary-item-row-item-id-row">"#,
-                                                );
-                                                {
-                                                    buf.push_str(r#"<div class="col">"#);
-                                                    {
-                                                        buf.push_str(r#"SKU #"#);
-                                                        buf.push_str(&item.product.id);
-                                                    }
-                                                    buf.push_str(r#"</div>"#);
-                                                }
-                                                buf.push_str(r#"</div>"#);
-                                                buf.push_str(r#"<div class="row">"#);
-                                                {
-                                                    buf.push_str(r#"<div class="col">"#);
-                                                    {
-                                                        buf.push_str(r#"Quantity: "#);
-                                                        buf.push_str(&item.quantity.to_string());
-                                                    }
-                                                    buf.push_str(r#"</div>"#);
-                                                    buf.push_str(
-                                                        r#"<div class="col pr-md-0 text-right">"#,
-                                                    );
-                                                    {
-                                                        buf.push_str(r#"<strong>"#);
-                                                        buf.push_str(&m.money_for_display());
-                                                        buf.push_str(r#"</strong>"#);
-                                                    }
-                                                    buf.push_str(r#"</div>"#);
-                                                }
-                                                buf.push_str(r#"</div>"#);
-                                            }
-                                            buf.push_str(r#"</div>"#);
-                                        }
-                                        buf.push_str(r#"</div>"#);
-                                    }
+                                    cart_item::CartItem::write(item, buf);
                                 }
+
                                 buf.push_str(r#"<div class="row cart-summary-shipping-row">"#);
                                 {
                                     buf.push_str(r#"<div class="col pl-md-0">Shipping</div>"#);
@@ -180,6 +116,7 @@ impl Component for CartBody {
                                     buf.push_str(r#"</div>"#);
                                 }
                                 buf.push_str(r#"</div>"#);
+
                                 buf.push_str(r#"<div class="row cart-summary-total-row">"#);
                                 {
                                     buf.push_str(r#"<div class="col pl-md-0">Total</div>"#);
@@ -190,6 +127,7 @@ impl Component for CartBody {
                                 buf.push_str(r#"</div>"#);
                             }
                             buf.push_str(r#"</div>"#);
+
                             buf.push_str(r#"<div class="col-lg-5 offset-lg-1 col-xl-4">"#);
                             {
                                 buf.push_str(r#"<form class="cart-checkout-form" action="/cart/checkout" method="POST">"#);
@@ -203,6 +141,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col cymbal-form-field">"#);
@@ -215,6 +154,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col cymbal-form-field">"#);
@@ -227,6 +167,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col cymbal-form-field">"#);
@@ -239,6 +180,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col cymbal-form-field">"#);
@@ -249,6 +191,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col-md-5 cymbal-form-field">"#);
@@ -257,6 +200,7 @@ impl Component for CartBody {
                                             buf.push_str(r#"<input type="text" name="state" id="state" value="CA" required>"#);
                                         }
                                         buf.push_str(r#"</div>"#);
+
                                         buf.push_str(r#"<div class="col-md-7 cymbal-form-field">"#);
                                         {
                                             buf.push_str(r#"<label for="country">Country</label>"#);
@@ -265,6 +209,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="row">"#);
                                     {
                                         buf.push_str(r#"<div class="col">"#);
@@ -276,6 +221,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col cymbal-form-field">"#);
@@ -289,6 +235,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<div class="form-row">"#);
                                     {
                                         buf.push_str(r#"<div class="col-md-5 cymbal-form-field">"#);
@@ -329,6 +276,7 @@ impl Component for CartBody {
                                             buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="cymbal-dropdown-chevron">"#);
                                         }
                                         buf.push_str(r#"</div>"#);
+
                                         buf.push_str(r#"<div class="col-md-4 cymbal-form-field">"#);
                                         {
                                             buf.push_str(
@@ -359,6 +307,7 @@ impl Component for CartBody {
                                             buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="cymbal-dropdown-chevron">"#);
                                         }
                                         buf.push_str(r#"</div>"#);
+
                                         buf.push_str(r#"<div class="col-md-3 cymbal-form-field">"#);
                                         {
                                             buf.push_str(
@@ -369,6 +318,7 @@ impl Component for CartBody {
                                         buf.push_str(r#"</div>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(
                                         r#"<div class="form-row justify-content-center">"#,
                                     );
