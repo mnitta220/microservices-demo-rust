@@ -145,24 +145,78 @@ pub async fn empty_cart_handler(cookies: Cookies) -> Result<Redirect, AppError> 
     Ok(Redirect::to("/"))
 }
 
+#[derive(Deserialize, Debug)]
+pub struct PlaceOrderInput {
+    pub email: String,
+    pub street_address: String,
+    pub zip_code: i32,
+    pub city: String,
+    pub state: String,
+    pub country: String,
+    pub credit_card_number: String,
+    pub credit_card_expiration_month: i32,
+    pub credit_card_expiration_year: i32,
+    pub credit_card_cvv: i32,
+}
+
 pub async fn place_order_handler(
     cookies: Cookies,
-    Form(input): Form<AddToCartInput>,
+    Form(input): Form<PlaceOrderInput>,
 ) -> Result<Redirect, AppError> {
-    tracing::debug!("POST /cart {}, {}", input.product_id, input.quantity);
+    tracing::debug!(
+        "POST /cart/checkout email={}, street_address={} zip_code={} city={} state={} country={} credit_card_number={} credit_card_expiration_month={} credit_card_expiration_year={} credit_card_cvv={}",
+        input.email,
+        input.street_address,
+        input.zip_code,
+        input.city,
+        input.state,
+        input.country,
+        input.credit_card_number,
+        input.credit_card_expiration_month,
+        input.credit_card_expiration_year,
+        input.credit_card_cvv,
+    );
 
     let session_id = match cookies.get(COOKIE_SESSION_ID) {
         Some(s) => s.value().to_string(),
         None => {
-            let id = Uuid::new_v4().to_string();
-            cookies.add(Cookie::new(COOKIE_SESSION_ID, id.clone()));
-            id
+            return Err(AppError(anyhow::anyhow!("failed to get session")));
         }
     };
 
-    if let Err(e) = rpc::cart::add_to_cart(session_id, input.product_id, input.quantity).await {
-        return Err(AppError(anyhow::anyhow!(e)));
-    }
+    let currency = match cookies.get(COOKIE_CURRENCY) {
+        Some(s) => s.value().to_string(),
+        None => {
+            return Err(AppError(anyhow::anyhow!("failed to get currency")));
+        }
+    };
+
+    let request = rpc::hipstershop::PlaceOrderRequest {
+        user_id: session_id,
+        user_currency: currency,
+        address: Some(rpc::hipstershop::Address {
+            street_address: input.street_address,
+            city: input.city,
+            state: input.state,
+            country: input.country,
+            zip_code: input.zip_code,
+        }),
+        email: input.email,
+        credit_card: Some(rpc::hipstershop::CreditCardInfo {
+            credit_card_number: input.credit_card_number,
+            credit_card_cvv: input.credit_card_cvv,
+            credit_card_expiration_year: input.credit_card_expiration_year,
+            credit_card_expiration_month: input.credit_card_expiration_month,
+        }),
+    };
+
+    let order: rpc::hipstershop::PlaceOrderResponse =
+        match rpc::checkout::place_order(request).await {
+            Ok(ret) => ret,
+            Err(e) => {
+                return Err(AppError(anyhow::anyhow!(e)));
+            }
+        };
 
     Ok(Redirect::to("/cart"))
 }
