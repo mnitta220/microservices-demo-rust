@@ -1,20 +1,17 @@
 use super::super::Component;
-use super::{footer::Footer, header::BodyHeader, hot_product::HotProduct, Body};
-use crate::{
-    rpc::{hipstershop::Product, product},
-    PageProps,
-};
+use super::{footer::Footer, header::BodyHeader, product::HotProductList, Body};
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct HomeBody {
     pub body_header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub product_list: Vec<Product>,
+    pub hot_product_list: HotProductList,
 }
 
 impl Body for HomeBody {
     async fn load(props: &PageProps) -> Result<Box<Self>> {
-        let product_list = match product::get_product_list(&props.user_currency).await {
+        let hot_product_list = match HotProductList::load(&props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
@@ -33,7 +30,7 @@ impl Body for HomeBody {
         let body = HomeBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
-            product_list,
+            hot_product_list,
         };
 
         Ok(Box::new(body))
@@ -65,9 +62,8 @@ impl Component for HomeBody {
                                     buf.push_str(r#"<h3>Hot Products</h3>"#);
                                 }
                                 buf.push_str(r#"</div>"#);
-                                for product in self.product_list.iter() {
-                                    HotProduct::write(product, buf);
-                                }
+
+                                self.hot_product_list.write(props, buf)?;
                             }
                             buf.push_str(r#"</div>"#);
 

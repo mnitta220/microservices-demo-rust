@@ -1,7 +1,4 @@
-use crate::{
-    components::{head::Head, Component},
-    rpc, CartInfo,
-};
+use crate::components::{body::cart::CartList, head::Head, Component};
 use anyhow::Result;
 use uuid::Uuid;
 
@@ -14,7 +11,7 @@ pub struct PageProps {
     pub request_id: String,
     pub user_currency: String,
     pub product_id: Option<String>,
-    pub cart_info: CartInfo,
+    pub cart_info: CartList,
 }
 
 pub struct Page {
@@ -31,12 +28,7 @@ impl Page {
         currency: &String,
         product_id: Option<String>,
     ) -> Result<Page> {
-        let cart_info = match rpc::cart::get_cart_info(session_id.clone(), currency.clone()).await {
-            Ok(r) => r,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e.to_string()));
-            }
-        };
+        let cart_info = CartList::load(session_id, currency).await?;
 
         let props = PageProps {
             session_id: session_id.clone(),

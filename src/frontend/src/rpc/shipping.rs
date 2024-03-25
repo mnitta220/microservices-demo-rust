@@ -1,7 +1,6 @@
 use super::{
     currency, CartItem, CurrencyConversionRequest, GetQuoteRequest, Money, ShippingServiceClient,
 };
-use crate::CartItemView;
 use std::env;
 
 async fn get_shipping_service_client(
@@ -25,7 +24,7 @@ async fn get_shipping_service_client(
 }
 
 pub async fn get_quote(
-    items: &Vec<CartItemView>,
+    items: &Vec<crate::components::body::cart::CartItem>,
     user_currency: &String,
 ) -> Result<Money, &'static str> {
     let mut shipping_service_client = match get_shipping_service_client().await {

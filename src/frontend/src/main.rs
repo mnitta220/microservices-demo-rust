@@ -6,7 +6,6 @@ use axum::{
     Router,
 };
 use pages::page::PageProps;
-use rpc::hipstershop::{Money, Product};
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_cookies::CookieManagerLayer;
@@ -61,29 +60,6 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
-}
-
-pub struct CartItemView {
-    pub product: Product,
-    pub quantity: i32,
-    pub price: Money,
-}
-
-pub struct CartInfo {
-    pub cart_items: Vec<CartItemView>,
-    pub shipping_cost: Money,
-    pub total_price: Money,
-    pub total_quantity: i32,
-}
-
-impl CartInfo {
-    pub fn cart_size(&self) -> i32 {
-        let mut size = 0;
-        for item in &self.cart_items {
-            size += item.quantity;
-        }
-        size
-    }
 }
 
 // Make our own error that wraps `anyhow::Error`.

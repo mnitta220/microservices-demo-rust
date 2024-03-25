@@ -1,9 +1,27 @@
-use crate::rpc::hipstershop::Ad;
+use super::super::Component;
+use crate::{
+    rpc::{ad, hipstershop::Ad},
+    PageProps,
+};
+use anyhow::Result;
 
-pub struct AdComponent {}
+pub struct AdItem {
+    pub ad: Ad,
+}
 
-impl AdComponent {
-    pub fn write(ad: &Ad, buf: &mut String) {
+impl AdItem {
+    pub async fn load() -> Option<AdItem> {
+        let ad: Ad = match ad::get_ad().await {
+            Some(a) => a,
+            None => return None,
+        };
+
+        Some(AdItem { ad })
+    }
+}
+
+impl Component for AdItem {
+    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<div class="ad">"#);
         {
             buf.push_str(r#"<div class="container py-3 px-lg-5 py-lg-5">"#);
@@ -12,9 +30,9 @@ impl AdComponent {
                 {
                     buf.push_str(r#"<strong>Ad</strong>"#);
                     buf.push_str(r#"<a href=""#);
-                    buf.push_str(&ad.redirect_url);
+                    buf.push_str(&self.ad.redirect_url);
                     buf.push_str(r#"" rel="nofollow" target="_blank">"#);
-                    buf.push_str(&ad.text);
+                    buf.push_str(&self.ad.text);
                     buf.push_str(r#"</a>"#);
                 }
                 buf.push_str(r#"</div>"#);
@@ -22,5 +40,7 @@ impl AdComponent {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</div>"#);
+
+        Ok(())
     }
 }

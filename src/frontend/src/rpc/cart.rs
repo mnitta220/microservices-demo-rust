@@ -1,8 +1,8 @@
 use super::{
-    currency, hipstershop::Money, product, shipping, AddItemRequest, CartItem, CartServiceClient,
+    currency, hipstershop::Money, product, shipping, AddItemRequest, CartServiceClient,
     CurrencyConversionRequest, EmptyCartRequest, GetCartRequest, GetProductRequest,
 };
-use crate::{CartInfo, CartItemView};
+use crate::components::body::cart::{CartItem, CartList};
 use std::env;
 use tonic::transport::Channel;
 
@@ -37,7 +37,7 @@ pub async fn add_to_cart(
         }
     };
 
-    let cart_item = CartItem {
+    let cart_item = super::CartItem {
         product_id,
         quantity,
     };
@@ -54,10 +54,10 @@ pub async fn add_to_cart(
     Ok(())
 }
 
-pub async fn get_cart_info(
+pub async fn get_cart_list(
     user_id: String,
     currency_code: String,
-) -> Result<crate::CartInfo, &'static str> {
+) -> Result<CartList, &'static str> {
     let mut cart_service_client = match get_cart_service_client().await {
         Ok(client) => client,
         Err(e) => {
@@ -95,8 +95,10 @@ pub async fn get_cart_info(
         units: 0,
         nanos: 0,
     };
+
     let mut total_quantity = 0;
-    let mut list: Vec<CartItemView> = Vec::new();
+    let mut list: Vec<CartItem> = Vec::new();
+
     for item in cart.items.iter() {
         let request = GetProductRequest {
             id: item.product_id.clone(),
@@ -128,7 +130,7 @@ pub async fn get_cart_info(
                 total_price = sum(&total_price, &mult_price)?;
                 total_quantity += item.quantity;
 
-                let ci = CartItemView {
+                let ci = CartItem {
                     product: product,
                     quantity: item.quantity,
                     price: mult_price,
@@ -142,14 +144,14 @@ pub async fn get_cart_info(
     let quote = shipping::get_quote(&list, &currency_code).await?;
     total_price = sum(&total_price, &quote)?;
 
-    let cart_info = CartInfo {
-        cart_items: list,
+    let cart_list = CartList {
+        items: list,
         shipping_cost: quote,
         total_price: total_price,
         total_quantity,
     };
 
-    Ok(cart_info)
+    Ok(cart_list)
 }
 
 pub async fn empty_cart(user_id: String) -> Result<(), &'static str> {

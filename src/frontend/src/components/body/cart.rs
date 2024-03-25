@@ -1,20 +1,140 @@
 use super::super::Component;
-use super::{
-    cart_item, footer::Footer, header::BodyHeader, recommendations::Recommendations, Body,
+use super::{footer::Footer, header::BodyHeader, recommendation::RecommendationList, Body};
+use crate::{
+    rpc::{
+        cart,
+        hipstershop::{Money, Product},
+    },
+    PageProps,
 };
-use crate::{rpc::recommendation, PageProps};
 use anyhow::Result;
 use chrono::prelude::*;
 
+pub struct CartItem {
+    pub product: Product,
+    pub quantity: i32,
+    pub price: Money,
+}
+
+pub struct CartList {
+    pub items: Vec<CartItem>,
+    pub shipping_cost: Money,
+    pub total_price: Money,
+    pub total_quantity: i32,
+}
+
 pub struct CartBody {
-    pub body_header: Box<dyn Component + Send>,
+    pub header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub recommendations: Box<dyn Component + Send>,
+    pub recommendation_list: RecommendationList,
+}
+
+impl CartList {
+    pub async fn load(session_id: &String, currency: &String) -> Result<Self> {
+        let cart_list = match cart::get_cart_list(session_id.clone(), currency.clone()).await {
+            Ok(r) => r,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e.to_string()));
+            }
+        };
+
+        Ok(cart_list)
+    }
+
+    pub fn cart_size(&self) -> i32 {
+        let mut size = 0;
+        for item in &self.items {
+            size += item.quantity;
+        }
+        size
+    }
+}
+
+impl Component for CartList {
+    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+        for item in &self.items {
+            item.write(props, buf)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl Component for CartItem {
+    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+        if let Some(m) = &self.product.price_usd {
+            buf.push_str(r#"<div class="row cart-summary-item-row">"#);
+            {
+                buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
+                {
+                    buf.push_str(r#"<a href="/product/"#);
+                    buf.push_str(&self.product.id);
+                    buf.push_str(r#"">"#);
+                    {
+                        buf.push_str(r#"<img class="img-fluid" alt="" src=""#);
+                        buf.push_str(&self.product.picture);
+                        buf.push_str(r#"" />"#);
+                    }
+                    buf.push_str(r#"</a>"#);
+                }
+                buf.push_str(r#"</div>"#);
+
+                buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
+                {
+                    buf.push_str(r#"<div class="row">"#);
+                    {
+                        buf.push_str(r#"<div class="col">"#);
+                        {
+                            buf.push_str(r#"<h4>"#);
+                            buf.push_str(&self.product.name);
+                            buf.push_str(r#"</h4>"#);
+                        }
+                        buf.push_str(r#"</div>"#);
+                    }
+                    buf.push_str(r#"</div>"#);
+
+                    buf.push_str(r#"<div class="row cart-summary-item-row-item-id-row">"#);
+                    {
+                        buf.push_str(r#"<div class="col">"#);
+                        {
+                            buf.push_str(r#"SKU #"#);
+                            buf.push_str(&self.product.id);
+                        }
+                        buf.push_str(r#"</div>"#);
+                    }
+                    buf.push_str(r#"</div>"#);
+
+                    buf.push_str(r#"<div class="row">"#);
+                    {
+                        buf.push_str(r#"<div class="col">"#);
+                        {
+                            buf.push_str(r#"Quantity: "#);
+                            buf.push_str(&self.quantity.to_string());
+                        }
+                        buf.push_str(r#"</div>"#);
+
+                        buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
+                        {
+                            buf.push_str(r#"<strong>"#);
+                            buf.push_str(&m.money_for_display());
+                            buf.push_str(r#"</strong>"#);
+                        }
+                        buf.push_str(r#"</div>"#);
+                    }
+                    buf.push_str(r#"</div>"#);
+                }
+                buf.push_str(r#"</div>"#);
+            }
+            buf.push_str(r#"</div>"#);
+        }
+
+        Ok(())
+    }
 }
 
 impl Body for CartBody {
     async fn load(props: &PageProps) -> Result<Box<Self>> {
-        let recommendation_list = match recommendation::get_recommendations(&props).await {
+        let recommendation_list = match RecommendationList::load(&props).await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));
@@ -28,16 +148,12 @@ impl Body for CartBody {
             }
         };
 
-        let recommendations = Recommendations {
-            recommendation_list,
-        };
-
         let footer = Footer {};
 
         let body = CartBody {
-            body_header: Box::new(body_header),
+            header: Box::new(body_header),
             footer: Box::new(footer),
-            recommendations: Box::new(recommendations),
+            recommendation_list,
         };
 
         Ok(Box::new(body))
@@ -48,11 +164,11 @@ impl Component for CartBody {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<body>"#);
         {
-            self.body_header.write(props, buf)?;
+            self.header.write(props, buf)?;
 
             buf.push_str(r#"<main role="main" class="cart-sections">"#);
             {
-                if props.cart_info.cart_items.len() == 0 {
+                if props.cart_info.items.len() == 0 {
                     buf.push_str(r#"<section class="empty-cart-section">"#);
                     {
                         buf.push_str(r#"<h3>Your shopping cart is empty!</h3>"#);
@@ -102,9 +218,7 @@ impl Component for CartBody {
                                 }
                                 buf.push_str(r#"</div>"#);
 
-                                for item in props.cart_info.cart_items.iter() {
-                                    cart_item::CartItem::write(item, buf);
-                                }
+                                props.cart_info.write(props, buf)?;
 
                                 buf.push_str(r#"<div class="row cart-summary-shipping-row">"#);
                                 {
@@ -346,7 +460,7 @@ impl Component for CartBody {
             }
             buf.push_str(r#"</main>"#);
 
-            self.recommendations.write(props, buf)?;
+            self.recommendation_list.write(props, buf)?;
             self.footer.write(props, buf)?;
         }
         buf.push_str(r#"</body>"#);
