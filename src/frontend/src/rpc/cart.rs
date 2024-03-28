@@ -159,7 +159,7 @@ fn valid_nanos(nanos: i32) -> bool {
     NANOS_MIN < nanos && nanos <= NANOS_MAX
 }
 
-fn sum(l: &Money, r: &Money) -> Result<Money> {
+pub fn sum(l: &Money, r: &Money) -> Result<Money> {
     if !is_valid(l) || !is_valid(r) {
         return Err(anyhow::anyhow!(
             "one of the specified money values is invalid"
@@ -195,7 +195,7 @@ fn sum(l: &Money, r: &Money) -> Result<Money> {
 
 // multiply_slow is a slow multiplication operation done through adding the value
 // to itself n-1 times.
-fn multiply_slow(m: &Money, n: i32) -> Result<Money> {
+pub fn multiply_slow(m: &Money, n: i32) -> Result<Money> {
     let mut out = m.clone();
     let mut n = n;
     while n > 1 {

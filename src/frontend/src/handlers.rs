@@ -1,5 +1,7 @@
 use crate::{
-    pages::{cart_page::CartPage, home_page::HomePage, product_page::ProductPage},
+    pages::{
+        cart_page::CartPage, home_page::HomePage, order_page::OrderPage, product_page::ProductPage,
+    },
     rpc, AppError,
 };
 use axum::{
@@ -162,7 +164,7 @@ pub struct PlaceOrderInput {
 pub async fn place_order_handler(
     cookies: Cookies,
     Form(input): Form<PlaceOrderInput>,
-) -> Result<Redirect, AppError> {
+) -> Result<Html<String>, AppError> {
     tracing::debug!(
         "POST /cart/checkout email={}, street_address={} zip_code={} city={} state={} country={} credit_card_number={} credit_card_expiration_month={} credit_card_expiration_year={} credit_card_cvv={}",
         input.email,
@@ -192,8 +194,8 @@ pub async fn place_order_handler(
     };
 
     let request = rpc::hipstershop::PlaceOrderRequest {
-        user_id: session_id,
-        user_currency: currency,
+        user_id: session_id.clone(),
+        user_currency: currency.clone(),
         address: Some(rpc::hipstershop::Address {
             street_address: input.street_address,
             city: input.city,
@@ -210,15 +212,17 @@ pub async fn place_order_handler(
         }),
     };
 
-    let order: rpc::hipstershop::PlaceOrderResponse =
-        match rpc::checkout::place_order(request).await {
-            Ok(ret) => ret,
-            Err(e) => {
-                return Err(AppError(anyhow::anyhow!(e)));
-            }
-        };
+    let (order, total_cost) = match rpc::checkout::place_order(request, currency.clone()).await {
+        Ok(ret) => ret,
+        Err(e) => {
+            return Err(AppError(anyhow::anyhow!(e)));
+        }
+    };
 
-    Ok(Redirect::to("/cart"))
+    match OrderPage::generate(&session_id, &currency, order, total_cost).await {
+        Ok(r) => Ok(Html(r)),
+        Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
+    }
 }
 
 pub async fn health_handler() -> &'static str {

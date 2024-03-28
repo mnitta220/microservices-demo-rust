@@ -7,6 +7,7 @@ pub mod currency;
 pub mod footer;
 pub mod header;
 pub mod home;
+pub mod order;
 pub mod product;
 pub mod recommendation;
 

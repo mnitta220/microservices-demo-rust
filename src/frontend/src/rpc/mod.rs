@@ -9,8 +9,7 @@ use hipstershop::{
     recommendation_service_client::RecommendationServiceClient,
     shipping_service_client::ShippingServiceClient, Ad, AdRequest, AddItemRequest, CartItem,
     CurrencyConversionRequest, Empty, EmptyCartRequest, GetCartRequest, GetProductRequest,
-    GetQuoteRequest, ListRecommendationsRequest, Money, PlaceOrderRequest, PlaceOrderResponse,
-    Product,
+    GetQuoteRequest, ListRecommendationsRequest, Money, OrderResult, PlaceOrderRequest, Product,
 };
 
 pub mod ad;
