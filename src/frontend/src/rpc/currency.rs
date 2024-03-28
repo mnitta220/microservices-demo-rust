@@ -1,6 +1,5 @@
 use super::{CurrencyServiceClient, Empty};
 use anyhow::Result;
-use std::env;
 use tonic::transport::Channel;
 
 impl super::Money {
@@ -33,12 +32,7 @@ fn whitelisted_currencies(currency: &str) -> bool {
 }
 
 pub async fn get_currency_service_client() -> Result<CurrencyServiceClient<Channel>> {
-    let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get CURRENCY_SERVICE_ADDR"));
-        }
-    };
+    let currency_service_addr = crate::CURRENCY_SERVICE_ADDR.get().unwrap();
 
     let currency_service_client =
         match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {

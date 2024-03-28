@@ -4,18 +4,10 @@ use super::{
 };
 use crate::PageProps;
 use anyhow::Result;
-use std::env;
 
 pub async fn get_product_catalog_service_client(
 ) -> Result<ProductCatalogServiceClient<tonic::transport::Channel>> {
-    let product_catalog_service_addr = match env::var("PRODUCT_CATALOG_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!(
-                "Failed to get PRODUCT_CATALOG_SERVICE_ADDR"
-            ));
-        }
-    };
+    let product_catalog_service_addr = crate::PRODUCT_CATALOG_SERVICE_ADDR.get().unwrap();
 
     let product_catalog_service_client = match ProductCatalogServiceClient::connect(format!(
         "http://{}",

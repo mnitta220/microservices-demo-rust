@@ -3,16 +3,10 @@ use super::{
 };
 use crate::PageProps;
 use anyhow::Result;
-use std::env;
 use tonic::transport::Channel;
 
 async fn get_recommendation_service_client() -> Result<RecommendationServiceClient<Channel>> {
-    let recommendation_service_addr = match env::var("RECOMMENDATION_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get RECOMMENDATION_SERVICE_ADDR"));
-        }
-    };
+    let recommendation_service_addr = crate::RECOMMENDATION_SERVICE_ADDR.get().unwrap();
 
     let recommendation_service_client = match RecommendationServiceClient::connect(format!(
         "http://{}",

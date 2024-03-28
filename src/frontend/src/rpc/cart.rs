@@ -4,16 +4,10 @@ use super::{
 };
 use crate::components::body::cart::{CartItem, CartList};
 use anyhow::Result;
-use std::env;
 use tonic::transport::Channel;
 
 async fn get_cart_service_client() -> Result<CartServiceClient<Channel>> {
-    let cart_service_addr = match env::var("CART_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get CART_SERVICE_ADDR"));
-        }
-    };
+    let cart_service_addr = crate::CART_SERVICE_ADDR.get().unwrap();
 
     let cart_service_client =
         match CartServiceClient::connect(format!("http://{}", cart_service_addr)).await {

@@ -1,15 +1,9 @@
 use super::{CheckoutServiceClient, PlaceOrderRequest, PlaceOrderResponse};
 use anyhow::Result;
-use std::env;
 use tonic::transport::Channel;
 
 async fn get_checkout_service_client() -> Result<CheckoutServiceClient<Channel>> {
-    let checkout_service_addr = match env::var("CHECKOUT_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get CHECKOUT_SERVICE_ADDR"));
-        }
-    };
+    let checkout_service_addr = crate::CHECKOUT_SERVICE_ADDR.get().unwrap();
 
     let checkout_service_client =
         match CheckoutServiceClient::connect(format!("http://{}", checkout_service_addr)).await {

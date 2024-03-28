@@ -2,15 +2,9 @@ use super::{
     currency, CartItem, CurrencyConversionRequest, GetQuoteRequest, Money, ShippingServiceClient,
 };
 use anyhow::Result;
-use std::env;
 
 async fn get_shipping_service_client() -> Result<ShippingServiceClient<tonic::transport::Channel>> {
-    let shipping_service_addr = match env::var("SHIPPING_SERVICE_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get SHIPPING_SERVICE_ADDR"));
-        }
-    };
+    let shipping_service_addr = crate::SHIPPING_SERVICE_ADDR.get().unwrap();
 
     let shipping_service_client =
         match ShippingServiceClient::connect(format!("http://{}", shipping_service_addr)).await {

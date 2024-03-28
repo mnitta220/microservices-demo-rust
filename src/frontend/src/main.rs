@@ -1,3 +1,4 @@
+use anyhow::Result;
 use axum::{
     error_handling::HandleErrorLayer,
     http::StatusCode,
@@ -5,6 +6,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use once_cell::sync::OnceCell;
 use pages::page::PageProps;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
@@ -17,6 +19,106 @@ mod handlers;
 mod pages;
 mod rpc;
 
+static AD_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static CART_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static CHECKOUT_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static CURRENCY_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static PRODUCT_CATALOG_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static RECOMMENDATION_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static SHIPPING_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+
+fn get_env() -> Result<()> {
+    // get AD_SERVICE_ADDR env
+    let addr = match std::env::var("AD_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get AD_SERVICE_ADDR"));
+        }
+    };
+    // set AD_SERVICE_ADDR static
+    if let Err(_) = AD_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set AD_SERVICE_ADDR"));
+    }
+
+    // get CART_SERVICE_ADDR env
+    let addr = match std::env::var("CART_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get CART_SERVICE_ADDR"));
+        }
+    };
+    // set CART_SERVICE_ADDR static
+    if let Err(_) = CART_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set CART_SERVICE_ADDR"));
+    }
+
+    // get CHECKOUT_SERVICE_ADDR env
+    let addr = match std::env::var("CHECKOUT_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get CHECKOUT_SERVICE_ADDR"));
+        }
+    };
+    // set CHECKOUT_SERVICE_ADDR static
+    if let Err(_) = CHECKOUT_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set CHECKOUT_SERVICE_ADDR"));
+    }
+
+    // get CURRENCY_SERVICE_ADDR env
+    let addr = match std::env::var("CURRENCY_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get CURRENCY_SERVICE_ADDR"));
+        }
+    };
+    // set CURRENCY_SERVICE_ADDR static
+    if let Err(_) = CURRENCY_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set CURRENCY_SERVICE_ADDR"));
+    }
+
+    // get PRODUCT_CATALOG_SERVICE_ADDR env
+    let addr = match std::env::var("PRODUCT_CATALOG_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!(
+                "Failed to get PRODUCT_CATALOG_SERVICE_ADDR"
+            ));
+        }
+    };
+    // set PRODUCT_CATALOG_SERVICE_ADDR static
+    if let Err(_) = PRODUCT_CATALOG_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!(
+            "Failed to set PRODUCT_CATALOG_SERVICE_ADDR"
+        ));
+    }
+
+    // get RECOMMENDATION_SERVICE_ADDR env
+    let addr = match std::env::var("RECOMMENDATION_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get RECOMMENDATION_SERVICE_ADDR"));
+        }
+    };
+    // set RECOMMENDATION_SERVICE_ADDR static
+    if let Err(_) = RECOMMENDATION_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set RECOMMENDATION_SERVICE_ADDR"));
+    }
+
+    // get SHIPPING_SERVICE_ADDR env
+    let addr = match std::env::var("SHIPPING_SERVICE_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get SHIPPING_SERVICE_ADDR"));
+        }
+    };
+    // set SHIPPING_SERVICE_ADDR static
+    if let Err(_) = SHIPPING_SERVICE_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set SHIPPING_SERVICE_ADDR"));
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
@@ -26,6 +128,11 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
+
+    if let Err(e) = get_env() {
+        tracing::error!("failed to get env: {:?}", e);
+        std::process::exit(0x0100);
+    }
 
     let app = Router::new()
         .route("/", get(handlers::home_handler))

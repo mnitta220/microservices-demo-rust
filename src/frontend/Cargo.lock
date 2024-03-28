@@ -352,6 +352,7 @@ dependencies = [
  "anyhow",
  "axum 0.7.5",
  "chrono",
+ "once_cell",
  "prost",
  "rand",
  "serde",
