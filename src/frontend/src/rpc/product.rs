@@ -3,14 +3,17 @@ use super::{
     ProductCatalogServiceClient,
 };
 use crate::PageProps;
+use anyhow::Result;
 use std::env;
 
 pub async fn get_product_catalog_service_client(
-) -> Result<ProductCatalogServiceClient<tonic::transport::Channel>, &'static str> {
+) -> Result<ProductCatalogServiceClient<tonic::transport::Channel>> {
     let product_catalog_service_addr = match env::var("PRODUCT_CATALOG_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
-            return Err("Failed to get PRODUCT_CATALOG_SERVICE_ADDR");
+            return Err(anyhow::anyhow!(
+                "Failed to get PRODUCT_CATALOG_SERVICE_ADDR"
+            ));
         }
     };
 
@@ -22,32 +25,22 @@ pub async fn get_product_catalog_service_client(
     {
         Ok(client) => client,
         Err(_) => {
-            return Err("get_product_catalog_service_client failed");
+            return Err(anyhow::anyhow!("get_product_catalog_service_client failed"));
         }
     };
 
     Ok(product_catalog_service_client)
 }
 
-pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'static str> {
-    let mut product_catalog_service_client = match get_product_catalog_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>> {
+    let mut product_catalog_service_client = get_product_catalog_service_client().await?;
 
-    let mut currency_service_client = match currency::get_currency_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+    let mut currency_service_client = currency::get_currency_service_client().await?;
 
     let products = match product_catalog_service_client.list_products(Empty {}).await {
         Ok(response) => response.into_inner(),
         Err(_) => {
-            return Err("get_products: list_products failed");
+            return Err(anyhow::anyhow!("get_products: list_products failed"));
         }
     };
 
@@ -62,7 +55,7 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'
             let changed = match currency_service_client.convert(request).await {
                 Ok(changed) => changed.into_inner(),
                 Err(_) => {
-                    return Err("currency convert failed");
+                    return Err(anyhow::anyhow!("currency convert failed"));
                 }
             };
             p.price_usd = Some(changed);
@@ -73,35 +66,25 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>, &'
     Ok(list)
 }
 
-pub async fn get_product(page_props: &PageProps) -> Result<Product, &'static str> {
+pub async fn get_product(page_props: &PageProps) -> Result<Product> {
     let product_id = match page_props.product_id.clone() {
         Some(id) => id,
-        None => return Err("product id not specified"),
+        None => return Err(anyhow::anyhow!("product id not specified")),
     };
     if product_id.len() == 0 {
-        return Err("product id not specified");
+        return Err(anyhow::anyhow!("product id not specified"));
     }
 
-    let mut product_catalog_service_client = match get_product_catalog_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+    let mut product_catalog_service_client = get_product_catalog_service_client().await?;
 
-    let mut currency_service_client = match currency::get_currency_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+    let mut currency_service_client = currency::get_currency_service_client().await?;
 
     let request = GetProductRequest { id: product_id };
 
     let mut product = match product_catalog_service_client.get_product(request).await {
         Ok(response) => response.into_inner(),
         Err(_) => {
-            return Err("get_product failed");
+            return Err(anyhow::anyhow!("get_product failed"));
         }
     };
     let price: Money;
@@ -113,7 +96,9 @@ pub async fn get_product(page_props: &PageProps) -> Result<Product, &'static str
         price = match currency_service_client.convert(request).await {
             Ok(changed) => changed.into_inner(),
             Err(_) => {
-                return Err("get_currencies: get_supported_currencies failed");
+                return Err(anyhow::anyhow!(
+                    "get_currencies: get_supported_currencies failed"
+                ));
             }
         };
     } else {

@@ -1,13 +1,14 @@
 use super::{Ad, AdRequest, AdServiceClient};
+use anyhow::Result;
 use rand::{thread_rng, Rng};
 use std::env;
 use tonic::transport::Channel;
 
-async fn get_ad_service_client() -> Result<AdServiceClient<Channel>, &'static str> {
+async fn get_ad_service_client() -> Result<AdServiceClient<Channel>> {
     let ad_service_addr = match env::var("AD_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
-            return Err("Failed to get AD_SERVICE_ADDR");
+            return Err(anyhow::anyhow!("Failed to get AD_SERVICE_ADDR"));
         }
     };
 
@@ -15,7 +16,7 @@ async fn get_ad_service_client() -> Result<AdServiceClient<Channel>, &'static st
         match AdServiceClient::connect(format!("http://{}", ad_service_addr)).await {
             Ok(client) => client,
             Err(_) => {
-                return Err("get_ad_service_client failed");
+                return Err(anyhow::anyhow!("get_ad_service_client failed"));
             }
         };
 

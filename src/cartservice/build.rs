@@ -24,6 +24,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 */
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tonic_build::compile_protos("protos/demo.proto")?;
+    tonic_build::compile_protos("protos/Cart.proto")?;
     Ok(())
 }

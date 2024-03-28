@@ -2,15 +2,15 @@ use super::{
     product, GetProductRequest, ListRecommendationsRequest, Product, RecommendationServiceClient,
 };
 use crate::PageProps;
+use anyhow::Result;
 use std::env;
 use tonic::transport::Channel;
 
-async fn get_recommendation_service_client(
-) -> Result<RecommendationServiceClient<Channel>, &'static str> {
+async fn get_recommendation_service_client() -> Result<RecommendationServiceClient<Channel>> {
     let recommendation_service_addr = match env::var("RECOMMENDATION_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
-            return Err("Failed to get RECOMMENDATION_SERVICE_ADDR");
+            return Err(anyhow::anyhow!("Failed to get RECOMMENDATION_SERVICE_ADDR"));
         }
     };
 
@@ -22,28 +22,18 @@ async fn get_recommendation_service_client(
     {
         Ok(client) => client,
         Err(_) => {
-            return Err("get_recommendation_service_client failed");
+            return Err(anyhow::anyhow!("get_recommendation_service_client failed"));
         }
     };
 
     Ok(recommendation_service_client)
 }
 
-pub async fn get_recommendations(page_props: &PageProps) -> Result<Vec<Product>, &'static str> {
+pub async fn get_recommendations(page_props: &PageProps) -> Result<Vec<Product>> {
     let mut list: Vec<Product> = Vec::new();
-    let mut recommendation_service_client = match get_recommendation_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
-    let mut product_catalog_service_client =
-        match product::get_product_catalog_service_client().await {
-            Ok(client) => client,
-            Err(e) => {
-                return Err(e);
-            }
-        };
+    let mut recommendation_service_client = get_recommendation_service_client().await?;
+
+    let mut product_catalog_service_client = product::get_product_catalog_service_client().await?;
 
     let product_ids = match &page_props.product_id {
         Some(p) => vec![(*p).clone()],

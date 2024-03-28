@@ -3,14 +3,15 @@ use super::{
     CurrencyConversionRequest, EmptyCartRequest, GetCartRequest, GetProductRequest,
 };
 use crate::components::body::cart::{CartItem, CartList};
+use anyhow::Result;
 use std::env;
 use tonic::transport::Channel;
 
-async fn get_cart_service_client() -> Result<CartServiceClient<Channel>, &'static str> {
+async fn get_cart_service_client() -> Result<CartServiceClient<Channel>> {
     let cart_service_addr = match env::var("CART_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
-            return Err("Failed to get CART_SERVICE_ADDR");
+            return Err(anyhow::anyhow!("Failed to get CART_SERVICE_ADDR"));
         }
     };
 
@@ -18,18 +19,14 @@ async fn get_cart_service_client() -> Result<CartServiceClient<Channel>, &'stati
         match CartServiceClient::connect(format!("http://{}", cart_service_addr)).await {
             Ok(client) => client,
             Err(_) => {
-                return Err("get_cart_service_client failed");
+                return Err(anyhow::anyhow!("get_cart_service_client failed"));
             }
         };
 
     Ok(cart_service_client)
 }
 
-pub async fn add_to_cart(
-    user_id: String,
-    product_id: String,
-    quantity: i32,
-) -> Result<(), &'static str> {
+pub async fn add_to_cart(user_id: String, product_id: String, quantity: i32) -> Result<()> {
     let mut cart_service_client = match get_cart_service_client().await {
         Ok(client) => client,
         Err(e) => {
@@ -47,46 +44,27 @@ pub async fn add_to_cart(
         item: Some(cart_item),
     };
 
-    if let Err(_e) = cart_service_client.add_item(request).await {
-        return Err("cart add_item failed");
+    if let Err(e) = cart_service_client.add_item(request).await {
+        return Err(anyhow::anyhow!("cart add_item failed: {}", e.message()));
     }
 
     Ok(())
 }
 
-pub async fn get_cart_list(
-    user_id: String,
-    currency_code: String,
-) -> Result<CartList, &'static str> {
-    let mut cart_service_client = match get_cart_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+pub async fn get_cart_list(user_id: String, currency_code: String) -> Result<CartList> {
+    let mut cart_service_client = get_cart_service_client().await?;
 
-    let mut product_catalog_service_client =
-        match product::get_product_catalog_service_client().await {
-            Ok(client) => client,
-            Err(e) => {
-                return Err(e);
-            }
-        };
+    let mut product_catalog_service_client = product::get_product_catalog_service_client().await?;
 
-    let mut currency_service_client = match currency::get_currency_service_client().await {
-        Ok(client) => client,
-        Err(e) => {
-            return Err(e);
-        }
-    };
+    let mut currency_service_client = currency::get_currency_service_client().await?;
 
     let cart = match cart_service_client
         .get_cart(GetCartRequest { user_id })
         .await
     {
         Ok(response) => response.into_inner(),
-        Err(_) => {
-            return Err("get_cart failed");
+        Err(e) => {
+            return Err(anyhow::anyhow!("get_cart failed: {}", e.message()));
         }
     };
 
@@ -117,7 +95,7 @@ pub async fn get_cart_list(
                     let changed = match currency_service_client.convert(request).await {
                         Ok(changed) => changed.into_inner(),
                         Err(_) => {
-                            return Err("currency convert failed");
+                            return Err(anyhow::anyhow!("currency convert failed"));
                         }
                     };
 
@@ -154,18 +132,18 @@ pub async fn get_cart_list(
     Ok(cart_list)
 }
 
-pub async fn empty_cart(user_id: String) -> Result<(), &'static str> {
+pub async fn empty_cart(user_id: String) -> Result<()> {
     let mut cart_service_client = match get_cart_service_client().await {
         Ok(client) => client,
         Err(e) => {
-            return Err(e);
+            return Err(anyhow::anyhow!(e));
         }
     };
 
     let request = EmptyCartRequest { user_id };
 
     if let Err(_e) = cart_service_client.empty_cart(request).await {
-        return Err("empty cart failed");
+        return Err(anyhow::anyhow!("empty cart failed"));
     }
 
     Ok(())
@@ -187,12 +165,14 @@ fn valid_nanos(nanos: i32) -> bool {
     NANOS_MIN < nanos && nanos <= NANOS_MAX
 }
 
-fn sum(l: &Money, r: &Money) -> Result<Money, &'static str> {
+fn sum(l: &Money, r: &Money) -> Result<Money> {
     if !is_valid(l) || !is_valid(r) {
-        return Err("one of the specified money values is invalid");
+        return Err(anyhow::anyhow!(
+            "one of the specified money values is invalid"
+        ));
     }
     if l.currency_code != r.currency_code {
-        return Err("mismatching currency codes");
+        return Err(anyhow::anyhow!("mismatching currency codes"));
     }
     let mut units = l.units + r.units;
     let mut nanos = l.nanos + r.nanos;
@@ -221,7 +201,7 @@ fn sum(l: &Money, r: &Money) -> Result<Money, &'static str> {
 
 // multiply_slow is a slow multiplication operation done through adding the value
 // to itself n-1 times.
-fn multiply_slow(m: &Money, n: i32) -> Result<Money, &'static str> {
+fn multiply_slow(m: &Money, n: i32) -> Result<Money> {
     let mut out = m.clone();
     let mut n = n;
     while n > 1 {

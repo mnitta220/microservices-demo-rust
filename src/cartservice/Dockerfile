@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG RUST_VERSION=1.77.0
-ARG APP_NAME=adservice
+ARG APP_NAME=cartservice
 
 FROM rust:${RUST_VERSION}-alpine AS build
 ARG APP_NAME
@@ -18,9 +18,9 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.1 && \
 
 FROM alpine:3.18 AS final
 
-COPY --from=build /src/target/release/adservice /bin/adservice
+COPY --from=build /src/target/release/cartservice /bin/cartservice
 COPY --from=build /bin/grpc_health_probe /bin/
 
-EXPOSE 9555
+EXPOSE 7070
 
-CMD ["/bin/adservice"]
+CMD ["/bin/cartservice"]

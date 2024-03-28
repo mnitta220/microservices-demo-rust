@@ -1,4 +1,5 @@
 use super::{CurrencyServiceClient, Empty};
+use anyhow::Result;
 use std::env;
 use tonic::transport::Channel;
 
@@ -31,11 +32,11 @@ fn whitelisted_currencies(currency: &str) -> bool {
     }
 }
 
-pub async fn get_currency_service_client() -> Result<CurrencyServiceClient<Channel>, &'static str> {
+pub async fn get_currency_service_client() -> Result<CurrencyServiceClient<Channel>> {
     let currency_service_addr = match env::var("CURRENCY_SERVICE_ADDR") {
         Ok(addr) => addr,
         Err(_) => {
-            return Err("Failed to get CURRENCY_SERVICE_ADDR");
+            return Err(anyhow::anyhow!("Failed to get CURRENCY_SERVICE_ADDR"));
         }
     };
 
@@ -43,18 +44,18 @@ pub async fn get_currency_service_client() -> Result<CurrencyServiceClient<Chann
         match CurrencyServiceClient::connect(format!("http://{}", currency_service_addr)).await {
             Ok(client) => client,
             Err(_) => {
-                return Err("get_currency_service_client failed");
+                return Err(anyhow::anyhow!("get_currency_service_client failed"));
             }
         };
 
     Ok(currency_service_client)
 }
 
-pub async fn get_supported_currencies() -> Result<Vec<String>, &'static str> {
+pub async fn get_supported_currencies() -> Result<Vec<String>> {
     let mut currency_service_client = match get_currency_service_client().await {
         Ok(client) => client,
         Err(_) => {
-            return Err("get_currencies: connect failed");
+            return Err(anyhow::anyhow!("get_currencies: connect failed"));
         }
     };
 
@@ -64,7 +65,9 @@ pub async fn get_supported_currencies() -> Result<Vec<String>, &'static str> {
     {
         Ok(response) => response,
         Err(_) => {
-            return Err("get_currencies: get_supported_currencies failed");
+            return Err(anyhow::anyhow!(
+                "get_currencies: get_supported_currencies failed"
+            ));
         }
     };
 
