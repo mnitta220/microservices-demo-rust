@@ -1,7 +1,4 @@
-use crate::{
-    components::body::{cart::CartBody, Body},
-    pages::page::Page,
-};
+use crate::{components::body::cart::CartBody, pages::page::Page};
 use anyhow::Result;
 
 /// Component for rendering the cart page

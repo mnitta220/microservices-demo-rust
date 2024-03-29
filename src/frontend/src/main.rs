@@ -6,6 +6,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use hostname;
 use once_cell::sync::OnceCell;
 use pages::page::PageProps;
 use std::time::Duration;
@@ -26,8 +27,11 @@ static CURRENCY_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
 static PRODUCT_CATALOG_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
 static RECOMMENDATION_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
 static SHIPPING_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
+static PLATFORM_NAME: OnceCell<String> = OnceCell::new();
+static PLATFORM_CSS: OnceCell<String> = OnceCell::new();
+static HOST_NAME: OnceCell<String> = OnceCell::new();
 
-fn get_env() -> Result<()> {
+fn get_environment_values() -> Result<()> {
     // get AD_SERVICE_ADDR env
     let addr = match std::env::var("AD_SERVICE_ADDR") {
         Ok(addr) => addr,
@@ -116,6 +120,39 @@ fn get_env() -> Result<()> {
         return Err(anyhow::anyhow!("Failed to set SHIPPING_SERVICE_ADDR"));
     }
 
+    // get ENV_PLATFORM env
+    let env_platform = match std::env::var("ENV_PLATFORM") {
+        Ok(e) => e,
+        Err(_) => "local".to_string(),
+    };
+    let (provider, css) = match env_platform.as_str() {
+        "aws" => ("AWS".to_string(), "aws-platform".to_string()),
+        "onprem" => ("On-Premises".to_string(), "onprem-platform".to_string()),
+        "azure" => ("Azure".to_string(), "azure-platform".to_string()),
+        "gcp" => ("Google Cloud".to_string(), "gcp-platform".to_string()),
+        "alibaba" => ("Alibaba Cloud".to_string(), "alibaba-platform".to_string()),
+        _ => ("local".to_string(), "local".to_string()),
+    };
+    // set PLATFORM_NAME static
+    if let Err(_) = PLATFORM_NAME.set(provider) {
+        return Err(anyhow::anyhow!("Failed to set PLATFORM_NAME"));
+    }
+    // set PLATFORM_CSS static
+    if let Err(_) = PLATFORM_CSS.set(css) {
+        return Err(anyhow::anyhow!("Failed to set PLATFORM_CSS"));
+    }
+
+    match hostname::get() {
+        Ok(os_name) => match os_name.into_string() {
+            Ok(host_name) => {
+                // set HOST_NAME static
+                if let Err(_) = HOST_NAME.set(host_name) {}
+            }
+            Err(_) => {}
+        },
+        Err(_) => {}
+    }
+
     Ok(())
 }
 
@@ -129,8 +166,8 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    if let Err(e) = get_env() {
-        tracing::error!("failed to get env: {:?}", e);
+    if let Err(e) = get_environment_values() {
+        tracing::error!("failed to get environment values: {:?}", e);
         std::process::exit(0x0100);
     }
 

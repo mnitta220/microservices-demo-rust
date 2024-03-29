@@ -1,5 +1,5 @@
-use super::super::Component;
 use crate::{
+    components::Component,
     rpc::{ad, hipstershop::Ad},
     PageProps,
 };

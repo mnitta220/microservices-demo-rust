@@ -1,5 +1,4 @@
-use super::super::Component;
-use crate::PageProps;
+use crate::{components::Component, PageProps};
 use anyhow::Result;
 
 pub struct Footer {}
@@ -35,7 +34,7 @@ impl Component for Footer {
                         buf.push_str(r#"</a>)<br/>"#);
                         buf.push_str(r#"<small>"#);
                         {
-                            buf.push_str(r#"Rewrote the frontend in Rust : &nbsp;&nbsp;"#);
+                            buf.push_str(r#"Rewrote in Rust : &nbsp;&nbsp;"#);
                         }
                         buf.push_str(r#"</small>"#);
                         buf.push_str(r#"© 2024 Masahiro Nitta ("#);
@@ -59,15 +58,16 @@ impl Component for Footer {
                             buf.push_str(&props.request_id);
                         }
                         buf.push_str(r#"</small>"#);
-                        /* don't get hostname
-                        buf.push_str(r#"<br />"#);
-                        buf.push_str(r#"<small>"#);
-                        {
-                            buf.push_str(r#"<b>Pod: </b>"#);
-                            buf.push_str(r#"frontend-55dc66b9dd-hc7vm"#);
+
+                        if let Some(hostname) = crate::HOST_NAME.get() {
+                            buf.push_str(r#"<br />"#);
+                            buf.push_str(r#"<small>"#);
+                            {
+                                buf.push_str(r#"<b>Pod: </b>"#);
+                                buf.push_str(hostname);
+                            }
+                            buf.push_str(r#"</small>"#);
                         }
-                        buf.push_str(r#"</small>"#);
-                        */
                     }
                     buf.push_str(r#"</p>"#);
                 }

@@ -1,5 +1,5 @@
 use super::super::Component;
-use super::{footer::Footer, header::BodyHeader, recommendation::RecommendationList, Body};
+use super::parts::{footer::Footer, header::BodyHeader, recommendation::RecommendationList};
 use crate::{
     rpc::{
         cart,
@@ -132,8 +132,8 @@ impl Component for CartItem {
     }
 }
 
-impl Body for CartBody {
-    async fn load(props: &PageProps) -> Result<Box<Self>> {
+impl CartBody {
+    pub async fn load(props: &PageProps) -> Result<Box<Self>> {
         let recommendation_list = match RecommendationList::load(&props).await {
             Ok(response) => response,
             Err(e) => {

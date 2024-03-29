@@ -1,5 +1,8 @@
 use super::super::Component;
-use super::{footer::Footer, header::BodyHeader, product::HotProductList, Body};
+use super::{
+    parts::{footer::Footer, header::BodyHeader},
+    product::HotProductList,
+};
 use crate::PageProps;
 use anyhow::Result;
 
@@ -9,8 +12,8 @@ pub struct HomeBody {
     pub hot_product_list: HotProductList,
 }
 
-impl Body for HomeBody {
-    async fn load(props: &PageProps) -> Result<Box<Self>> {
+impl HomeBody {
+    pub async fn load(props: &PageProps) -> Result<Box<Self>> {
         let hot_product_list = match HotProductList::load(&props).await {
             Ok(response) => response,
             Err(e) => {

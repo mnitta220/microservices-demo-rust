@@ -14,7 +14,7 @@ mod service;
 
 static REDIS_ADDR: OnceCell<String> = OnceCell::new();
 
-fn get_env() -> Result<()> {
+fn get_environment_values() -> Result<()> {
     // get REDIS_ADDR env
     let addr = match std::env::var("REDIS_ADDR") {
         Ok(addr) => addr,
@@ -40,8 +40,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    if let Err(e) = get_env() {
-        tracing::error!("failed to get env: {:?}", e);
+    if let Err(e) = get_environment_values() {
+        tracing::error!("failed to get environment values: {:?}", e);
         std::process::exit(0x0100);
     }
 

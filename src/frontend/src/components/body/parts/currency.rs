@@ -1,5 +1,4 @@
-use super::super::Component;
-use crate::{rpc::currency, PageProps};
+use crate::{components::Component, rpc::currency, PageProps};
 use anyhow::Result;
 
 pub fn currency_logo(currency: &str) -> &'static str {

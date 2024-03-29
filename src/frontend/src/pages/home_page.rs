@@ -1,7 +1,4 @@
-use crate::{
-    components::body::{home::HomeBody, Body},
-    pages::page::Page,
-};
+use crate::{components::body::home::HomeBody, pages::page::Page};
 use anyhow::Result;
 
 /// Component for rendering the homepage

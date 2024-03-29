@@ -1,5 +1,5 @@
 use super::super::Component;
-use super::{footer::Footer, header::BodyHeader, recommendation::RecommendationList};
+use super::parts::{footer::Footer, header::BodyHeader, recommendation::RecommendationList};
 use crate::{
     rpc::hipstershop::{Money, OrderResult},
     PageProps,

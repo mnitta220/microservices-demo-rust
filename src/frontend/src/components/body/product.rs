@@ -1,5 +1,5 @@
 use super::super::Component;
-use super::{ad, footer::Footer, header::BodyHeader, recommendation::RecommendationList, Body};
+use super::parts::{ad, footer::Footer, header::BodyHeader, recommendation::RecommendationList};
 use crate::{
     rpc::{hipstershop::Product, product},
     PageProps,
@@ -83,8 +83,8 @@ impl Component for HotProductItem {
     }
 }
 
-impl Body for ProductBody {
-    async fn load(props: &PageProps) -> Result<Box<Self>> {
+impl ProductBody {
+    pub async fn load(props: &PageProps) -> Result<Box<Self>> {
         let product = match product::get_product(&props).await {
             Ok(response) => response,
             Err(e) => {
