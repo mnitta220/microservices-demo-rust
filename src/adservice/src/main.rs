@@ -14,6 +14,40 @@ mod service;
 
 static AD_MAP: OnceCell<Vec<Ad>> = OnceCell::new();
 
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "adservice=trace".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
+    if let Err(e) = load_map() {
+        tracing::error!("failed to load ad map: {:?}", e);
+        std::process::exit(0x0100);
+    }
+
+    let (mut health_reporter, health_service) = tonic_health::server::health_reporter();
+    health_reporter
+        .set_serving::<AdServiceServer<service::AdServiceImpl>>()
+        .await;
+
+    let addr = "0.0.0.0:9555".parse().unwrap();
+    let ad_service = service::AdServiceImpl::default();
+
+    tracing::debug!("HealthServer + AdServiceServer listening on {}", addr);
+
+    Server::builder()
+        .add_service(health_service)
+        .add_service(AdServiceServer::new(ad_service))
+        .serve(addr)
+        .await?;
+
+    Ok(())
+}
+
 fn load_map() -> Result<()> {
     let map = vec![
         Ad {
@@ -49,40 +83,6 @@ fn load_map() -> Result<()> {
     if let Err(_) = AD_MAP.set(map) {
         return Err(anyhow::anyhow!("Failed to set AD_SERVICE_ADDR"));
     }
-
-    Ok(())
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "adservice=trace".into()),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .init();
-
-    if let Err(e) = load_map() {
-        tracing::error!("failed to load ad map: {:?}", e);
-        std::process::exit(0x0100);
-    }
-
-    let (mut health_reporter, health_service) = tonic_health::server::health_reporter();
-    health_reporter
-        .set_serving::<AdServiceServer<service::AdServiceImpl>>()
-        .await;
-
-    let addr = "0.0.0.0:9555".parse().unwrap();
-    let ad_service = service::AdServiceImpl::default();
-
-    tracing::debug!("HealthServer + AdServiceServer listening on {}", addr);
-
-    Server::builder()
-        .add_service(health_service)
-        .add_service(AdServiceServer::new(ad_service))
-        .serve(addr)
-        .await?;
 
     Ok(())
 }

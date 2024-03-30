@@ -1,6 +1,7 @@
 use super::{
     currency, CartItem, CurrencyConversionRequest, GetQuoteRequest, Money, ShippingServiceClient,
 };
+use crate::model;
 use anyhow::Result;
 
 async fn get_shipping_service_client() -> Result<ShippingServiceClient<tonic::transport::Channel>> {
@@ -18,7 +19,7 @@ async fn get_shipping_service_client() -> Result<ShippingServiceClient<tonic::tr
 }
 
 pub async fn get_quote(
-    items: &Vec<crate::components::body::cart::CartItem>,
+    items: &Vec<model::cart::CartItem>,
     user_currency: &String,
 ) -> Result<Money> {
     let mut shipping_service_client = get_shipping_service_client().await?;

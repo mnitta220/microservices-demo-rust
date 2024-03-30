@@ -2,7 +2,7 @@ use super::{
     currency, hipstershop::Money, product, shipping, AddItemRequest, CartServiceClient,
     CurrencyConversionRequest, EmptyCartRequest, GetCartRequest, GetProductRequest,
 };
-use crate::components::body::cart::{CartItem, CartList};
+use crate::model::cart::{Cart, CartItem};
 use anyhow::Result;
 use tonic::transport::Channel;
 
@@ -45,7 +45,7 @@ pub async fn add_to_cart(user_id: String, product_id: String, quantity: i32) -> 
     Ok(())
 }
 
-pub async fn get_cart_list(user_id: String, currency_code: String) -> Result<CartList> {
+pub async fn get_cart(user_id: String, currency_code: String) -> Result<Cart> {
     let mut cart_service_client = get_cart_service_client().await?;
 
     let mut product_catalog_service_client = product::get_product_catalog_service_client().await?;
@@ -116,7 +116,7 @@ pub async fn get_cart_list(user_id: String, currency_code: String) -> Result<Car
     let quote = shipping::get_quote(&list, &currency_code).await?;
     total_price = sum(&total_price, &quote)?;
 
-    let cart_list = CartList {
+    let cart_list = Cart {
         items: list,
         shipping_cost: quote,
         total_price: total_price,

@@ -1,37 +1,7 @@
-use crate::{
-    components::Component,
-    rpc::{hipstershop::Product, recommendation},
-    PageProps,
-};
+use crate::{components::Component, model, PageProps};
 use anyhow::Result;
 
-pub struct RecommendationList {
-    pub items: Vec<RecommendationItem>,
-}
-
-pub struct RecommendationItem {
-    pub product: Product,
-}
-
-impl RecommendationList {
-    pub async fn load(props: &PageProps) -> Result<Self> {
-        let recommendation_list = match recommendation::get_recommendations(&props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
-        let mut items = Vec::new();
-        for product in recommendation_list {
-            items.push(RecommendationItem { product: product });
-        }
-
-        Ok(RecommendationList { items })
-    }
-}
-
-impl Component for RecommendationList {
+impl Component for model::recommendation::RecommendationList {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<section class="recommendations">"#);
         {
@@ -61,7 +31,7 @@ impl Component for RecommendationList {
     }
 }
 
-impl Component for RecommendationItem {
+impl Component for model::recommendation::RecommendationItem {
     fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<div class="col-md-3">"#);
         {

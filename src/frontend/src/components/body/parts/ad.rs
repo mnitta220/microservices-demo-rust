@@ -1,26 +1,7 @@
-use crate::{
-    components::Component,
-    rpc::{ad, hipstershop::Ad},
-    PageProps,
-};
+use crate::{components::Component, model, PageProps};
 use anyhow::Result;
 
-pub struct AdItem {
-    pub ad: Ad,
-}
-
-impl AdItem {
-    pub async fn load() -> Option<AdItem> {
-        let ad: Ad = match ad::get_ad().await {
-            Some(a) => a,
-            None => return None,
-        };
-
-        Some(AdItem { ad })
-    }
-}
-
-impl Component for AdItem {
+impl Component for model::ad::AdItem {
     fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
         buf.push_str(r#"<div class="ad">"#);
         {

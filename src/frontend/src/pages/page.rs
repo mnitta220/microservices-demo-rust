@@ -1,6 +1,6 @@
-use crate::components::{body::cart::CartList, head::Head, Component};
+use crate::components::{head::Head, Component};
+use crate::model;
 use anyhow::Result;
-use uuid::Uuid;
 
 // buffer size for outputting HTML content.
 // specify a sufficient size according to the characteristics of the system.
@@ -11,11 +11,15 @@ pub struct PageProps {
     pub request_id: String,
     pub user_currency: String,
     pub product_id: Option<String>,
-    pub cart_info: CartList,
+    pub cart: Option<model::cart::Cart>,
+    pub hot_products: Option<model::hot_product::HotProducts>,
+    pub product: Option<model::product::Product>,
+    pub recommendations: Option<model::recommendation::RecommendationList>,
+    pub ad: Option<model::ad::AdItem>,
+    pub order: Option<model::order::Order>,
 }
 
 pub struct Page {
-    pub props: PageProps,
     pub lang: Option<String>,
     pub head: Box<dyn Component + Send>,
     pub body: Option<Box<dyn Component + Send>>,
@@ -23,35 +27,18 @@ pub struct Page {
 }
 
 impl Page {
-    pub async fn generate(
-        session_id: &String,
-        currency: &String,
-        product_id: Option<String>,
-    ) -> Result<Page> {
-        let cart_info = CartList::load(session_id, currency).await?;
-
-        let props = PageProps {
-            session_id: session_id.clone(),
-            request_id: Uuid::new_v4().to_string(),
-            user_currency: currency.clone(),
-            product_id: product_id,
-            cart_info,
-        };
-
+    pub fn generate() -> Page {
         let head = Head {};
 
-        let page = Page {
-            props,
+        Page {
             lang: Some("en".to_string()),
             head: Box::new(head),
             body: None,
             buf: String::with_capacity(PAGE_BUFFER_SIZE),
-        };
-
-        Ok(page)
+        }
     }
 
-    pub fn write(&mut self) -> Result<()> {
+    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> Result<()> {
         self.buf.push_str(r#"<!DOCTYPE html>"#);
         if let Some(lang) = &self.lang {
             self.buf.push_str(r#"<html lang=""#);
@@ -61,12 +48,12 @@ impl Page {
             self.buf.push_str(r#"<html>"#);
         }
 
-        if let Err(e) = self.head.write(&self.props, &mut self.buf) {
+        if let Err(e) = self.head.write(props, &mut self.buf) {
             return Err(e);
         }
 
         if let Some(b) = &self.body {
-            if let Err(e) = b.write(&self.props, &mut self.buf) {
+            if let Err(e) = b.write(props, &mut self.buf) {
                 return Err(e);
             }
         }

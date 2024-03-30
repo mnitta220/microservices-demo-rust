@@ -2,7 +2,6 @@ use super::{
     currency, CurrencyConversionRequest, Empty, GetProductRequest, Money, Product,
     ProductCatalogServiceClient,
 };
-use crate::PageProps;
 use anyhow::Result;
 
 pub async fn get_product_catalog_service_client(
@@ -58,15 +57,7 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>> {
     Ok(list)
 }
 
-pub async fn get_product(page_props: &PageProps) -> Result<Product> {
-    let product_id = match page_props.product_id.clone() {
-        Some(id) => id,
-        None => return Err(anyhow::anyhow!("product id not specified")),
-    };
-    if product_id.len() == 0 {
-        return Err(anyhow::anyhow!("product id not specified"));
-    }
-
+pub async fn get_product(product_id: String, user_currency: String) -> Result<Product> {
     let mut product_catalog_service_client = get_product_catalog_service_client().await?;
 
     let mut currency_service_client = currency::get_currency_service_client().await?;
@@ -80,10 +71,10 @@ pub async fn get_product(page_props: &PageProps) -> Result<Product> {
         }
     };
     let price: Money;
-    if product.price_usd.as_ref().unwrap().currency_code != page_props.user_currency {
+    if product.price_usd.as_ref().unwrap().currency_code != user_currency {
         let request = CurrencyConversionRequest {
             from: product.price_usd.clone(),
-            to_code: page_props.user_currency.clone(),
+            to_code: user_currency,
         };
         price = match currency_service_client.convert(request).await {
             Ok(changed) => changed.into_inner(),

@@ -1,3 +1,4 @@
+use crate::model;
 use crate::{
     pages::{
         cart_page::CartPage, home_page::HomePage, order_page::OrderPage, product_page::ProductPage,
@@ -41,8 +42,23 @@ pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
 
     let (session_id, currency) = get_set_session(cookies);
+    let cart = model::cart::Cart::load(&session_id, &currency).await?;
+    let hot_products = model::hot_product::HotProducts::load(&currency).await?;
 
-    match HomePage::generate(&session_id, &currency).await {
+    let props = crate::pages::page::PageProps {
+        session_id: session_id,
+        request_id: Uuid::new_v4().to_string(),
+        user_currency: currency,
+        product_id: None,
+        cart: Some(cart),
+        hot_products: Some(hot_products),
+        product: None,
+        recommendations: None,
+        ad: None,
+        order: None,
+    };
+
+    match HomePage::generate(&props).await {
         Ok(r) => Ok(Html(r)),
         Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
     }
@@ -55,8 +71,26 @@ pub async fn product_handler(
     tracing::debug!("GET /product {}", id);
 
     let (session_id, currency) = get_set_session(cookies);
+    let cart = model::cart::Cart::load(&session_id, &currency).await?;
+    let product = model::product::Product::load(&id, &currency).await?;
+    let recommendations =
+        model::recommendation::RecommendationList::load(Some(id), session_id.clone()).await?;
+    let ad = model::ad::AdItem::load().await;
 
-    match ProductPage::generate(&session_id, &currency, id).await {
+    let props = crate::pages::page::PageProps {
+        session_id: session_id,
+        request_id: Uuid::new_v4().to_string(),
+        user_currency: currency,
+        product_id: None,
+        cart: Some(cart),
+        hot_products: None,
+        product: Some(product),
+        recommendations: Some(recommendations),
+        ad,
+        order: None,
+    };
+
+    match ProductPage::generate(&props).await {
         Ok(r) => Ok(Html(r)),
         Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
     }
@@ -66,8 +100,23 @@ pub async fn view_cart_handler(cookies: Cookies) -> Result<Html<String>, AppErro
     tracing::debug!("GET /cart");
 
     let (session_id, currency) = get_set_session(cookies);
+    let cart = model::cart::Cart::load(&session_id, &currency).await?;
+    let recommendations =
+        model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
 
-    let ret = match CartPage::generate(&session_id, &currency).await {
+    let props = crate::pages::page::PageProps {
+        session_id: session_id,
+        request_id: Uuid::new_v4().to_string(),
+        user_currency: currency,
+        product_id: None,
+        cart: Some(cart),
+        hot_products: None,
+        product: None,
+        recommendations: Some(recommendations),
+        ad: None,
+        order: None,
+    };
+    let ret = match CartPage::generate(&props).await {
         Ok(r) => r,
         Err(e) => {
             return Err(AppError(anyhow::anyhow!(e)));
@@ -193,33 +242,25 @@ pub async fn place_order_handler(
         }
     };
 
-    let request = rpc::hipstershop::PlaceOrderRequest {
-        user_id: session_id.clone(),
-        user_currency: currency.clone(),
-        address: Some(rpc::hipstershop::Address {
-            street_address: input.street_address,
-            city: input.city,
-            state: input.state,
-            country: input.country,
-            zip_code: input.zip_code,
-        }),
-        email: input.email,
-        credit_card: Some(rpc::hipstershop::CreditCardInfo {
-            credit_card_number: input.credit_card_number,
-            credit_card_cvv: input.credit_card_cvv,
-            credit_card_expiration_year: input.credit_card_expiration_year,
-            credit_card_expiration_month: input.credit_card_expiration_month,
-        }),
+    let cart = model::cart::Cart::load(&session_id, &currency).await?;
+    let order = model::order::Order::load(input, session_id.clone(), currency.clone()).await?;
+    let recommendations =
+        model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
+
+    let props = crate::pages::page::PageProps {
+        session_id: session_id,
+        request_id: Uuid::new_v4().to_string(),
+        user_currency: currency,
+        product_id: None,
+        cart: Some(cart),
+        hot_products: None,
+        product: None,
+        recommendations: Some(recommendations),
+        ad: None,
+        order: Some(order),
     };
 
-    let (order, total_cost) = match rpc::checkout::place_order(request, currency.clone()).await {
-        Ok(ret) => ret,
-        Err(e) => {
-            return Err(AppError(anyhow::anyhow!(e)));
-        }
-    };
-
-    match OrderPage::generate(&session_id, &currency, order, total_cost).await {
+    match OrderPage::generate(&props).await {
         Ok(r) => Ok(Html(r)),
         Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
     }

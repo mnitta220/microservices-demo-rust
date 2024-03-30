@@ -54,11 +54,13 @@ impl Component for BodyHeader {
                         buf.push_str(r#"<a href="/cart" class="cart-link">"#);
                         {
                             buf.push_str(r#"<img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />"#);
-                            let cart_size = props.cart_info.cart_size();
-                            if cart_size > 0 {
-                                buf.push_str(r#"<span class="cart-size-circle">"#);
-                                buf.push_str(&cart_size.to_string());
-                                buf.push_str(r#"</span>"#);
+                            if let Some(cart) = &props.cart {
+                                let cart_size = cart.cart_size();
+                                if cart_size > 0 {
+                                    buf.push_str(r#"<span class="cart-size-circle">"#);
+                                    buf.push_str(&cart_size.to_string());
+                                    buf.push_str(r#"</span>"#);
+                                }
                             }
                         }
                         buf.push_str(r#"</a>"#);

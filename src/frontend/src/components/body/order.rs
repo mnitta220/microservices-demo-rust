@@ -1,32 +1,15 @@
 use super::super::Component;
-use super::parts::{footer::Footer, header::BodyHeader, recommendation::RecommendationList};
-use crate::{
-    rpc::hipstershop::{Money, OrderResult},
-    PageProps,
-};
+use super::parts::{footer::Footer, header::BodyHeader};
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct OrderBody {
     pub header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub recommendation_list: RecommendationList,
-    pub order: OrderResult,
-    pub total_cost: Money,
 }
 
 impl OrderBody {
-    pub async fn load(
-        props: &PageProps,
-        order: OrderResult,
-        total_cost: Money,
-    ) -> Result<Box<Self>> {
-        let recommendation_list = match RecommendationList::load(&props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
+    pub async fn load(props: &PageProps) -> Result<Box<Self>> {
         let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
@@ -39,9 +22,6 @@ impl OrderBody {
         let body = OrderBody {
             header: Box::new(body_header),
             footer: Box::new(footer),
-            recommendation_list,
-            order,
-            total_cost,
         };
 
         Ok(Box::new(body))
@@ -50,6 +30,13 @@ impl OrderBody {
 
 impl Component for OrderBody {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+        let (order, total_cost) = match &props.order {
+            Some(o) => (&o.order, &o.total_cost),
+            None => {
+                return Err(anyhow::anyhow!("order is not set"));
+            }
+        };
+
         buf.push_str(r#"<body>"#);
         {
             self.header.write(props, buf)?;
@@ -81,7 +68,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
-                            buf.push_str(&self.order.order_id);
+                            buf.push_str(&order.order_id);
                         }
                         buf.push_str(r#"</div>"#);
                     }
@@ -95,7 +82,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
-                            buf.push_str(&self.order.shipping_tracking_id);
+                            buf.push_str(&order.shipping_tracking_id);
                         }
                         buf.push_str(r#"</div>"#);
                     }
@@ -109,7 +96,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
-                            buf.push_str(&self.total_cost.money_for_display());
+                            buf.push_str(&total_cost.money_for_display());
                         }
                         buf.push_str(r#"</div>"#);
                     }
@@ -132,7 +119,9 @@ impl Component for OrderBody {
                 }
                 buf.push_str(r#"</section>"#);
 
-                self.recommendation_list.write(props, buf)?;
+                if let Some(recommendations) = &props.recommendations {
+                    recommendations.write(props, buf)?
+                }
             }
             buf.push_str(r#"</main>"#);
             self.footer.write(props, buf)?;

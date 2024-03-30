@@ -1,46 +1,14 @@
 use super::super::Component;
-use super::parts::{ad, footer::Footer, header::BodyHeader, recommendation::RecommendationList};
-use crate::{
-    rpc::{hipstershop::Product, product},
-    PageProps,
-};
+use super::parts::{footer::Footer, header::BodyHeader};
+use crate::{model, PageProps};
 use anyhow::Result;
-
-pub struct HotProductItem {
-    pub product: Product,
-}
-
-pub struct HotProductList {
-    pub items: Vec<HotProductItem>,
-}
 
 pub struct ProductBody {
     pub body_header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub product: Product,
-    pub recommendation_list: RecommendationList,
-    pub ad: Option<ad::AdItem>,
 }
 
-impl HotProductList {
-    pub async fn load(props: &PageProps) -> Result<Self> {
-        let product_list = match product::get_product_list(&props.user_currency).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
-        let mut items = Vec::new();
-        for product in product_list {
-            items.push(HotProductItem { product: product });
-        }
-
-        Ok(HotProductList { items })
-    }
-}
-
-impl Component for HotProductList {
+impl Component for model::hot_product::HotProducts {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
         for item in &self.items {
             item.write(props, buf)?;
@@ -49,7 +17,7 @@ impl Component for HotProductList {
     }
 }
 
-impl Component for HotProductItem {
+impl Component for model::hot_product::HotProductItem {
     fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
         let money = self.product.price_usd.as_ref().unwrap();
         buf.push_str(r#"<div class="col-md-4 hot-product-card">"#);
@@ -85,22 +53,6 @@ impl Component for HotProductItem {
 
 impl ProductBody {
     pub async fn load(props: &PageProps) -> Result<Box<Self>> {
-        let product = match product::get_product(&props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
-        let recommendation_list = match RecommendationList::load(&props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
-        let ad = ad::AdItem::load().await;
-
         let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
@@ -113,9 +65,6 @@ impl ProductBody {
         let body = ProductBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
-            product,
-            recommendation_list,
-            ad,
         };
 
         Ok(Box::new(body))
@@ -124,7 +73,14 @@ impl ProductBody {
 
 impl Component for ProductBody {
     fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
-        let money = self.product.price_usd.as_ref().unwrap();
+        let product = match &props.product {
+            Some(p) => &p.product,
+            None => {
+                return Err(anyhow::anyhow!("product is not set"));
+            }
+        };
+        let money = product.price_usd.as_ref().unwrap();
+
         buf.push_str(r#"<body>"#);
         {
             self.body_header.write(props, buf)?;
@@ -138,7 +94,7 @@ impl Component for ProductBody {
                         buf.push_str(r#"<div class="col-md-6">"#);
                         {
                             buf.push_str(r#"<img class="product-image" alt src=""#);
-                            buf.push_str(&self.product.picture);
+                            buf.push_str(&product.picture);
                             buf.push_str(r#"" />"#);
                         }
                         buf.push_str(r#"</div>"#);
@@ -148,13 +104,13 @@ impl Component for ProductBody {
                             buf.push_str(r#"<div class="product-wrapper">"#);
                             {
                                 buf.push_str(r#"<h2>"#);
-                                buf.push_str(&self.product.name);
+                                buf.push_str(&product.name);
                                 buf.push_str(r#"</h2>"#);
                                 buf.push_str(r#"<p class="product-price">"#);
                                 buf.push_str(&money.money_for_display());
                                 buf.push_str(r#"</p>"#);
                                 buf.push_str(r#"<p>"#);
-                                buf.push_str(&self.product.description);
+                                buf.push_str(&product.description);
                                 buf.push_str(r#"</p>"#);
 
                                 buf.push_str(r#"<form method="POST" action="/cart">"#);
@@ -162,7 +118,7 @@ impl Component for ProductBody {
                                     buf.push_str(
                                         r#"<input type="hidden" name="product_id" value=""#,
                                     );
-                                    buf.push_str(&self.product.id);
+                                    buf.push_str(&product.id);
                                     buf.push_str(r#"" />"#);
 
                                     buf.push_str(r#"<div class="product-quantity-dropdown">"#);
@@ -192,13 +148,15 @@ impl Component for ProductBody {
                 }
                 buf.push_str(r#"</div>"#);
 
-                buf.push_str(r#"<div>"#);
-                {
-                    self.recommendation_list.write(props, buf)?
+                if let Some(recommendations) = &props.recommendations {
+                    buf.push_str(r#"<div>"#);
+                    {
+                        recommendations.write(props, buf)?
+                    }
+                    buf.push_str(r#"</div>"#);
                 }
-                buf.push_str(r#"</div>"#);
 
-                if let Some(a) = &self.ad {
+                if let Some(a) = &props.ad {
                     a.write(props, buf)?;
                 }
             }

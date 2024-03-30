@@ -17,6 +17,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod components;
 mod handlers;
+mod model;
 mod pages;
 mod rpc;
 
@@ -30,6 +31,56 @@ static SHIPPING_SERVICE_ADDR: OnceCell<String> = OnceCell::new();
 static PLATFORM_NAME: OnceCell<String> = OnceCell::new();
 static PLATFORM_CSS: OnceCell<String> = OnceCell::new();
 static HOST_NAME: OnceCell<String> = OnceCell::new();
+
+#[tokio::main]
+async fn main() {
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "frontend=trace".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
+    if let Err(e) = get_environment_values() {
+        tracing::error!("failed to get environment values: {:?}", e);
+        std::process::exit(0x0100);
+    }
+
+    let app = Router::new()
+        .route("/", get(handlers::home_handler))
+        .route("/product/:id", get(handlers::product_handler))
+        .route("/setCurrency", post(handlers::set_currency_handler))
+        .route(
+            "/cart",
+            get(handlers::view_cart_handler).post(handlers::add_to_cart_handler),
+        )
+        .route("/cart/empty", post(handlers::empty_cart_handler))
+        .route("/cart/checkout", post(handlers::place_order_handler))
+        .route("/_healthz", get(handlers::health_handler))
+        .nest_service("/static", ServeDir::new("static"))
+        .layer(
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|error: BoxError| async move {
+                    if error.is::<tower::timeout::error::Elapsed>() {
+                        Ok(StatusCode::REQUEST_TIMEOUT)
+                    } else {
+                        Err((
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            format!("Unhandled internal error: {error}"),
+                        ))
+                    }
+                }))
+                .layer(CookieManagerLayer::new())
+                .timeout(Duration::from_secs(10))
+                .layer(TraceLayer::new_for_http())
+                .into_inner(),
+        );
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    tracing::debug!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
+}
 
 fn get_environment_values() -> Result<()> {
     // get AD_SERVICE_ADDR env
@@ -154,56 +205,6 @@ fn get_environment_values() -> Result<()> {
     }
 
     Ok(())
-}
-
-#[tokio::main]
-async fn main() {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "frontend=trace".into()),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .init();
-
-    if let Err(e) = get_environment_values() {
-        tracing::error!("failed to get environment values: {:?}", e);
-        std::process::exit(0x0100);
-    }
-
-    let app = Router::new()
-        .route("/", get(handlers::home_handler))
-        .route("/product/:id", get(handlers::product_handler))
-        .route("/setCurrency", post(handlers::set_currency_handler))
-        .route(
-            "/cart",
-            get(handlers::view_cart_handler).post(handlers::add_to_cart_handler),
-        )
-        .route("/cart/empty", post(handlers::empty_cart_handler))
-        .route("/cart/checkout", post(handlers::place_order_handler))
-        .route("/_healthz", get(handlers::health_handler))
-        .nest_service("/static", ServeDir::new("static"))
-        .layer(
-            ServiceBuilder::new()
-                .layer(HandleErrorLayer::new(|error: BoxError| async move {
-                    if error.is::<tower::timeout::error::Elapsed>() {
-                        Ok(StatusCode::REQUEST_TIMEOUT)
-                    } else {
-                        Err((
-                            StatusCode::INTERNAL_SERVER_ERROR,
-                            format!("Unhandled internal error: {error}"),
-                        ))
-                    }
-                }))
-                .layer(CookieManagerLayer::new())
-                .timeout(Duration::from_secs(10))
-                .layer(TraceLayer::new_for_http())
-                .into_inner(),
-        );
-
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
-    tracing::debug!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
 }
 
 // Make our own error that wraps `anyhow::Error`.

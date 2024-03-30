@@ -14,22 +14,6 @@ mod service;
 
 static REDIS_ADDR: OnceCell<String> = OnceCell::new();
 
-fn get_environment_values() -> Result<()> {
-    // get REDIS_ADDR env
-    let addr = match std::env::var("REDIS_ADDR") {
-        Ok(addr) => addr,
-        Err(_) => {
-            return Err(anyhow::anyhow!("Failed to get REDIS_ADDR"));
-        }
-    };
-    // set REDIS_ADDR static
-    if let Err(_) = REDIS_ADDR.set(addr) {
-        return Err(anyhow::anyhow!("Failed to set REDIS_ADDR"));
-    }
-
-    Ok(())
-}
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::registry()
@@ -60,6 +44,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .add_service(CartServiceServer::new(cart_service))
         .serve(addr)
         .await?;
+
+    Ok(())
+}
+
+fn get_environment_values() -> Result<()> {
+    // get REDIS_ADDR env
+    let addr = match std::env::var("REDIS_ADDR") {
+        Ok(addr) => addr,
+        Err(_) => {
+            return Err(anyhow::anyhow!("Failed to get REDIS_ADDR"));
+        }
+    };
+    // set REDIS_ADDR static
+    if let Err(_) = REDIS_ADDR.set(addr) {
+        return Err(anyhow::anyhow!("Failed to set REDIS_ADDR"));
+    }
 
     Ok(())
 }

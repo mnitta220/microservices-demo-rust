@@ -1,26 +1,15 @@
 use super::super::Component;
-use super::{
-    parts::{footer::Footer, header::BodyHeader},
-    product::HotProductList,
-};
+use super::parts::{footer::Footer, header::BodyHeader};
 use crate::PageProps;
 use anyhow::Result;
 
 pub struct HomeBody {
     pub body_header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-    pub hot_product_list: HotProductList,
 }
 
 impl HomeBody {
     pub async fn load(props: &PageProps) -> Result<Box<Self>> {
-        let hot_product_list = match HotProductList::load(&props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
         let body_header = match BodyHeader::load(props).await {
             Ok(response) => response,
             Err(e) => {
@@ -33,7 +22,6 @@ impl HomeBody {
         let body = HomeBody {
             body_header: Box::new(body_header),
             footer: Box::new(footer),
-            hot_product_list,
         };
 
         Ok(Box::new(body))
@@ -66,7 +54,9 @@ impl Component for HomeBody {
                                 }
                                 buf.push_str(r#"</div>"#);
 
-                                self.hot_product_list.write(props, buf)?;
+                                if let Some(hot_products) = &props.hot_products {
+                                    hot_products.write(props, buf)?;
+                                }
                             }
                             buf.push_str(r#"</div>"#);
 

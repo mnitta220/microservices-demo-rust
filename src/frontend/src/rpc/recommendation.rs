@@ -1,7 +1,6 @@
 use super::{
     product, GetProductRequest, ListRecommendationsRequest, Product, RecommendationServiceClient,
 };
-use crate::PageProps;
 use anyhow::Result;
 use tonic::transport::Channel;
 
@@ -23,18 +22,21 @@ async fn get_recommendation_service_client() -> Result<RecommendationServiceClie
     Ok(recommendation_service_client)
 }
 
-pub async fn get_recommendations(page_props: &PageProps) -> Result<Vec<Product>> {
+pub async fn get_recommendations(
+    product_id: Option<String>,
+    session_id: String,
+) -> Result<Vec<Product>> {
     let mut list: Vec<Product> = Vec::new();
     let mut recommendation_service_client = get_recommendation_service_client().await?;
 
     let mut product_catalog_service_client = product::get_product_catalog_service_client().await?;
 
-    let product_ids = match &page_props.product_id {
-        Some(p) => vec![(*p).clone()],
+    let product_ids = match product_id {
+        Some(p) => vec![p],
         None => vec![],
     };
     let request = ListRecommendationsRequest {
-        user_id: page_props.session_id.clone(),
+        user_id: session_id,
         product_ids,
     };
 
