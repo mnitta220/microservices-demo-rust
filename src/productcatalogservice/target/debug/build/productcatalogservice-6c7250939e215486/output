@@ -1,2 +1,0 @@
-cargo:rerun-if-changed=./protos/demo.proto
-cargo:rerun-if-changed=./protos
