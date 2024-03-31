@@ -10,7 +10,7 @@ pub struct RecommendationItem {
 }
 
 impl RecommendationList {
-    pub async fn load(product_id: Option<String>, session_id: String) -> Result<Self> {
+    pub async fn load(product_id: Option<String>, session_id: &String) -> Result<Self> {
         let recommendation_list =
             match recommendation::get_recommendations(product_id, session_id).await {
                 Ok(response) => response,

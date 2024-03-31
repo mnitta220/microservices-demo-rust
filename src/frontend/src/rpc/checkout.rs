@@ -21,7 +21,7 @@ async fn get_checkout_service_client() -> Result<CheckoutServiceClient<Channel>>
 
 pub async fn place_order(
     request: PlaceOrderRequest,
-    currency_code: String,
+    currency_code: &String,
 ) -> Result<(OrderResult, Money)> {
     let mut checkout_service_client = get_checkout_service_client().await?;
 
@@ -52,7 +52,7 @@ pub async fn place_order(
     for item in &order.items {
         if let Some(m) = &item.cost {
             let mult_price: Money;
-            if m.currency_code != currency_code {
+            if m.currency_code != *currency_code {
                 let request = CurrencyConversionRequest {
                     from: Some(m.clone()),
                     to_code: currency_code.clone(),
@@ -75,7 +75,7 @@ pub async fn place_order(
     }
 
     if let Some(m) = &order.shipping_cost {
-        if m.currency_code != currency_code {
+        if m.currency_code != *currency_code {
             let request = CurrencyConversionRequest {
                 from: Some(m.clone()),
                 to_code: currency_code.clone(),

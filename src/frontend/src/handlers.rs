@@ -1,11 +1,10 @@
-use crate::model;
 use crate::{
     pages::{
-        cart_page::CartPage, home_page::HomePage, order_page::OrderPage, page,
-        product_page::ProductPage,
+        cart_page::CartPage, home_page::HomePage, order_page::OrderPage, product_page::ProductPage,
     },
     rpc, AppError,
 };
+use anyhow::Result;
 use axum::{
     extract::{Form, Path},
     http::StatusCode,
@@ -18,42 +17,44 @@ use uuid::Uuid;
 const COOKIE_SESSION_ID: &str = "shop_session-id";
 const COOKIE_CURRENCY: &str = "shop_currency";
 
-fn get_set_session(cookies: Cookies) -> (String, String) {
+fn session_info(cookies: Cookies, should_exist: bool) -> Result<(String, String)> {
     let session_id = match cookies.get(COOKIE_SESSION_ID) {
         Some(s) => s.value().to_string(),
         None => {
-            let id = Uuid::new_v4().to_string();
-            cookies.add(Cookie::new(COOKIE_SESSION_ID, id.clone()));
-            id
+            if should_exist {
+                return Err(anyhow::anyhow!("failed to get session"));
+            } else {
+                let id = Uuid::new_v4().to_string();
+                cookies.add(Cookie::new(COOKIE_SESSION_ID, id.clone()));
+                id
+            }
         }
     };
 
     let currency = match cookies.get(COOKIE_CURRENCY) {
         Some(s) => s.value().to_string(),
         None => {
-            cookies.add(Cookie::new(COOKIE_CURRENCY, "USD".to_string()));
-            "USD".to_string()
+            if should_exist {
+                return Err(anyhow::anyhow!("failed to get currency"));
+            } else {
+                cookies.add(Cookie::new(COOKIE_CURRENCY, "USD".to_string()));
+                "USD".to_string()
+            }
         }
     };
 
-    (session_id, currency)
+    Ok((session_id, currency))
 }
 
 pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
 
-    let (session_id, currency) = get_set_session(cookies);
-    let cart = model::cart::Cart::load(&session_id, &currency).await?;
-    let hot_products = model::hot_product::HotProducts::load(&currency).await?;
+    let (session_id, currency) = session_info(cookies, false)?;
 
-    let mut props = page::PageProps::new(session_id, currency);
-    props.cart = Some(cart);
-    props.hot_products = Some(hot_products);
+    let mut page = HomePage::new(session_id, currency).await?;
+    let buf = page.write()?;
 
-    match HomePage::generate(&props).await {
-        Ok(r) => Ok(Html(r)),
-        Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
-    }
+    Ok(Html(buf))
 }
 
 pub async fn product_handler(
@@ -62,45 +63,23 @@ pub async fn product_handler(
 ) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /product {}", id);
 
-    let (session_id, currency) = get_set_session(cookies);
-    let cart = model::cart::Cart::load(&session_id, &currency).await?;
-    let product = model::product::Product::load(&id, &currency).await?;
-    let recommendations =
-        model::recommendation::RecommendationList::load(Some(id), session_id.clone()).await?;
-    let ad = model::ad::AdItem::load().await;
+    let (session_id, currency) = session_info(cookies, false)?;
 
-    let mut props = page::PageProps::new(session_id, currency);
-    props.cart = Some(cart);
-    props.product = Some(product);
-    props.recommendations = Some(recommendations);
-    props.ad = ad;
+    let mut page = ProductPage::new(session_id, currency, id).await?;
+    let buf = page.write()?;
 
-    match ProductPage::generate(&props).await {
-        Ok(r) => Ok(Html(r)),
-        Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
-    }
+    Ok(Html(buf))
 }
 
 pub async fn view_cart_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /cart");
 
-    let (session_id, currency) = get_set_session(cookies);
-    let cart = model::cart::Cart::load(&session_id, &currency).await?;
-    let recommendations =
-        model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
+    let (session_id, currency) = session_info(cookies, false)?;
 
-    let mut props = page::PageProps::new(session_id, currency);
-    props.cart = Some(cart);
-    props.recommendations = Some(recommendations);
+    let mut page = CartPage::new(session_id, currency).await?;
+    let buf = page.write()?;
 
-    let ret = match CartPage::generate(&props).await {
-        Ok(r) => r,
-        Err(e) => {
-            return Err(AppError(anyhow::anyhow!(e)));
-        }
-    };
-
-    Ok(Html(ret))
+    Ok(Html(buf))
 }
 
 #[derive(Deserialize, Debug)]
@@ -205,34 +184,12 @@ pub async fn place_order_handler(
         input.credit_card_cvv,
     );
 
-    let session_id = match cookies.get(COOKIE_SESSION_ID) {
-        Some(s) => s.value().to_string(),
-        None => {
-            return Err(AppError(anyhow::anyhow!("failed to get session")));
-        }
-    };
+    let (session_id, currency) = session_info(cookies, true)?;
 
-    let currency = match cookies.get(COOKIE_CURRENCY) {
-        Some(s) => s.value().to_string(),
-        None => {
-            return Err(AppError(anyhow::anyhow!("failed to get currency")));
-        }
-    };
+    let mut page = OrderPage::new(session_id, currency, input).await?;
+    let buf = page.write()?;
 
-    let order = model::order::Order::load(input, session_id.clone(), currency.clone()).await?;
-    let cart = model::cart::Cart::load(&session_id, &currency).await?;
-    let recommendations =
-        model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
-
-    let mut props = page::PageProps::new(session_id, currency);
-    props.cart = Some(cart);
-    props.order = Some(order);
-    props.recommendations = Some(recommendations);
-
-    match OrderPage::generate(&props).await {
-        Ok(r) => Ok(Html(r)),
-        Err(e) => Err(AppError(anyhow::anyhow!(e.to_string()))),
-    }
+    Ok(Html(buf))
 }
 
 pub async fn health_handler() -> &'static str {

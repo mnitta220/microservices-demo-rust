@@ -7,16 +7,9 @@ pub struct BodyHeader {
 }
 
 impl BodyHeader {
-    pub async fn load(props: &PageProps) -> Result<Self> {
-        let currency_form = match CurrencyForm::load(props).await {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
+    pub fn load() -> Result<Self> {
         let body_header = BodyHeader {
-            currency_form: Box::new(currency_form),
+            currency_form: Box::new(CurrencyForm {}),
         };
 
         Ok(body_header)

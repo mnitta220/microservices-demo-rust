@@ -9,8 +9,8 @@ pub struct ProductBody {
 }
 
 impl ProductBody {
-    pub async fn load(props: &PageProps) -> Result<Box<Self>> {
-        let body_header = match BodyHeader::load(props).await {
+    pub fn load() -> Result<Box<Self>> {
+        let body_header = match BodyHeader::load() {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));

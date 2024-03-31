@@ -1,17 +1,31 @@
-use crate::{components::body::home::HomeBody, pages::page::Page};
+use crate::model;
+use crate::{components::body::home::HomeBody, pages::page};
 use anyhow::Result;
 
 /// Component for rendering the homepage
-pub struct HomePage {}
+pub struct HomePage {
+    pub props: page::PageProps,
+    pub page: page::Page,
+}
 
 impl HomePage {
-    /// Output the contents of the HTML page to a String.
-    pub async fn generate(props: &crate::pages::page::PageProps) -> Result<String> {
+    pub async fn new(session_id: String, currency: String) -> Result<Self> {
+        let mut props = page::PageProps::new(&session_id, &currency);
+        // fetch currency codes
+        let currencies = model::currency::SupportedCurrencies::load().await?;
+        props.currency_codes = Some(currencies.currency_codes);
+        // fetch cart info
+        let cart = model::cart::Cart::load(&session_id, &currency).await?;
+        props.cart = Some(cart);
+        // fetch hot product info
+        let hot_products = model::hot_product::HotProducts::load(&currency).await?;
+        props.hot_products = Some(hot_products);
+
         // Construct the components of the HTML page.
-        let mut page = Page::new();
+        let mut page = page::Page::new();
 
         // Construct the components of the HTML <body> tag.
-        let body = match HomeBody::load(props).await {
+        let body = match HomeBody::load() {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e.to_string()));
@@ -20,11 +34,10 @@ impl HomePage {
 
         page.body = Some(body);
 
-        // Output the contents of the HTML page to a buffer.
-        if let Err(e) = page.write(props) {
-            return Err(anyhow::anyhow!(e.to_string()));
-        }
+        Ok(HomePage { props, page })
+    }
 
-        Ok(page.buf)
+    pub fn write(&mut self) -> Result<String> {
+        self.page.write(&self.props)
     }
 }

@@ -11,6 +11,7 @@ pub struct PageProps {
     pub session_id: String,
     pub request_id: String,
     pub user_currency: String,
+    pub currency_codes: Option<Vec<String>>,
     pub product_id: Option<String>,
     pub cart: Option<model::cart::Cart>,
     pub hot_products: Option<model::hot_product::HotProducts>,
@@ -21,11 +22,12 @@ pub struct PageProps {
 }
 
 impl PageProps {
-    pub fn new(session_id: String, user_currency: String) -> Self {
+    pub fn new(session_id: &String, user_currency: &String) -> Self {
         PageProps {
-            session_id,
+            session_id: session_id.clone(),
             request_id: Uuid::new_v4().to_string(),
-            user_currency,
+            user_currency: user_currency.clone(),
+            currency_codes: None,
             product_id: None,
             cart: None,
             hot_products: None,
@@ -40,36 +42,36 @@ impl PageProps {
 pub struct Page {
     pub head: Box<dyn Component + Send>,
     pub body: Option<Box<dyn Component + Send>>,
-    pub buf: String,
 }
 
 impl Page {
     pub fn new() -> Page {
-        let head = Head {};
-
         Page {
-            head: Box::new(head),
+            head: Box::new(Head {}),
             body: None,
-            buf: String::with_capacity(PAGE_BUFFER_SIZE),
         }
     }
 
-    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> Result<()> {
-        self.buf.push_str(r#"<!DOCTYPE html>"#);
-        self.buf.push_str(r#"<html lang="en">"#);
+    // output HTML content to buffer.
+    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> Result<String> {
+        // buffer for outputting HTML content.
+        let mut buf = String::with_capacity(PAGE_BUFFER_SIZE);
+
+        buf.push_str(r#"<!DOCTYPE html>"#);
+        buf.push_str(r#"<html lang="en">"#);
         {
-            if let Err(e) = self.head.write(props, &mut self.buf) {
+            if let Err(e) = self.head.write(props, &mut buf) {
                 return Err(e);
             }
 
             if let Some(b) = &self.body {
-                if let Err(e) = b.write(props, &mut self.buf) {
+                if let Err(e) = b.write(props, &mut buf) {
                     return Err(e);
                 }
             }
         }
-        self.buf.push_str(r#"</html>"#);
+        buf.push_str(r#"</html>"#);
 
-        Ok(())
+        Ok(buf)
     }
 }

@@ -7,10 +7,10 @@ pub struct Order {
 }
 
 impl Order {
-    pub async fn load(
+    pub async fn place_order(
         input: crate::handlers::PlaceOrderInput,
-        session_id: String,
-        currency: String,
+        session_id: &String,
+        currency: &String,
     ) -> Result<Self> {
         let request = hipstershop::PlaceOrderRequest {
             user_id: session_id.clone(),
@@ -31,7 +31,7 @@ impl Order {
             }),
         };
 
-        let (order, total_cost) = checkout::place_order(request, currency.clone()).await?;
+        let (order, total_cost) = checkout::place_order(request, currency).await?;
 
         Ok(Order { order, total_cost })
     }

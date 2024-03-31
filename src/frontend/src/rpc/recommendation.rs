@@ -24,7 +24,7 @@ async fn get_recommendation_service_client() -> Result<RecommendationServiceClie
 
 pub async fn get_recommendations(
     product_id: Option<String>,
-    session_id: String,
+    session_id: &String,
 ) -> Result<Vec<Product>> {
     let mut list: Vec<Product> = Vec::new();
     let mut recommendation_service_client = get_recommendation_service_client().await?;
@@ -36,7 +36,7 @@ pub async fn get_recommendations(
         None => vec![],
     };
     let request = ListRecommendationsRequest {
-        user_id: session_id,
+        user_id: session_id.clone(),
         product_ids,
     };
 
