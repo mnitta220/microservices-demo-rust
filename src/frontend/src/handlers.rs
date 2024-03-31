@@ -1,7 +1,8 @@
 use crate::model;
 use crate::{
     pages::{
-        cart_page::CartPage, home_page::HomePage, order_page::OrderPage, product_page::ProductPage,
+        cart_page::CartPage, home_page::HomePage, order_page::OrderPage, page,
+        product_page::ProductPage,
     },
     rpc, AppError,
 };
@@ -45,18 +46,9 @@ pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
     let cart = model::cart::Cart::load(&session_id, &currency).await?;
     let hot_products = model::hot_product::HotProducts::load(&currency).await?;
 
-    let props = crate::pages::page::PageProps {
-        session_id: session_id,
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: None,
-        cart: Some(cart),
-        hot_products: Some(hot_products),
-        product: None,
-        recommendations: None,
-        ad: None,
-        order: None,
-    };
+    let mut props = page::PageProps::new(session_id, currency);
+    props.cart = Some(cart);
+    props.hot_products = Some(hot_products);
 
     match HomePage::generate(&props).await {
         Ok(r) => Ok(Html(r)),
@@ -77,18 +69,11 @@ pub async fn product_handler(
         model::recommendation::RecommendationList::load(Some(id), session_id.clone()).await?;
     let ad = model::ad::AdItem::load().await;
 
-    let props = crate::pages::page::PageProps {
-        session_id: session_id,
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: None,
-        cart: Some(cart),
-        hot_products: None,
-        product: Some(product),
-        recommendations: Some(recommendations),
-        ad,
-        order: None,
-    };
+    let mut props = page::PageProps::new(session_id, currency);
+    props.cart = Some(cart);
+    props.product = Some(product);
+    props.recommendations = Some(recommendations);
+    props.ad = ad;
 
     match ProductPage::generate(&props).await {
         Ok(r) => Ok(Html(r)),
@@ -104,18 +89,10 @@ pub async fn view_cart_handler(cookies: Cookies) -> Result<Html<String>, AppErro
     let recommendations =
         model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
 
-    let props = crate::pages::page::PageProps {
-        session_id: session_id,
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: None,
-        cart: Some(cart),
-        hot_products: None,
-        product: None,
-        recommendations: Some(recommendations),
-        ad: None,
-        order: None,
-    };
+    let mut props = page::PageProps::new(session_id, currency);
+    props.cart = Some(cart);
+    props.recommendations = Some(recommendations);
+
     let ret = match CartPage::generate(&props).await {
         Ok(r) => r,
         Err(e) => {
@@ -242,23 +219,15 @@ pub async fn place_order_handler(
         }
     };
 
-    let cart = model::cart::Cart::load(&session_id, &currency).await?;
     let order = model::order::Order::load(input, session_id.clone(), currency.clone()).await?;
+    let cart = model::cart::Cart::load(&session_id, &currency).await?;
     let recommendations =
         model::recommendation::RecommendationList::load(None, session_id.clone()).await?;
 
-    let props = crate::pages::page::PageProps {
-        session_id: session_id,
-        request_id: Uuid::new_v4().to_string(),
-        user_currency: currency,
-        product_id: None,
-        cart: Some(cart),
-        hot_products: None,
-        product: None,
-        recommendations: Some(recommendations),
-        ad: None,
-        order: Some(order),
-    };
+    let mut props = page::PageProps::new(session_id, currency);
+    props.cart = Some(cart);
+    props.order = Some(order);
+    props.recommendations = Some(recommendations);
 
     match OrderPage::generate(&props).await {
         Ok(r) => Ok(Html(r)),

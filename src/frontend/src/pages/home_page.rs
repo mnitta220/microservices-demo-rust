@@ -8,7 +8,7 @@ impl HomePage {
     /// Output the contents of the HTML page to a String.
     pub async fn generate(props: &crate::pages::page::PageProps) -> Result<String> {
         // Construct the components of the HTML page.
-        let mut page = Page::generate();
+        let mut page = Page::new();
 
         // Construct the components of the HTML <body> tag.
         let body = match HomeBody::load(props).await {

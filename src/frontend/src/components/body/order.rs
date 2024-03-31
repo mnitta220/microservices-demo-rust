@@ -52,6 +52,7 @@ impl Component for OrderBody {
                             buf.push_str(r#"<h3>Your order is complete!</h3>"#);
                         }
                         buf.push_str(r#"</div>"#);
+
                         buf.push_str(r#"<div class="col-12 text-center">"#);
                         {
                             buf.push_str(r#"<p>We've sent you a confirmation email.</p>"#);
@@ -59,6 +60,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                     }
                     buf.push_str(r#"</div>"#);
+
                     buf.push_str(r#"<div class="row border-bottom-solid padding-y-24">"#);
                     {
                         buf.push_str(r#"<div class="col-6 pl-md-0">"#);
@@ -66,6 +68,7 @@ impl Component for OrderBody {
                             buf.push_str(r#"Confirmation #"#);
                         }
                         buf.push_str(r#"</div>"#);
+
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
                             buf.push_str(&order.order_id);
@@ -73,6 +76,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                     }
                     buf.push_str(r#"</div>"#);
+
                     buf.push_str(r#"<div class="row border-bottom-solid padding-y-24">"#);
                     {
                         buf.push_str(r#"<div class="col-6 pl-md-0">"#);
@@ -80,6 +84,7 @@ impl Component for OrderBody {
                             buf.push_str(r#"Tracking #"#);
                         }
                         buf.push_str(r#"</div>"#);
+
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
                             buf.push_str(&order.shipping_tracking_id);
@@ -87,6 +92,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                     }
                     buf.push_str(r#"</div>"#);
+
                     buf.push_str(r#"<div class="row padding-y-24">"#);
                     {
                         buf.push_str(r#"<div class="col-6 pl-md-0">"#);
@@ -94,6 +100,7 @@ impl Component for OrderBody {
                             buf.push_str(r#"Total Paid"#);
                         }
                         buf.push_str(r#"</div>"#);
+
                         buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
                         {
                             buf.push_str(&total_cost.money_for_display());
@@ -101,6 +108,7 @@ impl Component for OrderBody {
                         buf.push_str(r#"</div>"#);
                     }
                     buf.push_str(r#"</div>"#);
+
                     buf.push_str(r#"<div class="row">"#);
                     {
                         buf.push_str(r#"<div class="col-12 text-center">"#);
@@ -124,6 +132,7 @@ impl Component for OrderBody {
                 }
             }
             buf.push_str(r#"</main>"#);
+
             self.footer.write(props, buf)?;
         }
         buf.push_str(r#"</body>"#);

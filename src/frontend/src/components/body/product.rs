@@ -1,54 +1,11 @@
 use super::super::Component;
 use super::parts::{footer::Footer, header::BodyHeader};
-use crate::{model, PageProps};
+use crate::PageProps;
 use anyhow::Result;
 
 pub struct ProductBody {
     pub body_header: Box<dyn Component + Send>,
     pub footer: Box<dyn Component + Send>,
-}
-
-impl Component for model::hot_product::HotProducts {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
-        for item in &self.items {
-            item.write(props, buf)?;
-        }
-        Ok(())
-    }
-}
-
-impl Component for model::hot_product::HotProductItem {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
-        let money = self.product.price_usd.as_ref().unwrap();
-        buf.push_str(r#"<div class="col-md-4 hot-product-card">"#);
-        {
-            buf.push_str(r#"<a href="/product/"#);
-            buf.push_str(&self.product.id);
-            buf.push_str(r#"">"#);
-            {
-                buf.push_str(r#"<img alt="" src=""#);
-                buf.push_str(&self.product.picture);
-                buf.push_str(r#"">"#);
-                buf.push_str(r#"<div class="hot-product-card-img-overlay"></div>"#);
-            }
-            buf.push_str(r#"</a>"#);
-
-            buf.push_str(r#"<div>"#);
-            {
-                buf.push_str(r#"<div class="hot-product-card-name">"#);
-                buf.push_str(&self.product.name);
-                buf.push_str(r#"</div>"#);
-
-                buf.push_str(r#"<div class="hot-product-card-price">"#);
-                buf.push_str(&money.money_for_display());
-                buf.push_str(r#"</div>"#);
-            }
-            buf.push_str(r#"</div>"#);
-        }
-        buf.push_str(r#"</div>"#);
-
-        Ok(())
-    }
 }
 
 impl ProductBody {
@@ -106,9 +63,11 @@ impl Component for ProductBody {
                                 buf.push_str(r#"<h2>"#);
                                 buf.push_str(&product.name);
                                 buf.push_str(r#"</h2>"#);
+
                                 buf.push_str(r#"<p class="product-price">"#);
                                 buf.push_str(&money.money_for_display());
                                 buf.push_str(r#"</p>"#);
+
                                 buf.push_str(r#"<p>"#);
                                 buf.push_str(&product.description);
                                 buf.push_str(r#"</p>"#);
@@ -136,6 +95,7 @@ impl Component for ProductBody {
                                         buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt>"#);
                                     }
                                     buf.push_str(r#"</div>"#);
+
                                     buf.push_str(r#"<button type="submit" class="cymbal-button-primary">Add To Cart</button>"#);
                                 }
                                 buf.push_str(r#"</form>"#);
@@ -156,11 +116,12 @@ impl Component for ProductBody {
                     buf.push_str(r#"</div>"#);
                 }
 
-                if let Some(a) = &props.ad {
-                    a.write(props, buf)?;
+                if let Some(ad) = &props.ad {
+                    ad.write(props, buf)?;
                 }
             }
             buf.push_str(r#"</main>"#);
+
             self.footer.write(props, buf)?;
         }
         buf.push_str(r#"</body>"#);

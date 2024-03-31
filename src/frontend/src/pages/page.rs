@@ -1,6 +1,7 @@
 use crate::components::{head::Head, Component};
 use crate::model;
 use anyhow::Result;
+use uuid::Uuid;
 
 // buffer size for outputting HTML content.
 // specify a sufficient size according to the characteristics of the system.
@@ -19,6 +20,23 @@ pub struct PageProps {
     pub order: Option<model::order::Order>,
 }
 
+impl PageProps {
+    pub fn new(session_id: String, user_currency: String) -> Self {
+        PageProps {
+            session_id,
+            request_id: Uuid::new_v4().to_string(),
+            user_currency,
+            product_id: None,
+            cart: None,
+            hot_products: None,
+            product: None,
+            recommendations: None,
+            ad: None,
+            order: None,
+        }
+    }
+}
+
 pub struct Page {
     pub lang: Option<String>,
     pub head: Box<dyn Component + Send>,
@@ -27,7 +45,7 @@ pub struct Page {
 }
 
 impl Page {
-    pub fn generate() -> Page {
+    pub fn new() -> Page {
         let head = Head {};
 
         Page {
