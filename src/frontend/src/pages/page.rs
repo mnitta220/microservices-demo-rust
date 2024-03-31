@@ -38,7 +38,6 @@ impl PageProps {
 }
 
 pub struct Page {
-    pub lang: Option<String>,
     pub head: Box<dyn Component + Send>,
     pub body: Option<Box<dyn Component + Send>>,
     pub buf: String,
@@ -49,7 +48,6 @@ impl Page {
         let head = Head {};
 
         Page {
-            lang: Some("en".to_string()),
             head: Box::new(head),
             body: None,
             buf: String::with_capacity(PAGE_BUFFER_SIZE),
@@ -58,24 +56,18 @@ impl Page {
 
     pub fn write(&mut self, props: &crate::pages::page::PageProps) -> Result<()> {
         self.buf.push_str(r#"<!DOCTYPE html>"#);
-        if let Some(lang) = &self.lang {
-            self.buf.push_str(r#"<html lang=""#);
-            self.buf.push_str(lang);
-            self.buf.push_str(r#"">"#);
-        } else {
-            self.buf.push_str(r#"<html>"#);
-        }
-
-        if let Err(e) = self.head.write(props, &mut self.buf) {
-            return Err(e);
-        }
-
-        if let Some(b) = &self.body {
-            if let Err(e) = b.write(props, &mut self.buf) {
+        self.buf.push_str(r#"<html lang="en">"#);
+        {
+            if let Err(e) = self.head.write(props, &mut self.buf) {
                 return Err(e);
             }
-        }
 
+            if let Some(b) = &self.body {
+                if let Err(e) = b.write(props, &mut self.buf) {
+                    return Err(e);
+                }
+            }
+        }
         self.buf.push_str(r#"</html>"#);
 
         Ok(())
