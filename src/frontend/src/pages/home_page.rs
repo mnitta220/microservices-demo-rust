@@ -25,14 +25,8 @@ impl HomePage {
         let mut page = page::Page::new();
 
         // Construct the components of the HTML <body> tag.
-        let body = match HomeBody::load() {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e.to_string()));
-            }
-        };
-
-        page.body = Some(body);
+        let body = HomeBody::new();
+        page.body = Some(Box::new(body));
 
         Ok(HomePage { props, page })
     }

@@ -7,12 +7,12 @@ pub struct BodyHeader {
 }
 
 impl BodyHeader {
-    pub fn load() -> Result<Self> {
+    pub fn new() -> Self {
         let body_header = BodyHeader {
             currency_form: Box::new(CurrencyForm {}),
         };
 
-        Ok(body_header)
+        body_header
     }
 }
 

@@ -31,14 +31,8 @@ impl ProductPage {
         let mut page = page::Page::new();
 
         // Construct the components of the HTML <body> tag.
-        let body = match ProductBody::load() {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e.to_string()));
-            }
-        };
-
-        page.body = Some(body);
+        let body = ProductBody::new();
+        page.body = Some(Box::new(body));
 
         Ok(ProductPage { props, page })
     }

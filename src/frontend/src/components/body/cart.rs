@@ -10,24 +10,16 @@ pub struct CartBody {
 }
 
 impl CartBody {
-    pub fn load() -> Result<Box<Self>> {
-        let body_header = match BodyHeader::load() {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
+    pub fn new() -> Self {
+        let body_header = BodyHeader::new();
         let checkout_form = CheckoutForm {};
         let footer = Footer {};
 
-        let body = CartBody {
+        CartBody {
             header: Box::new(body_header),
             checkout_form: Box::new(checkout_form),
             footer: Box::new(footer),
-        };
-
-        Ok(Box::new(body))
+        }
     }
 }
 

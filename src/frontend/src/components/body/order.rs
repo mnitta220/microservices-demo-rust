@@ -9,22 +9,14 @@ pub struct OrderBody {
 }
 
 impl OrderBody {
-    pub fn load() -> Result<Box<Self>> {
-        let body_header = match BodyHeader::load() {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e));
-            }
-        };
-
+    pub fn new() -> Self {
+        let body_header = BodyHeader::new();
         let footer = Footer {};
 
-        let body = OrderBody {
+        OrderBody {
             header: Box::new(body_header),
             footer: Box::new(footer),
-        };
-
-        Ok(Box::new(body))
+        }
     }
 }
 

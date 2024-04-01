@@ -6,5 +6,5 @@ Rust で書き直すにあたって、フロントエンドには Web フレー�
 
 - [フロントエンド](./frontend/0.frontend.md)
   1. [axum](./frontend/1.axum.md)
-  2. [handler](./frontend/2.handler.md)
+  1. [handler](./frontend/2.handler.md)
 - [バックエンド](./backend/0.backend.md)

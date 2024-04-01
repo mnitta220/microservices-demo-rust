@@ -55,19 +55,19 @@
 
 http://localhost:8080/
 
-| Original | Rewrote in Rust |
-| -------: | --------------: |
-|    413ms |            13ms |
-|     59ms |            11ms |
-|     60ms |            13ms |
+|        | Original | Rewrote in Rust |
+| ------ | -------: | --------------: |
+| 1 回目 |    413ms |            13ms |
+| 2 回目 |     59ms |            11ms |
+| 3 回目 |     60ms |            13ms |
 
 http://localhost:8080/product/OLJCESPC7Z
 
-| Original | Rewrote in Rust |
-| -------: | --------------: |
-|     17ms |            13ms |
-|     15ms |            14ms |
-|     15ms |            15ms |
+|        | Original | Rewrote in Rust |
+| ------ | -------: | --------------: |
+| 1 回目 |     17ms |            13ms |
+| 2 回目 |     15ms |            14ms |
+| 3 回目 |     15ms |            15ms |
 
 <br>
 

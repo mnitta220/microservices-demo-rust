@@ -33,14 +33,8 @@ impl OrderPage {
         let mut page = page::Page::new();
 
         // Construct the components of the HTML <body> tag.
-        let body = match OrderBody::load() {
-            Ok(response) => response,
-            Err(e) => {
-                return Err(anyhow::anyhow!(e.to_string()));
-            }
-        };
-
-        page.body = Some(body);
+        let body = OrderBody::new();
+        page.body = Some(Box::new(body));
 
         Ok(OrderPage { props, page })
     }
