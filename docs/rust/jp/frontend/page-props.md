@@ -1,0 +1,22 @@
+# Page props
+
+画面の表示で使用されるデータを、PageProps 構造体に保持します。Option 属性になっている項目は、その画面で使われる場合のみ、Some(T)がセットされ、使われない場合は None になります。  
+Component の write メソッドには、PageProps への参照が渡されます。
+
+[src/frontend/src/pages/page.rs](/src/frontend/src/pages/page.rs)
+
+```rust
+pub struct PageProps {
+    pub session_id: String,
+    pub request_id: String,
+    pub user_currency: String,
+    pub currency_codes: Option<Vec<String>>,
+    pub product_id: Option<String>,
+    pub cart: Option<model::cart::Cart>,
+    pub hot_products: Option<model::hot_product::HotProducts>,
+    pub product: Option<model::product::Product>,
+    pub recommendations: Option<model::recommendation::RecommendationList>,
+    pub ad: Option<model::ad::AdItem>,
+    pub order: Option<model::order::Order>,
+}
+```

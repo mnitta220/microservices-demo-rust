@@ -20,7 +20,7 @@ impl OrderPage {
         props.order = Some(order);
         // fetch currency codes
         let currencies = model::currency::SupportedCurrencies::load().await?;
-        props.currency_codes = Some(currencies.currency_codes);
+        props.currency_codes = Some(currencies);
         // fetch cart info
         let cart = model::cart::Cart::load(&session_id, &currency).await?;
         props.cart = Some(cart);

@@ -1,5 +1,7 @@
-use crate::components::{head::Head, Component};
-use crate::model;
+use crate::{
+    components::{head::Head, Component},
+    model,
+};
 use anyhow::Result;
 use uuid::Uuid;
 
@@ -11,8 +13,8 @@ pub struct PageProps {
     pub session_id: String,
     pub request_id: String,
     pub user_currency: String,
-    pub currency_codes: Option<Vec<String>>,
     pub product_id: Option<String>,
+    pub currency_codes: Option<model::currency::SupportedCurrencies>,
     pub cart: Option<model::cart::Cart>,
     pub hot_products: Option<model::hot_product::HotProducts>,
     pub product: Option<model::product::Product>,
@@ -27,8 +29,8 @@ impl PageProps {
             session_id: session_id.clone(),
             request_id: Uuid::new_v4().to_string(),
             user_currency: user_currency.clone(),
-            currency_codes: None,
             product_id: None,
+            currency_codes: None,
             cart: None,
             hot_products: None,
             product: None,
@@ -64,8 +66,8 @@ impl Page {
                 return Err(e);
             }
 
-            if let Some(b) = &self.body {
-                if let Err(e) = b.write(props, &mut buf) {
+            if let Some(body) = &self.body {
+                if let Err(e) = body.write(props, &mut buf) {
                     return Err(e);
                 }
             }

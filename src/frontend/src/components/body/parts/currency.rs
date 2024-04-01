@@ -34,7 +34,7 @@ impl Component for CurrencyForm {
             {
                 buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
 
-                for currency_code in currency_codes.iter() {
+                for currency_code in currency_codes.currency_codes.iter() {
                     if whitelisted_currencies(currency_code.as_str()) {
                         buf.push_str(r#"<option value=""#);
                         buf.push_str(currency_code);
