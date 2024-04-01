@@ -24,7 +24,7 @@
 
 <br>
 
-> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年〇月〇日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。
+> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年 3 月 11 日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。
 
 <br>
 
