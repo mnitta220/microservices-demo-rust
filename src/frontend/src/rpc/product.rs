@@ -70,7 +70,9 @@ pub async fn get_product(product_id: String, user_currency: String) -> Result<Pr
             return Err(anyhow::anyhow!("get_product failed"));
         }
     };
+
     let price: Money;
+
     if product.price_usd.as_ref().unwrap().currency_code != user_currency {
         let request = CurrencyConversionRequest {
             from: product.price_usd.clone(),
