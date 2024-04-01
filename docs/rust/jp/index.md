@@ -1,6 +1,10 @@
-# Index
+# Rust での書き直し
 
-- [Frontend](./frontend/index.md)
-  - [Page props](./frontend/page-props.md)
-  - [Components](./frontend/components.md)
-- [Backend](./backend/index.md)
+Rust で書き直すにあたって、フロントエンドには Web フレームワークである「[axum](https://github.com/tokio-rs/axum)」を、フロントエンドとバックエンドの連携は gRPC で行われます。そのためのライブラリとして、「[tonic](https://github.com/hyperium/tonic)」を使いました。
+
+## Index
+
+- [フロントエンド](./frontend/0.frontend.md)
+  1. [axum](./frontend/1.axum.md)
+  2. [handler](./frontend/2.handler.md)
+- [バックエンド](./backend/0.backend.md)

@@ -4,23 +4,72 @@
 
 # microservice-demo-rust
 
-このプロジェクトは、Google が提供している「Online Boutique」(microservices-demo)というデモアプリケーションの一部を、Rust で書き直したものです。  
+このプロジェクトは、Google が提供している「Online Boutique」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
 ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python などが使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
-次の表の中で、「Rewote」欄に「Rust」と書かれているサービスを、Rust で書き直しました。
+次の表で、「Rewote」欄に「Rust」と書かれているサービスを、Rust で書き直しました。「Rust」と書いていないサービスは、オリジナルのままです。
 
-| Service                                             | Language   | Rewote | Description                                                                                                                       |
-| --------------------------------------------------- | ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| [frontend](/src/frontend)                           | Go         | Rust   | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
-| [cartservice](/src/cartservice)                     | C#         | Rust   | Stores the items in the user's shopping cart in Redis and retrieves it.                                                           |
-| [productcatalogservice](/src/productcatalogservice) | Go         | Rust   | Provides the list of products from a JSON file and ability to search products and get individual products.                        |
-| [currencyservice](/src/currencyservice)             | JavaScript |        | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
-| [paymentservice](/src/paymentservice)               | JavaScript |        | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
-| [shippingservice](/src/shippingservice)             | Go         |        | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
-| [emailservice](/src/emailservice)                   | Python     |        | Sends users an order confirmation email (mock).                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go         |        | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
-| [recommendationservice](/src/recommendationservice) | Python     |        | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java       | Rust   | Provides text ads based on given context words.                                                                                   |
+| Service                                             | Original<br>Language | Rewote | Description                                                                                                                       |
+| --------------------------------------------------- | -------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| [frontend](/src/frontend)                           | Go                   | Rust   | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
+| [cartservice](/src/cartservice)                     | C#                   | Rust   | Stores the items in the user's shopping cart in Redis and retrieves it.                                                           |
+| [productcatalogservice](/src/productcatalogservice) | Go                   | Rust   | Provides the list of products from a JSON file and ability to search products and get individual products.                        |
+| [currencyservice](/src/currencyservice)             | JavaScript           |        | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
+| [paymentservice](/src/paymentservice)               | JavaScript           |        | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
+| [shippingservice](/src/shippingservice)             | Go                   |        | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
+| [emailservice](/src/emailservice)                   | Python               |        | Sends users an order confirmation email (mock).                                                                                   |
+| [checkoutservice](/src/checkoutservice)             | Go                   |        | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
+| [recommendationservice](/src/recommendationservice) | Python               |        | Recommends other products based on what's given in the cart.                                                                      |
+| [adservice](/src/adservice)                         | Java                 | Rust   | Provides text ads based on given context words.                                                                                   |
+
+<br>
+
+> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年〇月〇日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。
+
+<br>
+
+## 目的
+
+私が Rust での書き直しを行った理由は、私はこれまで、Rust で Web システムを構築した経験がありませんでした。これを行ったらどうなるのか、学習と調査を兼ねて、作ってみたかったからです。  
+[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) は、学習と調査のために作り直すのには、ちょうどよい小さな規模でした。  
+特に、フロントエンドで Rust を使った開発がどうなるのかについて、試行錯誤を繰り返しました。その結果、Rust は、フロントエンドの開発においても、非常に適した言語であるという、自分なりの結論に達することができました。開発の効率と生産性、および、構築したシステムのパフォーマンスが、十分に満足できるものでした。  
+私がここで行った開発の方法がベストだとは思っていません。改善案やご意見などがありましたら、お寄せいただければ幸いです。
+
+<br>
+
+## Quick Start
+
+### 開発環境のセットアップ
+
+<br>
+
+## 開発ドキュメント
+
+[オリジナルの開発ドキュメント](/docs/development-guide.md)
+
+[Rust での書き直し](/docs/rust/jp/index.md)
+
+<br>
+
+## パフォーマンス比較
+
+http://localhost:8080/
+
+| Original | Rewrote in Rust |
+| -------: | --------------: |
+|    413ms |            13ms |
+|     59ms |            11ms |
+|     60ms |            13ms |
+
+http://localhost:8080/product/OLJCESPC7Z
+
+| Original | Rewrote in Rust |
+| -------: | --------------: |
+|     17ms |            13ms |
+|     15ms |            14ms |
+|     15ms |            15ms |
+
+<br>
 
 ![Continuous Integration](https://github.com/GoogleCloudPlatform/microservices-demo/workflows/Continuous%20Integration%20-%20Main/Release/badge.svg)
 
