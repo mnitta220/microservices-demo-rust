@@ -1,4 +1,4 @@
-use crate::rpc::currency;
+use crate::rpc;
 use anyhow::Result;
 
 pub struct SupportedCurrencies {
@@ -7,7 +7,7 @@ pub struct SupportedCurrencies {
 
 impl SupportedCurrencies {
     pub async fn load() -> Result<Self> {
-        let currencies = match currency::get_supported_currencies().await {
+        let currencies = match rpc::currency::get_supported_currencies().await {
             Ok(response) => response,
             Err(e) => {
                 return Err(anyhow::anyhow!(e));

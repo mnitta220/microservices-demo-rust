@@ -1,4 +1,4 @@
-use crate::rpc::{hipstershop::Product, recommendation};
+use crate::rpc;
 use anyhow::Result;
 
 pub struct RecommendationList {
@@ -6,13 +6,13 @@ pub struct RecommendationList {
 }
 
 pub struct RecommendationItem {
-    pub product: Product,
+    pub product: rpc::hipstershop::Product,
 }
 
 impl RecommendationList {
     pub async fn load(product_id: Option<String>, session_id: &String) -> Result<Self> {
         let recommendation_list =
-            match recommendation::get_recommendations(product_id, session_id).await {
+            match rpc::recommendation::get_recommendations(product_id, session_id).await {
                 Ok(response) => response,
                 Err(e) => {
                     return Err(anyhow::anyhow!(e));
