@@ -4,9 +4,9 @@
 
 # microservice-demo-rust
 
-<div style="width: 100%; border-bottom: 1px solid #555; padding-bottom: 6px; margin-bottom: 18px;">
+<section style="width: 100%; border-bottom: 1px solid #555; padding-bottom: 6px; margin-bottom: 18px;">
 <a href="README.md">English</a>&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
-</div>
+</section>
 このプロジェクトは、Google が提供している「Online Boutique」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
 ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python などが使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
