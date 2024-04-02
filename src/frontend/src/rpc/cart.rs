@@ -78,8 +78,10 @@ pub async fn get_cart(user_id: String, currency_code: String) -> Result<Cart> {
 
         if let Ok(response) = product_catalog_service_client.get_product(request).await {
             let mut product = response.into_inner();
+
             if let Some(ref price) = product.price_usd {
                 let mult_price: Money;
+
                 if price.currency_code != currency_code {
                     let request = CurrencyConversionRequest {
                         from: Some(price.clone()),
@@ -165,9 +167,11 @@ pub fn sum(l: &Money, r: &Money) -> Result<Money> {
             "one of the specified money values is invalid"
         ));
     }
+
     if l.currency_code != r.currency_code {
         return Err(anyhow::anyhow!("mismatching currency codes"));
     }
+
     let mut units = l.units + r.units;
     let mut nanos = l.nanos + r.nanos;
 
@@ -198,9 +202,11 @@ pub fn sum(l: &Money, r: &Money) -> Result<Money> {
 pub fn multiply_slow(m: &Money, n: i32) -> Result<Money> {
     let mut out = m.clone();
     let mut n = n;
+
     while n > 1 {
         out = sum(&out, m)?;
         n -= 1;
     }
+
     Ok(out)
 }

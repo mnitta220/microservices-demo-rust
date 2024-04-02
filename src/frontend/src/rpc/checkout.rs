@@ -52,6 +52,7 @@ pub async fn place_order(
     for item in &order.items {
         if let Some(m) = &item.cost {
             let mult_price: Money;
+
             if m.currency_code != *currency_code {
                 let request = CurrencyConversionRequest {
                     from: Some(m.clone()),
@@ -64,6 +65,7 @@ pub async fn place_order(
                         return Err(anyhow::anyhow!("currency convert failed"));
                     }
                 };
+
                 mult_price =
                     super::cart::multiply_slow(&changed, item.item.as_ref().unwrap().quantity)?;
             } else {
@@ -87,6 +89,7 @@ pub async fn place_order(
                     return Err(anyhow::anyhow!("currency convert failed"));
                 }
             };
+
             total_cost = super::cart::sum(&total_cost, &changed)?;
         } else {
             total_cost = super::cart::sum(&total_cost, &m)?;

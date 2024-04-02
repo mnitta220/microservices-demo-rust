@@ -64,6 +64,7 @@ impl crate::CartService for CartServiceImpl {
         };
 
         let mut items = Vec::new();
+
         for item in cart.items {
             items.push(CartStoreItem {
                 product_id: item.product_id,

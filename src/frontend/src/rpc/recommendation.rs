@@ -35,6 +35,7 @@ pub async fn get_recommendations(
         Some(p) => vec![p],
         None => vec![],
     };
+
     let request = ListRecommendationsRequest {
         user_id: session_id.clone(),
         product_ids,
@@ -51,10 +52,12 @@ pub async fn get_recommendations(
     };
 
     let mut idx = 0;
+
     for id in recommendations.product_ids {
         if idx > 3 {
             break;
         }
+
         idx += 1;
         let request = GetProductRequest { id: id };
 

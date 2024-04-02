@@ -1,5 +1,3 @@
-use tonic::transport::Server;
-
 pub mod hipstershop {
     tonic::include_proto!("hipstershop");
 }
@@ -8,6 +6,7 @@ use anyhow::Result;
 use hipstershop::cart_service_server::{CartService, CartServiceServer};
 use hipstershop::{AddItemRequest, Cart, CartItem, Empty, EmptyCartRequest, GetCartRequest};
 use once_cell::sync::OnceCell;
+use tonic::transport::Server;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod service;

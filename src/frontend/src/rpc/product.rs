@@ -36,6 +36,7 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>> {
     };
 
     let mut list: Vec<Product> = Vec::new();
+
     for product in products.products.iter() {
         let mut p = product.clone();
         if product.price_usd.as_ref().unwrap().currency_code != *user_currency {

@@ -27,6 +27,7 @@ pub async fn get_quote(
     let mut currency_service_client = currency::get_currency_service_client().await?;
 
     let mut cart_items: Vec<CartItem> = Vec::new();
+
     for item in items.iter() {
         let i = CartItem {
             product_id: item.product.id.clone(),
@@ -57,12 +58,14 @@ pub async fn get_quote(
             from: Some(quote),
             to_code: user_currency.clone(),
         };
+
         let changed = match currency_service_client.convert(request).await {
             Ok(changed) => changed.into_inner(),
             Err(_) => {
                 return Err(anyhow::anyhow!("currency convert failed"));
             }
         };
+
         quote = changed;
     }
 

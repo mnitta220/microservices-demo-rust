@@ -66,6 +66,7 @@ pub async fn get_supported_currencies() -> Result<Vec<String>> {
     };
 
     let mut list: Vec<String> = Vec::new();
+
     for currency_code in currencies.get_ref().currency_codes.iter() {
         if whitelisted_currencies(currency_code.as_str()) {
             list.push(currency_code.to_string());

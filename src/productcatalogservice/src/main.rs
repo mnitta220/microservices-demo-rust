@@ -1,5 +1,3 @@
-use tonic::transport::Server;
-
 pub mod hipstershop {
     tonic::include_proto!("hipstershop");
 }
@@ -13,6 +11,7 @@ use hipstershop::{
     SearchProductsResponse,
 };
 use once_cell::sync::OnceCell;
+use tonic::transport::Server;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod service;

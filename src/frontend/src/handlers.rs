@@ -98,6 +98,7 @@ pub async fn post_set_currency(
         input.currency_code,
         60 * 60 * 48
     ));
+
     if let Ok(c) = cookie {
         cookies.add(c);
     }
