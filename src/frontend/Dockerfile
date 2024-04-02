@@ -1,43 +1,27 @@
-# Copyright 2020 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# syntax=docker/dockerfile:1
 
-FROM golang:1.22.0-alpine@sha256:8e96e6cff6a388c2f70f5f662b64120941fcd7d4b89d62fec87520323a316bd9 as builder
-RUN apk add --no-cache ca-certificates git
-RUN apk add build-base
+ARG RUST_VERSION=1.77.0
+ARG APP_NAME=frontend
+
+FROM rust:${RUST_VERSION}-alpine AS build
+ARG APP_NAME
 WORKDIR /src
 
-# restore dependencies
-COPY go.mod go.sum ./
-RUN go mod download
+RUN apk update && apk add --no-cache clang lld musl-dev git make protobuf-dev
+
 COPY . .
+RUN cargo build --release
+COPY ./static /src/static
 
-# Skaffold passes in debug-oriented compiler flags
-ARG SKAFFOLD_GO_GCFLAGS
-RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /go/bin/frontend .
-
-FROM alpine:3.19.1@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b as release
-RUN apk add --no-cache ca-certificates \
-    busybox-extras net-tools bind-tools
+FROM alpine:3.18 AS final
 WORKDIR /src
-COPY --from=builder /go/bin/frontend /src/server
-COPY ./templates ./templates
-COPY ./static ./static
 
-# Definition of this variable is used by 'skaffold debug' to identify a golang binary.
-# Default behavior - a failure prints a stack trace for the current goroutine.
-# See https://golang.org/pkg/runtime/
-ENV GOTRACEBACK=single
+COPY --from=build /src/target/release/frontend /src/frontend
+COPY --from=build /src/static /src/static
+
+# ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
+ENV ENV_PLATFORM=local
 
 EXPOSE 8080
-ENTRYPOINT ["/src/server"]
+
+CMD ["/src/frontend"]

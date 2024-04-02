@@ -17,10 +17,11 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.1 && \
     chmod +x /bin/grpc_health_probe
 
 FROM alpine:3.18 AS final
+WORKDIR /src
 
-COPY --from=build /src/target/release/adservice /bin/adservice
+COPY --from=build /src/target/release/adservice /src/adservice
 COPY --from=build /bin/grpc_health_probe /bin/
 
 EXPOSE 9555
 
-CMD ["/bin/adservice"]
+CMD ["/src/adservice"]

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG RUST_VERSION=1.77.0
-ARG APP_NAME=productcatalogservice
+ARG APP_NAME=cartservice
 
 FROM rust:${RUST_VERSION}-alpine AS build
 ARG APP_NAME
@@ -11,7 +11,6 @@ RUN apk add --no-cache clang lld musl-dev git make protobuf-dev
 
 COPY . .
 RUN cargo build --release
-COPY ./products.json /src/products.json
 
 RUN GRPC_HEALTH_PROBE_VERSION=v0.3.1 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
@@ -20,10 +19,9 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.1 && \
 FROM alpine:3.18 AS final
 WORKDIR /src
 
-COPY --from=build /src/target/release/productcatalogservice /src/productcatalogservice
-COPY --from=build /src/products.json /src/products.json
+COPY --from=build /src/target/release/cartservice /src/cartservice
 COPY --from=build /bin/grpc_health_probe /bin/
 
-EXPOSE 3550
+EXPOSE 7070
 
-CMD ["/src/productcatalogservice"]
+CMD ["/src/cartservice"]
