@@ -15,24 +15,31 @@ impl OrderPage {
         input: crate::handlers::PlaceOrderInput,
     ) -> Result<Self> {
         let mut props = page::PageProps::new(&session_id, &currency);
-        // place order
-        let order = model::order::Order::place_order(input, &session_id, &currency).await?;
-        props.order = Some(order);
-        // fetch currency codes
-        let currencies = model::currency::SupportedCurrencies::load().await?;
-        props.currency_codes = Some(currencies);
-        // fetch cart info
-        let cart = model::cart::Cart::load(&session_id, &currency).await?;
-        props.cart = Some(cart);
-        // fetch recommendation info
-        let recommendations =
-            model::recommendation::RecommendationList::load(None, &session_id).await?;
-        props.recommendations = Some(recommendations);
+
+        // load and setting props
+        {
+            // place order
+            let order = model::order::Order::place_order(input, &session_id, &currency).await?;
+            props.order = Some(order);
+
+            // fetch currency codes
+            let currencies = model::currency::SupportedCurrencies::load().await?;
+            props.currency_codes = Some(currencies);
+
+            // fetch cart info
+            let cart = model::cart::Cart::load(&session_id, &currency).await?;
+            props.cart = Some(cart);
+
+            // fetch recommendation info
+            let recommendations =
+                model::recommendation::RecommendationList::load(None, &session_id).await?;
+            props.recommendations = Some(recommendations);
+        }
 
         // Construct the components of the HTML page.
         let mut page = page::Page::new();
 
-        // Construct the components of the HTML <body> tag.
+        // Construct the components of the HTML body.
         let body = OrderBody::new();
         page.body = Some(Box::new(body));
 
