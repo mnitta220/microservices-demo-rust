@@ -1,6 +1,6 @@
-[English](../en/index.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
+English&nbsp;&nbsp;|&nbsp;&nbsp;[Japanese](../jp/index.md)
 
-# Rust での書き直し
+# Rewrote in Rust
 
 このアプリケーションは、次の図のようなアーキテクチャーになっています。
 

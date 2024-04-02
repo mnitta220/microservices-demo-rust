@@ -7,35 +7,44 @@
 [English](./README.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
 
 このプロジェクトは、Google が提供している「Online Boutique」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
-ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python などが使われています。  
+ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
 次の表で、「Rewote」欄に「Rust」と書かれているサービスを、Rust で書き直しました。「Rust」と書いていないサービスは、オリジナルのままです。
 
-| Service                                             | Original<br>Language | Rewote | Description                                                                                                                       |
-| --------------------------------------------------- | -------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| [frontend](/src/frontend)                           | Go                   | Rust   | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
-| [cartservice](/src/cartservice)                     | C#                   | Rust   | Stores the items in the user's shopping cart in Redis and retrieves it.                                                           |
-| [productcatalogservice](/src/productcatalogservice) | Go                   | Rust   | Provides the list of products from a JSON file and ability to search products and get individual products.                        |
-| [currencyservice](/src/currencyservice)             | JavaScript           |        | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
-| [paymentservice](/src/paymentservice)               | JavaScript           |        | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
-| [shippingservice](/src/shippingservice)             | Go                   |        | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
-| [emailservice](/src/emailservice)                   | Python               |        | Sends users an order confirmation email (mock).                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go                   |        | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
-| [recommendationservice](/src/recommendationservice) | Python               |        | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java                 | Rust   | Provides text ads based on given context words.                                                                                   |
+This project is a rewrite of parts of the "Online Boutique" (microservices-demo) demo application provided by Google in Rust.  
+It is a web-based e-commerce application that allows users to browse products, add them to a cart, and purchase them. It runs on a Kubernetes cluster and the microservices communicate with each other using gRPC. The development languages used are Go, C#, JavaScript, Java, and Python.  
+It consists of 11 microservices. I have rewritten 4 of these services in Rust.  
+In the following table, services marked in the 'Rewrote' column as 'Rust' have been rewritten in Rust. Services not marked as 'Rust' remain in their original state.
+
+| Service                                             | Original<br>Language | Rewote | Description                                                                                                                                                                                                                                                                                |
+| --------------------------------------------------- | -------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [frontend](/src/frontend)                           | Go                   | Rust   | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. <br>ウェブサイトを提供するための HTTP サーバを公開します。サインアップ/ログインは不要で、すべてのユーザーに対して自動的にセッション ID を生成します。    |
+| [cartservice](/src/cartservice)                     | C#                   | Rust   | Stores the items in the user's shopping cart in Redis and retrieves it.<br>ユーザーのショッピングカート内の商品を Redis に保存して、それを取得します。                                                                                                                                     |
+| [productcatalogservice](/src/productcatalogservice) | Go                   | Rust   | Provides the list of products from a JSON file and ability to search products and get individual products. <br>JSON ファイルから商品の一覧を提供し、商品を検索して個々の商品を取得する機能を提供します。                                                                                   |
+| [currencyservice](/src/currencyservice)             | JavaScript           |        | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. <br>ある通貨の金額を別の通貨に変換します。ヨーロッパ中央銀行から取得した実際の値を使用します。これは最も高い QPS（1 秒あたりのクエリ数）のサービスです。 |
+| [paymentservice](/src/paymentservice)               | JavaScript           |        | Charges the given credit card info (mock) with the given amount and returns a transaction ID.<br>与えられたクレジットカード情報（モック）と金額で課金し、トランザクション ID を返します。                                                                                                  |
+| [shippingservice](/src/shippingservice)             | Go                   |        | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)<br>ショッピングカートに基づいて送料の見積もりを提供します。アイテムを指定された住所に発送します。（モック）                                                                              |
+| [emailservice](/src/emailservice)                   | Python               |        | Sends users an order confirmation email (mock).<br>ユーザーに注文確認のメールを送信します。（モック）                                                                                                                                                                                      |
+| [checkoutservice](/src/checkoutservice)             | Go                   |        | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.<br>ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                                             |
+| [recommendationservice](/src/recommendationservice) | Python               |        | Recommends other products based on what's given in the cart.<br>カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                                                                                                 |
+| [adservice](/src/adservice)                         | Java                 | Rust   | Provides text ads based on given context words.<br>指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                                                                                                        |
 
 <br>
 
-> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年 3 月 11 日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。
+> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年 3 月 11 日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。<br>This project was developed by forking the source code of microservices-demo as of March 11, 2024. Updates made to microservices-demo after that date have not been incorporated.
 
 <br>
 
 ## 目的
 
-私が Rust での書き直しを行った理由は、私はこれまで、Rust で Web システムを構築した経験がありませんでした。これを行ったらどうなるのか、学習と調査を兼ねて、作ってみたかったからです。  
-[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) は、学習と調査のために作り直すのには、ちょうどよい小さな規模でした。  
-特に、フロントエンドで Rust を使った開発がどうなるのかについて、試行錯誤を繰り返しました。その結果、Rust は、フロントエンドの開発においても、非常に適した言語であるという、自分なりの結論に達することができました。開発の効率と生産性、および、構築したシステムのパフォーマンスが、十分に満足できるものでした。  
-私がここで行った開発の方法がベストだとは思っていません。改善案やご意見などがありましたら、お寄せいただければ幸いです。
+今回、私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、これまで Rust を使って Web システムを構築した経験がなかったからです。Rust での開発がどのようなものかを実際に試してみたかったのです。  
+microservices-demo は、学習と検証にちょうど良い規模のプロジェクトでした。特にフロントエンドでの Rust 活用について、試行錯誤を重ねました。その結果、フロントエンド開発においても Rust は非常に適した言語であるという結論に達しました。開発効率や生産性、そして構築されたシステムのパフォーマンスにも、とても満足しています。  
+今回行った開発手法が最善だとは考えていません。もし改善点やご意見がありましたら、ぜひお寄せください。
+
+The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I had no prior experience building web systems with Rust. I wanted to explore what it would be like.  
+The microservices-demo was a small enough project to be a good fit for learning and exploration.  
+I experimented extensively with using Rust for the frontend in particular. As a result, I was able to conclude that Rust is a very suitable language for frontend development as well. I was very satisfied with the development efficiency and productivity, as well as the performance of the built system.  
+I do not believe that the way I developed the project here is the best way. If you have any suggestions or feedback, I would appreciate hearing them.
 
 <br>
 
@@ -59,9 +68,9 @@ http://localhost:8080/
 
 |        | Original | Rewrote in Rust |
 | ------ | -------: | --------------: |
-| 1 回目 |    413ms |            13ms |
-| 2 回目 |     59ms |            11ms |
-| 3 回目 |     60ms |            13ms |
+| 1 回目 |     52ms |             9ms |
+| 2 回目 |     13ms |            10ms |
+| 3 回目 |     15ms |            11ms |
 
 http://localhost:8080/product/OLJCESPC7Z
 

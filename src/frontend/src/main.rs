@@ -48,16 +48,13 @@ async fn main() {
     }
 
     let app = Router::new()
-        .route("/", get(handlers::home_handler))
-        .route("/product/:id", get(handlers::product_handler))
-        .route("/setCurrency", post(handlers::set_currency_handler))
-        .route(
-            "/cart",
-            get(handlers::view_cart_handler).post(handlers::add_to_cart_handler),
-        )
-        .route("/cart/empty", post(handlers::empty_cart_handler))
-        .route("/cart/checkout", post(handlers::place_order_handler))
-        .route("/_healthz", get(handlers::health_handler))
+        .route("/", get(handlers::get_home))
+        .route("/product/:id", get(handlers::get_product))
+        .route("/setCurrency", post(handlers::post_set_currency))
+        .route("/cart", get(handlers::get_cart).post(handlers::post_cart))
+        .route("/cart/empty", post(handlers::post_cart_empty))
+        .route("/cart/checkout", post(handlers::post_cart_checkout))
+        .route("/_healthz", get(handlers::health))
         .nest_service("/static", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()

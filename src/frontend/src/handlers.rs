@@ -46,7 +46,7 @@ fn session_info(cookies: Cookies, should_exist: bool) -> Result<(String, String)
     Ok((session_id, currency))
 }
 
-pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
+pub async fn get_home(cookies: Cookies) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /");
 
     let (session_id, currency) = session_info(cookies, false)?;
@@ -57,7 +57,7 @@ pub async fn home_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
     Ok(Html(buf))
 }
 
-pub async fn product_handler(
+pub async fn get_product(
     cookies: Cookies,
     Path(id): Path<String>,
 ) -> Result<Html<String>, AppError> {
@@ -71,7 +71,7 @@ pub async fn product_handler(
     Ok(Html(buf))
 }
 
-pub async fn view_cart_handler(cookies: Cookies) -> Result<Html<String>, AppError> {
+pub async fn get_cart(cookies: Cookies) -> Result<Html<String>, AppError> {
     tracing::debug!("GET /cart");
 
     let (session_id, currency) = session_info(cookies, false)?;
@@ -87,7 +87,7 @@ pub struct SetCurrencyInput {
     pub currency_code: String,
 }
 
-pub async fn set_currency_handler(
+pub async fn post_set_currency(
     cookies: Cookies,
     Form(input): Form<SetCurrencyInput>,
 ) -> Result<Redirect, StatusCode> {
@@ -111,7 +111,7 @@ pub struct AddToCartInput {
     pub quantity: i32,
 }
 
-pub async fn add_to_cart_handler(
+pub async fn post_cart(
     cookies: Cookies,
     Form(input): Form<AddToCartInput>,
 ) -> Result<Redirect, AppError> {
@@ -133,7 +133,7 @@ pub async fn add_to_cart_handler(
     Ok(Redirect::to("/cart"))
 }
 
-pub async fn empty_cart_handler(cookies: Cookies) -> Result<Redirect, AppError> {
+pub async fn post_cart_empty(cookies: Cookies) -> Result<Redirect, AppError> {
     tracing::debug!("POST /cart/empty");
 
     let session_id = match cookies.get(COOKIE_SESSION_ID) {
@@ -166,7 +166,7 @@ pub struct PlaceOrderInput {
     pub credit_card_cvv: i32,
 }
 
-pub async fn place_order_handler(
+pub async fn post_cart_checkout(
     cookies: Cookies,
     Form(input): Form<PlaceOrderInput>,
 ) -> Result<Html<String>, AppError> {
@@ -192,6 +192,6 @@ pub async fn place_order_handler(
     Ok(Html(buf))
 }
 
-pub async fn health_handler() -> &'static str {
+pub async fn health() -> &'static str {
     "OK"
 }
