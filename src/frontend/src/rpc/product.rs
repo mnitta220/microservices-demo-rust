@@ -1,5 +1,5 @@
 use super::{
-    currency, CurrencyConversionRequest, Empty, GetProductRequest, Money, Product,
+    currency, CurrencyConversionRequest, Empty, GetProductRequest, Product,
     ProductCatalogServiceClient,
 };
 use anyhow::Result;
@@ -35,12 +35,11 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>> {
         }
     };
 
-    let mut list: Vec<Product> = Vec::new();
+    let mut list = products.products;
 
-    for product in products.products.iter() {
-        let mut p = product.clone();
-
+    for product in list.iter_mut() {
         if product.price_usd.as_ref().unwrap().currency_code != *user_currency {
+            // Convert the product price to the user's currency.
             let request = CurrencyConversionRequest {
                 from: product.price_usd.clone(),
                 to_code: user_currency.clone(),
@@ -52,11 +51,8 @@ pub async fn get_product_list(user_currency: &String) -> Result<Vec<Product>> {
                     return Err(anyhow::anyhow!("currency convert failed"));
                 }
             };
-
-            p.price_usd = Some(changed);
+            product.price_usd = Some(changed);
         }
-
-        list.push(p);
     }
 
     Ok(list)
@@ -76,15 +72,14 @@ pub async fn get_product(product_id: String, user_currency: String) -> Result<Pr
         }
     };
 
-    let price: Money;
-
     if product.price_usd.as_ref().unwrap().currency_code != user_currency {
+        // Convert the product price to the user's currency.
         let request = CurrencyConversionRequest {
             from: product.price_usd.clone(),
             to_code: user_currency,
         };
 
-        price = match currency_service_client.convert(request).await {
+        let price = match currency_service_client.convert(request).await {
             Ok(changed) => changed.into_inner(),
             Err(_) => {
                 return Err(anyhow::anyhow!(
@@ -92,11 +87,9 @@ pub async fn get_product(product_id: String, user_currency: String) -> Result<Pr
                 ));
             }
         };
-    } else {
-        price = product.price_usd.unwrap();
-    }
 
-    product.price_usd = Some(price);
+        product.price_usd = Some(price);
+    }
 
     Ok(product)
 }
