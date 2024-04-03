@@ -6,12 +6,12 @@
 
 [English](./README.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
 
-このプロジェクトは、Google が提供している「Online Boutique」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
+このプロジェクトは、Google が提供している「**Online Boutique**」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
 ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
 次の表で、「Rewote」欄に「Rust」と書かれているサービスを、Rust で書き直しました。「Rust」と書いていないサービスは、オリジナルのままです。
 
-This project is a rewrite of parts of the "Online Boutique" (microservices-demo) demo application provided by Google in Rust.  
+This project is a rewrite of parts of the "**Online Boutique**" (microservices-demo) demo application provided by Google in Rust.  
 It is a web-based e-commerce application that allows users to browse products, add them to a cart, and purchase them. It runs on a Kubernetes cluster and the microservices communicate with each other using gRPC. The development languages used are Go, C#, JavaScript, Java, and Python.  
 It consists of 11 microservices. I have rewritten 4 of these services in Rust.  
 In the following table, services marked in the 'Rewrote' column as 'Rust' have been rewritten in Rust. Services not marked as 'Rust' remain in their original state.
@@ -39,7 +39,7 @@ In the following table, services marked in the 'Rewrote' column as 'Rust' have b
 
 私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
 [axum](https://github.com/tokio-rs/axum) 、 [Tokio](https://tokio.rs/) 、[tonic](https://github.com/hyperium/tonic) などを使うのは初めてでしたたので、いろいろと調べるのに時間がかかりました。よりよいコーディングを求めて、何度も書き直しました。  
-Rust は一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、Rust は非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
+Rust は、私が一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
 実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
 
@@ -51,62 +51,44 @@ There are still many areas for improvement in the implementation I did this time
 
 <br>
 
-## Quick Start
-
-### 開発環境のセットアップ
-
-<br>
-
-## 開発ドキュメント
-
-[オリジナルの開発ドキュメント](/docs/development-guide.md)
-
-[Rust での書き直し](/docs/rust/jp/index.md)
-
-<br>
-
-## パフォーマンス比較
-
-http://localhost:8080/
-
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     52ms |             9ms |
-| 2 回目 |     13ms |            10ms |
-| 3 回目 |     15ms |            11ms |
-
-http://localhost:8080/product/OLJCESPC7Z
-
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     17ms |            13ms |
-| 2 回目 |     15ms |            14ms |
-| 3 回目 |     15ms |            15ms |
-
-<br>
-
-![Continuous Integration](https://github.com/GoogleCloudPlatform/microservices-demo/workflows/Continuous%20Integration%20-%20Main/Release/badge.svg)
-
-**Online Boutique** is a cloud-first microservices demo application. The application is a
-web-based e-commerce app where users can browse items,
-add them to the cart, and purchase them.
-
-Google uses this application to demonstrate the use of technologies like
-Kubernetes, GKE, Istio, Stackdriver, and gRPC. This application
-works on any Kubernetes cluster, like Google
-Kubernetes Engine (GKE). It’s **easy to deploy with little to no configuration**.
-
-If you’re using this demo, please **★Star** this repository to show your interest!
-
-**Note to Googlers (Google employees):** Please fill out the form at [go/microservices-demo](http://go/microservices-demo).
-
 ## Screenshots
 
 | Home Page                                                                                                             | Checkout Screen                                                                                                        |
 | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
-## Quickstart (GKE)
+## Quickstart
+
+### 開発環境のセットアップ
+
+### Docker for Desktop
+
+1. To launch **Docker for Desktop** (tested with Mac/Windows). Go to Preferences:
+
+   - choose “Enable Kubernetes”,
+   - set CPUs to at least 3, and Memory to at least 6.0 GiB
+   - on the "Disk" tab, set at least 32 GB disk space
+
+2. Run `kubectl get nodes` to verify you're connected to the respective control plane.
+
+3. Run `skaffold run` (first time will be slow, it can take ~20 minutes).
+   This will build and deploy the application. If you need to rebuild the images
+   automatically as you refactor the code, run `skaffold dev` command.
+
+4. Run `kubectl get pods` to verify the Pods are ready and running.
+
+5. Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
+
+6. Navigate to `localhost:8080` to access the web frontend.
+
+<br>
+
+- Cleanup
+
+  - If you've deployed the application with `skaffold run` command, you can run
+    `skaffold delete` to clean up the deployed resources.
+
+### GKE
 
 1. Ensure you have the following requirements:
 
@@ -211,78 +193,32 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 - replacing the in-cluster Redis cache with [Google Cloud Memorystore (Redis)](/kustomize/components/memorystore), [AlloyDB](/kustomize/components/alloydb) or [Google Cloud Spanner](/kustomize/components/spanner)
 - etc.
 
-## Architecture
-
-**Online Boutique** is composed of 11 microservices written in different
-languages that talk to each other over gRPC.
-
-[![Architecture of
-microservices](/docs/img/architecture-diagram.png)](/docs/img/architecture-diagram.png)
-
-Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
-
-| Service                                             | Language | Description                                                                                                                       |
-| --------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| [frontend](/src/frontend)                           | Go       | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
-| [cartservice](/src/cartservice)                     | C#       | Stores the items in the user's shopping cart in Redis and retrieves it.                                                           |
-| [productcatalogservice](/src/productcatalogservice) | Go       | Provides the list of products from a JSON file and ability to search products and get individual products.                        |
-| [currencyservice](/src/currencyservice)             | Node.js  | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
-| [paymentservice](/src/paymentservice)               | Node.js  | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
-| [shippingservice](/src/shippingservice)             | Go       | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
-| [emailservice](/src/emailservice)                   | Python   | Sends users an order confirmation email (mock).                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go       | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
-| [recommendationservice](/src/recommendationservice) | Python   | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java     | Provides text ads based on given context words.                                                                                   |
-
-## Features
-
-- **[Kubernetes](https://kubernetes.io)/[GKE](https://cloud.google.com/kubernetes-engine/):**
-  The app is designed to run on Kubernetes (both locally on "Docker for
-  Desktop", as well as on the cloud with GKE).
-- **[gRPC](https://grpc.io):** Microservices use a high volume of gRPC calls to
-  communicate to each other.
-- **[Istio](https://istio.io):** Application works on Istio service mesh.
-- **[Cloud Operations (Stackdriver)](https://cloud.google.com/products/operations):** Many services
-  are instrumented with **Profiling** and **Tracing**. In
-  addition to these, using Istio enables features like Request/Response
-  **Metrics** and **Context Graph** out of the box. When it is running out of
-  Google Cloud, this code path remains inactive.
-- **[Skaffold](https://skaffold.dev):** Application
-  is deployed to Kubernetes with a single command using Skaffold.
-- **Synthetic Load Generation:** The application demo comes with a background
-  job that creates realistic usage patterns on the website using
-  [Locust](https://locust.io/) load generator.
-
 ## Development
 
 See the [Development guide](/docs/development-guide.md) to learn how to run and develop this app locally.
 
-## Demos featuring Online Boutique
+## 開発ドキュメント
 
-- [The new Kubernetes Gateway API with Istio and Anthos Service Mesh (ASM)](https://medium.com/p/9d64c7009cd)
-- [Use Azure Redis Cache with the Online Boutique sample on AKS](https://medium.com/p/981bd98b53f8)
-- [Sail Sharp, 8 tips to optimize and secure your .NET containers for Kubernetes](https://medium.com/p/c68ba253844a)
-- [Deploy multi-region application with Anthos and Google cloud Spanner](https://medium.com/google-cloud/a2ea3493ed0)
-- [Use Google Cloud Memorystore (Redis) with the Online Boutique sample on GKE](https://medium.com/p/82f7879a900d)
-- [Use Helm to simplify the deployment of Online Boutique, with a Service Mesh, GitOps, and more!](https://medium.com/p/246119e46d53)
-- [How to reduce microservices complexity with Apigee and Anthos Service Mesh](https://cloud.google.com/blog/products/application-modernization/api-management-and-service-mesh-go-together)
-- [gRPC health probes with Kubernetes 1.24+](https://medium.com/p/b5bd26253a4c)
-- [Use Google Cloud Spanner with the Online Boutique sample](https://medium.com/p/f7248e077339)
-- [Seamlessly encrypt traffic from any apps in your Mesh to Memorystore (redis)](https://medium.com/google-cloud/64b71969318d)
-- [Strengthen your app's security with Anthos Service Mesh and Anthos Config Management](https://cloud.google.com/service-mesh/docs/strengthen-app-security)
-- [From edge to mesh: Exposing service mesh applications through GKE Ingress](https://cloud.google.com/architecture/exposing-service-mesh-apps-through-gke-ingress)
-- [Take the first step toward SRE with Cloud Operations Sandbox](https://cloud.google.com/blog/products/operations/on-the-road-to-sre-with-cloud-operations-sandbox)
-- [Deploying the Online Boutique sample application on Anthos Service Mesh](https://cloud.google.com/service-mesh/docs/onlineboutique-install-kpt)
-- [Anthos Service Mesh Workshop: Lab Guide](https://codelabs.developers.google.com/codelabs/anthos-service-mesh-workshop)
-- [KubeCon EU 2019 - Reinventing Networking: A Deep Dive into Istio's Multicluster Gateways - Steve Dake, Independent](https://youtu.be/-t2BfT59zJA?t=982)
-- Google Cloud Next'18 SF
-  - [Day 1 Keynote](https://youtu.be/vJ9OaAqfxo4?t=2416) showing GKE On-Prem
-  - [Day 3 Keynote](https://youtu.be/JQPOPV_VH5w?t=815) showing Stackdriver
-    APM (Tracing, Code Search, Profiler, Google Cloud Build)
-  - [Introduction to Service Management with Istio](https://www.youtube.com/watch?v=wCJrdKdD6UM&feature=youtu.be&t=586)
-- [Google Cloud Next'18 London – Keynote](https://youtu.be/nIq2pkNcfEI?t=3071)
-  showing Stackdriver Incident Response Management
+[オリジナルの開発ドキュメント](/docs/development-guide.md)
 
----
+[Rust での書き直し](/docs/rust/jp/index.md)
 
-This is not an official Google project.
+<br>
+
+## パフォーマンス比較
+
+http://localhost:8080/
+
+|        | Original | Rewrote in Rust |
+| ------ | -------: | --------------: |
+| 1 回目 |     52ms |             9ms |
+| 2 回目 |     13ms |            10ms |
+| 3 回目 |     15ms |            11ms |
+
+http://localhost:8080/product/OLJCESPC7Z
+
+|        | Original | Rewrote in Rust |
+| ------ | -------: | --------------: |
+| 1 回目 |     17ms |            13ms |
+| 2 回目 |     15ms |            14ms |
+| 3 回目 |     15ms |            15ms |

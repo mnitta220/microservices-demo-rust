@@ -8,7 +8,7 @@
 
 この図の各サービスが、Kubernetes のノードとして動作します。サービス間の通信には gRPC が使われます。  
 Rust で書き直しを行ったのは、frontend、productcatalog、cart、ad です。  
-Rust で書き直すにあたって、フロントエンドには Web フレームワークである「[axum](https://github.com/tokio-rs/axum)」を、 gRPC のライブラリには「[tonic](https://github.com/hyperium/tonic)」を使いました。
+Rust で書き直すにあたって、フロントエンドには Web フレームワークである [axum](https://github.com/tokio-rs/axum) を、 gRPC のライブラリには [tonic](https://github.com/hyperium/tonic) を使いました。
 
 ## Index
 
@@ -18,7 +18,8 @@ Rust で書き直すにあたって、フロントエンドには Web フレー�
   1. [ページ](./frontend/3.page.md)
   1. [モデル](./frontend/4.model.md)
   1. [gRPC](./frontend/5.rpc.md)
-  1. [PageProps](./frontend/6.page-props.md)
-  1. [コンポーネント](./frontend/7.component.md)
+  1. [コンポーネント](./frontend/6.component.md)
 - [バックエンド](./backend/0.backend.md)
   1. [productcatalog サービス](./backend/1.productcatalog.md)
+  1. [cart サービス](./backend/2.cart.md)
+  1. [ad サービス](./backend/3.ad.md)
