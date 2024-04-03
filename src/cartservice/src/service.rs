@@ -114,8 +114,6 @@ impl crate::CartService for CartServiceImpl {
 }
 
 async fn get_cart_sub(request: crate::GetCartRequest) -> Result<crate::Cart> {
-    //let user_id = request.into_inner().user_id;
-
     let store = match get_redis_value(&request.user_id) {
         Ok(s) => s,
         Err(_) => {

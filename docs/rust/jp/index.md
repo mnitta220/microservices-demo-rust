@@ -14,5 +14,11 @@ Rust で書き直すにあたって、フロントエンドには Web フレー�
 
 - [フロントエンド](./frontend/0.frontend.md)
   1. [axum](./frontend/1.axum.md)
-  1. [handler](./frontend/2.handler.md)
+  1. [ハンドラー](./frontend/2.handler.md)
+  1. [ページ](./frontend/3.page.md)
+  1. [モデル](./frontend/4.model.md)
+  1. [gRPC](./frontend/5.rpc.md)
+  1. [PageProps](./frontend/6.page-props.md)
+  1. [コンポーネント](./frontend/7.component.md)
 - [バックエンド](./backend/0.backend.md)
+  1. [productcatalog サービス](./backend/1.productcatalog.md)
