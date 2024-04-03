@@ -1,18 +1,15 @@
 use crate::{components::Component, model, rpc, PageProps};
-use anyhow::Result;
 
 impl Component for model::hot_product::HotProducts {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, props: &PageProps, buf: &mut String) {
         for product in &self.products {
-            product.write(props, buf)?;
+            product.write(props, buf);
         }
-
-        Ok(())
     }
 }
 
 impl Component for rpc::hipstershop::Product {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         let money = self.price_usd.as_ref().unwrap();
 
         buf.push_str(r#"<div class="col-md-4 hot-product-card">"#);
@@ -41,7 +38,5 @@ impl Component for rpc::hipstershop::Product {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</div>"#);
-
-        Ok(())
     }
 }

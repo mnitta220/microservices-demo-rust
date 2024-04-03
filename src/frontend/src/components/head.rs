@@ -1,10 +1,9 @@
 use crate::{components::Component, PageProps};
-use anyhow::Result;
 
 pub struct Head {}
 
 impl Component for Head {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<head>"#);
         {
             buf.push_str(r#"<meta charset="UTF-8">"#);
@@ -29,7 +28,5 @@ impl Component for Head {
             buf.push_str(r#"<link rel="icon" type="image/x-icon" href="/static/favicon.ico">"#);
         }
         buf.push_str(r#"</head>"#);
-
-        Ok(())
     }
 }

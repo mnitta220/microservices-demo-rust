@@ -1,11 +1,10 @@
 use crate::{components::Component, PageProps};
-use anyhow::Result;
 use chrono::prelude::*;
 
 pub struct CheckoutForm {}
 
 impl Component for CheckoutForm {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<form class="cart-checkout-form" action="/cart/checkout" method="POST">"#);
         {
             buf.push_str(r#"<div class="row">"#);
@@ -132,6 +131,7 @@ impl Component for CheckoutForm {
                 buf.push_str(r#"<div class="col-md-4 cymbal-form-field">"#);
                 {
                     buf.push_str(r#"<label for="credit_card_expiration_year">Year</label>"#);
+
                     buf.push_str(r#"<select name="credit_card_expiration_year" id="credit_card_expiration_year">"#);
                     {
                         let now = Local::now();
@@ -154,6 +154,7 @@ impl Component for CheckoutForm {
                         }
                     }
                     buf.push_str(r#"</select>"#);
+
                     buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="cymbal-dropdown-chevron">"#);
                 }
                 buf.push_str(r#"</div>"#);
@@ -180,7 +181,5 @@ impl Component for CheckoutForm {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</form>"#);
-
-        Ok(())
     }
 }

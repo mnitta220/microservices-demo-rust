@@ -1,7 +1,6 @@
 use super::super::Component;
 use super::parts::{checkout::CheckoutForm, footer::Footer, header::BodyHeader};
 use crate::PageProps;
-use anyhow::Result;
 
 pub struct CartBody {
     pub header: Box<dyn Component + Send>,
@@ -24,10 +23,10 @@ impl CartBody {
 }
 
 impl Component for CartBody {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<body>"#);
         {
-            self.header.write(props, buf)?;
+            self.header.write(props, buf);
 
             buf.push_str(r#"<main role="main" class="cart-sections">"#);
             {
@@ -83,7 +82,7 @@ impl Component for CartBody {
                                     buf.push_str(r#"</div>"#);
 
                                     for item in &cart.items {
-                                        item.write(props, buf)?;
+                                        item.write(props, buf);
                                     }
 
                                     buf.push_str(r#"<div class="row cart-summary-shipping-row">"#);
@@ -108,7 +107,7 @@ impl Component for CartBody {
 
                                 buf.push_str(r#"<div class="col-lg-5 offset-lg-1 col-xl-4">"#);
                                 {
-                                    self.checkout_form.write(props, buf)?;
+                                    self.checkout_form.write(props, buf);
                                 }
                                 buf.push_str(r#"</div>"#);
                             }
@@ -121,13 +120,11 @@ impl Component for CartBody {
             buf.push_str(r#"</main>"#);
 
             if let Some(recommendations) = &props.recommendations {
-                recommendations.write(props, buf)?
+                recommendations.write(props, buf)
             }
 
-            self.footer.write(props, buf)?;
+            self.footer.write(props, buf);
         }
         buf.push_str(r#"</body>"#);
-
-        Ok(())
     }
 }

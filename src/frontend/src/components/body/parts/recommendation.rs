@@ -1,8 +1,7 @@
 use crate::{components::Component, model, PageProps};
-use anyhow::Result;
 
 impl Component for model::recommendation::RecommendationList {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<section class="recommendations">"#);
         {
             buf.push_str(r#"<div class="container">"#);
@@ -15,7 +14,7 @@ impl Component for model::recommendation::RecommendationList {
 
                         buf.push_str(r#"<div class="row">"#);
                         for item in &self.items {
-                            item.write(props, buf)?;
+                            item.write(props, buf);
                         }
                         buf.push_str(r#"</div>"#);
                     }
@@ -26,13 +25,11 @@ impl Component for model::recommendation::RecommendationList {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</section>"#);
-
-        Ok(())
     }
 }
 
 impl Component for model::recommendation::RecommendationItem {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<div class="col-md-3">"#);
         {
             buf.push_str(r#"<div>"#);
@@ -58,7 +55,5 @@ impl Component for model::recommendation::RecommendationItem {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</div>"#);
-
-        Ok(())
     }
 }

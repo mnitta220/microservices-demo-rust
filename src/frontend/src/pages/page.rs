@@ -62,14 +62,10 @@ impl Page {
         buf.push_str(r#"<!DOCTYPE html>"#);
         buf.push_str(r#"<html lang="en">"#);
         {
-            if let Err(e) = self.head.write(props, &mut buf) {
-                return Err(e);
-            }
+            self.head.write(props, &mut buf);
 
             if let Some(body) = &self.body {
-                if let Err(e) = body.write(props, &mut buf) {
-                    return Err(e);
-                }
+                body.write(props, &mut buf);
             }
         }
         buf.push_str(r#"</html>"#);

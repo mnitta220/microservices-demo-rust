@@ -1,8 +1,7 @@
 use crate::{components::Component, model, PageProps};
-use anyhow::Result;
 
 impl Component for model::ad::AdItem {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<div class="ad">"#);
         {
             buf.push_str(r#"<div class="container py-3 px-lg-5 py-lg-5">"#);
@@ -21,7 +20,5 @@ impl Component for model::ad::AdItem {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</div>"#);
-
-        Ok(())
     }
 }

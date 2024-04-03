@@ -1,6 +1,5 @@
 use super::currency::CurrencyForm;
 use crate::{components::Component, PageProps};
-use anyhow::Result;
 
 pub struct BodyHeader {
     pub currency_form: Box<dyn Component + Send>,
@@ -17,7 +16,7 @@ impl BodyHeader {
 }
 
 impl Component for BodyHeader {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<header>"#);
         {
             buf.push_str(r#"<div class="navbar sub-navbar">"#);
@@ -36,7 +35,7 @@ impl Component for BodyHeader {
                         {
                             buf.push_str(r#"<div class="h-control">"#);
                             {
-                                self.currency_form.write(props, buf)?;
+                                self.currency_form.write(props, buf);
 
                                 buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="icon arrow" />"#);
                             }
@@ -76,7 +75,5 @@ impl Component for BodyHeader {
             buf.push_str(r#"</span>"#);
         }
         buf.push_str(r#"</div>"#);
-
-        Ok(())
     }
 }

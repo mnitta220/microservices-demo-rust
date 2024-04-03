@@ -1,10 +1,9 @@
 use crate::{components::Component, PageProps};
-use anyhow::Result;
 
 pub struct Footer {}
 
 impl Component for Footer {
-    fn write(&self, props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, props: &PageProps, buf: &mut String) {
         buf.push_str(r#"<footer class="py-5">"#);
         {
             buf.push_str(r#"<div class="footer-top">"#);
@@ -76,6 +75,7 @@ impl Component for Footer {
             buf.push_str(r#"</div>"#);
         }
         buf.push_str(r#"</footer>"#);
+
         buf.push_str(
             r#"<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" "#,
         );
@@ -84,7 +84,5 @@ impl Component for Footer {
         );
         buf.push_str(r#"crossorigin="anonymous">"#);
         buf.push_str(r#"</script>"#);
-
-        Ok(())
     }
 }

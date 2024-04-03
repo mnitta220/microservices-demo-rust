@@ -1,8 +1,7 @@
 use crate::{components::Component, model, PageProps};
-use anyhow::Result;
 
 impl Component for model::cart::CartItem {
-    fn write(&self, _props: &PageProps, buf: &mut String) -> Result<()> {
+    fn write(&self, _props: &PageProps, buf: &mut String) {
         if let Some(m) = &self.product.price_usd {
             buf.push_str(r#"<div class="row cart-summary-item-row">"#);
             {
@@ -68,7 +67,5 @@ impl Component for model::cart::CartItem {
             }
             buf.push_str(r#"</div>"#);
         }
-
-        Ok(())
     }
 }
