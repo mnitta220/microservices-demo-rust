@@ -2,7 +2,6 @@ use crate::{
     components::{head::Head, Component},
     model,
 };
-use anyhow::Result;
 use uuid::Uuid;
 
 // buffer size for outputting HTML content.
@@ -55,7 +54,7 @@ impl Page {
     }
 
     // output HTML content to buffer.
-    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> Result<String> {
+    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> String {
         // buffer for outputting HTML content.
         let mut buf = String::with_capacity(PAGE_BUFFER_SIZE);
 
@@ -70,6 +69,6 @@ impl Page {
         }
         buf.push_str(r#"</html>"#);
 
-        Ok(buf)
+        buf
     }
 }

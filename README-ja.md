@@ -37,14 +37,17 @@ In the following table, services marked in the 'Rewrote' column as 'Rust' have b
 
 ## 目的
 
-今回、私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、これまで Rust を使って Web システムを構築した経験がなかったからです。Rust での開発がどのようなものかを実際に試してみたかったのです。  
-microservices-demo は、学習と検証にちょうど良い規模のプロジェクトでした。特にフロントエンドでの Rust 活用について、試行錯誤を重ねました。その結果、フロントエンド開発においても Rust は非常に適した言語であるという結論に達しました。開発効率や生産性、そして構築されたシステムのパフォーマンスにも、とても満足しています。  
-今回行った開発手法が最善だとは考えていません。もし改善点やご意見がありましたら、ぜひお寄せください。
+私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
+[axum](https://github.com/tokio-rs/axum) 、 [Tokio](https://tokio.rs/) 、[tonic](https://github.com/hyperium/tonic) などを使うのは初めてでしたたので、いろいろと調べるのに時間がかかりました。よりよいコーディングを求めて、何度も書き直しました。  
+Rust は一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、Rust は非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
+実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
+今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
 
-The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I had no prior experience building web systems with Rust. I wanted to explore what it would be like.  
-The microservices-demo was a small enough project to be a good fit for learning and exploration.  
-I experimented extensively with using Rust for the frontend in particular. As a result, I was able to conclude that Rust is a very suitable language for frontend development as well. I was very satisfied with the development efficiency and productivity, as well as the performance of the built system.  
-I do not believe that the way I developed the project here is the best way. If you have any suggestions or feedback, I would appreciate hearing them.
+The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I wanted to see what it would be like to build a web system that runs on a Kubernetes cluster using Rust. The microservices-demo was a project of just the right size for learning and experimentation.  
+It took me a while to figure things out, as this was my first time using libraries like [axum](https://github.com/tokio-rs/axum), [Tokio](https://tokio.rs/), and [tonic](https://github.com/hyperium/tonic). I rewrote it several times seeking better coding practices.  
+Rust is my favorite language because it allows me to build systems with excellent memory safety and performance. I especially like the fact that it doesn't have a garbage collector. This project gave me the expected and satisfying results. I was also able to confirm that Rust is a very suitable language for frontend development, and that it excels in terms of development efficiency and productivity.  
+It seems that Rust is still used in few cases in actual system development. I hope that Rust adoption will increase in various system developments in the future.  
+There are still many areas for improvement in the implementation I did this time. If you have any feedback or suggestions for improvement, please let me know.
 
 <br>
 

@@ -52,7 +52,7 @@ pub async fn get_home(cookies: Cookies) -> Result<Html<String>, AppError> {
     let (session_id, currency) = session_info(cookies, false)?;
 
     let mut page = HomePage::new(session_id, currency).await?;
-    let buf = page.write()?;
+    let buf = page.write();
 
     Ok(Html(buf))
 }
@@ -66,7 +66,7 @@ pub async fn get_product(
     let (session_id, currency) = session_info(cookies, false)?;
 
     let mut page = ProductPage::new(session_id, currency, id).await?;
-    let buf = page.write()?;
+    let buf = page.write();
 
     Ok(Html(buf))
 }
@@ -77,7 +77,7 @@ pub async fn get_cart(cookies: Cookies) -> Result<Html<String>, AppError> {
     let (session_id, currency) = session_info(cookies, false)?;
 
     let mut page = CartPage::new(session_id, currency).await?;
-    let buf = page.write()?;
+    let buf = page.write();
 
     Ok(Html(buf))
 }
@@ -188,7 +188,7 @@ pub async fn post_cart_checkout(
     let (session_id, currency) = session_info(cookies, true)?;
 
     let mut page = OrderPage::new(session_id, currency, input).await?;
-    let buf = page.write()?;
+    let buf = page.write();
 
     Ok(Html(buf))
 }

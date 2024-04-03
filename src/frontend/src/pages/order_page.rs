@@ -46,7 +46,7 @@ impl OrderPage {
         Ok(OrderPage { props, page })
     }
 
-    pub fn write(&mut self) -> Result<String> {
+    pub fn write(&mut self) -> String {
         self.page.write(&self.props)
     }
 }
