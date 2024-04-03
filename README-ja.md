@@ -6,15 +6,15 @@
 
 [English](./README.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
 
-このプロジェクトは、Google が提供している「**Online Boutique**」([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo))というデモアプリケーションの一部を、Rust で書き直したものです。  
-ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。Kubernetes クラスター上で動作し、マイクロサービスが gRPC で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
+このプロジェクトは、Google が提供している **Online Boutique** ([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)) デモアプリケーションの一部を、[Rust](https://www.rust-lang.org/ja) で書き直したものです。  
+ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。[Kubernetes](https://kubernetes.io/) クラスター上で動作し、マイクロサービスが [gRPC](https://grpc.io/) で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
-次の表で、「Rewote」欄に「Rust」と書かれているサービスを、Rust で書き直しました。「Rust」と書いていないサービスは、オリジナルのままです。
+次の表で、`Rewote` 欄に `Rust` と書かれているサービスを、Rust で書き直しました。`Rust` と書かれていないサービスは、オリジナルのままです。
 
-This project is a rewrite of parts of the "**Online Boutique**" (microservices-demo) demo application provided by Google in Rust.  
-It is a web-based e-commerce application that allows users to browse products, add them to a cart, and purchase them. It runs on a Kubernetes cluster and the microservices communicate with each other using gRPC. The development languages used are Go, C#, JavaScript, Java, and Python.  
+This project is a rewrite of parts of the **Online Boutique** ([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)) demo application provided by Google in [Rust](https://www.rust-lang.org/).  
+It is a web-based e-commerce application that allows users to browse products, add them to a cart, and purchase them. It runs on a [Kubernetes](https://kubernetes.io/) cluster and the microservices communicate with each other using [gRPC](https://grpc.io/). The development languages used are Go, C#, JavaScript, Java, and Python.  
 It consists of 11 microservices. I have rewritten 4 of these services in Rust.  
-In the following table, services marked in the 'Rewrote' column as 'Rust' have been rewritten in Rust. Services not marked as 'Rust' remain in their original state.
+In the following table, services marked in the `Rewrote` column as `Rust` have been rewritten in Rust. Services not marked as `Rust` remain in their original state.
 
 | Service                                             | Original<br>Language | Rewote | Description                                                                                                                                                                                                                                                                                |
 | --------------------------------------------------- | -------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -79,7 +79,7 @@ There are still many areas for improvement in the implementation I did this time
 
 5. Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
 
-6. Navigate to `localhost:8080` to access the web frontend.
+6. Navigate to http://localhost:8080 to access the web frontend.
 
 <br>
 
