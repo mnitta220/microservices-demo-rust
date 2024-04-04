@@ -30,6 +30,7 @@ Rust で書き直すにあたって、フロントエンドには Web フレー�
 <table style="width: 90%; margin-top: 20px;">
 <tr>
 <td style="text-align: left"></td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 <td style="text-align: right"><a href="./1.development/1-0.development.md">1. Rust での開発&nbsp;&gt;</a></td>
 </tr>
 </table>
