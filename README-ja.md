@@ -59,36 +59,43 @@ There are still many areas for improvement in the implementation I did this time
 
 ## Quickstart
 
-### 開発環境のセットアップ
+### Rust 開発環境のセットアップ
 
-### Docker for Desktop
+[Rust での開発](/docs/rust/jp/1.development/1-0.development.md)
 
-1. To launch **Docker for Desktop** (tested with Mac/Windows). Go to Preferences:
+### Docker Desktop での実行<br>Running on Docker Desktop
 
-   - choose “Enable Kubernetes”,
-   - set CPUs to at least 3, and Memory to at least 6.0 GiB
-   - on the "Disk" tab, set at least 32 GB disk space
+1. [Git](https://git-scm.com/)、[Docker Desktop](https://www.docker.com/products/docker-desktop/)、[Skaffold](https://skaffold.dev/docs/install/)をインストールします。<br>Install [Git](https://git-scm.com/), [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [Skaffold](https://skaffold.dev/docs/install/)
 
-2. Run `kubectl get nodes` to verify you're connected to the respective control plane.
+1. Docker Desktop の Settings - Kubernetes で “Enable Kubernetes” を選択します。<br>Select “Enable Kubernetes” in Docker Desktop Settings - Kubernetes
 
-3. Run `skaffold run` (first time will be slow, it can take ~20 minutes).
+1. Clone the repository.
+
+   ```sh
+   git clone https://github.com/mnitta220/microservices-demo-rust.git
+   cd microservices-demo-rust/
+   ```
+
+1. `kubectl get nodes` を実行して、docker-desktop コントロールプレーンに接続されていることを確認してください。<br>Run `kubectl get nodes` to verify you're connected to the docker-desktop control plane.
+
+1. `skaffold run` を実行してください（初回は遅く、約 20 分かかる場合があります）。 これによりアプリケーションがビルドされ、デプロイされます。コードをリファクタリングする際に自動的にイメージを再ビルドする必要がある場合は、`skaffold dev` コマンドを実行してください。<br>Run `skaffold run` (first time will be slow, it can take ~20 minutes).
    This will build and deploy the application. If you need to rebuild the images
    automatically as you refactor the code, run `skaffold dev` command.
 
-4. Run `kubectl get pods` to verify the Pods are ready and running.
+1. `kubectl get pods` を実行して、Pod が準備完了して実行中であることを確認してください。<br>Run `kubectl get pods` to verify the Pods are ready and running.
 
-5. Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
+1. `kubectl port-forward deployment/frontend 8080:8080` を実行して、ポートをフロントエンド サービスに転送してください。<br>Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
 
-6. Navigate to http://localhost:8080 to access the web frontend.
+1. http://localhost:8080 にアクセスして、ウェブフロントエンドにアクセスしてください。<br>Navigate to http://localhost:8080 to access the web frontend.
 
 <br>
 
 - Cleanup
 
-  - If you've deployed the application with `skaffold run` command, you can run
+  - `skaffold run` コマンドでアプリケーションをデプロイした場合、`skaffold delete` を実行してデプロイされたリソースをクリーンアップできます。<br>If you've deployed the application with `skaffold run` command, you can run
     `skaffold delete` to clean up the deployed resources.
 
-### GKE
+### GKE での実行<br>Running on GKE
 
 1. Ensure you have the following requirements:
 
@@ -98,8 +105,8 @@ There are still many areas for improvement in the implementation I did this time
 2. Clone the repository.
 
    ```sh
-   git clone https://github.com/GoogleCloudPlatform/microservices-demo
-   cd microservices-demo/
+   git clone https://github.com/mnitta220/microservices-demo-rust.git
+   cd microservices-demo-rust/
    ```
 
 3. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
@@ -197,11 +204,7 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 See the [Development guide](/docs/development-guide.md) to learn how to run and develop this app locally.
 
-## 開発ドキュメント
-
-[オリジナルの開発ドキュメント](/docs/development-guide.md)
-
-[Rust での書き直し](/docs/rust/jp/index.md)
+See the [Rust での書き直し](/docs/rust/jp/index.md)
 
 <br>
 
