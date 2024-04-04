@@ -11,27 +11,22 @@
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
 次の表で、`Rewote` 欄に "**Rust**" と書かれているサービスを Rust で書き直しました。"**Rust**" と書かれていないサービスはオリジナルのままです。
 
-This project is a rewrite of parts of the **Online Boutique** ([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)) demo application provided by Google in [Rust](https://www.rust-lang.org/).  
-It is a web-based e-commerce application that allows users to browse products, add them to a cart, and purchase them. It runs on a [Kubernetes](https://kubernetes.io/) cluster and the microservices communicate with each other using [gRPC](https://grpc.io/). The development languages used are Go, C#, JavaScript, Java, and Python.  
-It consists of 11 microservices. I have rewritten 4 of these services in Rust.  
-In the following table, services marked in the `Rewrote` column as "**Rust**" have been rewritten in Rust. Services not marked as "**Rust**" remain in their original state.
-
-| Service                                             | Original<br>Language | Rewote   | Description                                                                                                                                                                                                                                                                                |
-| --------------------------------------------------- | -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [frontend](/src/frontend)                           | Go                   | **Rust** | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. <br>ウェブサイトを提供するための HTTP サーバを公開します。サインアップ/ログインは不要で、すべてのユーザーに対して自動的にセッション ID を生成します。    |
-| [cartservice](/src/cartservice)                     | C#                   | **Rust** | Stores the items in the user's shopping cart in Redis and retrieves it.<br>ユーザーのショッピングカート内の商品を Redis に保存して、それを取得します。                                                                                                                                     |
-| [productcatalogservice](/src/productcatalogservice) | Go                   | **Rust** | Provides the list of products from a JSON file and ability to search products and get individual products. <br>JSON ファイルから商品の一覧を提供し、商品を検索して個々の商品を取得する機能を提供します。                                                                                   |
-| [currencyservice](/src/currencyservice)             | JavaScript           |          | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. <br>ある通貨の金額を別の通貨に変換します。ヨーロッパ中央銀行から取得した実際の値を使用します。これは最も高い QPS（1 秒あたりのクエリ数）のサービスです。 |
-| [paymentservice](/src/paymentservice)               | JavaScript           |          | Charges the given credit card info (mock) with the given amount and returns a transaction ID.<br>与えられたクレジットカード情報（モック）と金額で課金し、トランザクション ID を返します。                                                                                                  |
-| [shippingservice](/src/shippingservice)             | Go                   |          | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)<br>ショッピングカートに基づいて送料の見積もりを提供します。アイテムを指定された住所に発送します。（モック）                                                                              |
-| [emailservice](/src/emailservice)                   | Python               |          | Sends users an order confirmation email (mock).<br>ユーザーに注文確認のメールを送信します。（モック）                                                                                                                                                                                      |
-| [checkoutservice](/src/checkoutservice)             | Go                   |          | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.<br>ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                                             |
-| [recommendationservice](/src/recommendationservice) | Python               |          | Recommends other products based on what's given in the cart.<br>カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                                                                                                 |
-| [adservice](/src/adservice)                         | Java                 | **Rust** | Provides text ads based on given context words.<br>指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                                                                                                        |
+| Service                                             | Original<br>Language | Rewote   | Description                                                                                                                                          |
+| --------------------------------------------------- | -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [frontend](/src/frontend)                           | Go                   | **Rust** | ウェブサイトを提供するための HTTP サーバを公開します。サインアップ/ログインは不要で、すべてのユーザーに対して自動的にセッション ID を生成します。    |
+| [cartservice](/src/cartservice)                     | C#                   | **Rust** | ユーザーのショッピングカート内の商品を Redis に保存して、それを取得します。                                                                          |
+| [productcatalogservice](/src/productcatalogservice) | Go                   | **Rust** | JSON ファイルから商品の一覧を提供し、商品を検索して個々の商品を取得する機能を提供します。                                                            |
+| [currencyservice](/src/currencyservice)             | JavaScript           |          | ある通貨の金額を別の通貨に変換します。ヨーロッパ中央銀行から取得した実際の値を使用します。これは最も高い QPS（1 秒あたりのクエリ数）のサービスです。 |
+| [paymentservice](/src/paymentservice)               | JavaScript           |          | 与えられたクレジットカード情報（モック）と金額で課金し、トランザクション ID を返します。                                                             |
+| [shippingservice](/src/shippingservice)             | Go                   |          | ショッピングカートに基づいて送料の見積もりを提供します。アイテムを指定された住所に発送します。（モック）                                             |
+| [emailservice](/src/emailservice)                   | Python               |          | ユーザーに注文確認のメールを送信します。（モック）                                                                                                   |
+| [checkoutservice](/src/checkoutservice)             | Go                   |          | ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                 |
+| [recommendationservice](/src/recommendationservice) | Python               |          | カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                           |
+| [adservice](/src/adservice)                         | Java                 | **Rust** | 指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                     |
 
 <br>
 
-> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年 3 月 11 日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。<br>This project was developed by forking the source code of [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) as of March 11, 2024. Updates made to microservices-demo after that date have not been incorporated.
+> このプロジェクトは、[microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) の 2024 年 3 月 11 日時点のソースコードを fork して開発を行いました。それ以降に microservices-demo で行われた更新は取り込んでいません。
 
 <br>
 
@@ -42,12 +37,6 @@ In the following table, services marked in the `Rewrote` column as "**Rust**" ha
 Rust は、私が一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
 実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
-
-The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I wanted to see what it would be like to build a web system that runs on a Kubernetes cluster using Rust. The microservices-demo was a project of just the right size for learning and experimentation.  
-It took me a while to figure things out, as this was my first time using libraries like [axum](https://github.com/tokio-rs/axum), [Tokio](https://tokio.rs/), and [tonic](https://github.com/hyperium/tonic). I rewrote it several times seeking better coding practices.  
-Rust is my favorite language because it allows me to build systems with excellent memory safety and performance. I especially like the fact that it doesn't have a garbage collector. This project gave me the expected and satisfying results. I was also able to confirm that Rust is a very suitable language for frontend development, and that it excels in terms of development efficiency and productivity.  
-It seems that Rust is still used in few cases in actual system development. I hope that Rust adoption will increase in various system developments in the future.  
-There are still many areas for improvement in the implementation I did this time. If you have any feedback or suggestions for improvement, please let me know.
 
 <br>
 
@@ -63,11 +52,11 @@ There are still many areas for improvement in the implementation I did this time
 
 [Rust での開発](/docs/rust/jp/1.development/1-0.development.md)
 
-### Docker Desktop での実行<br>Running on Docker Desktop
+### Docker Desktop での実行
 
-1. [Git](https://git-scm.com/)、[Docker Desktop](https://www.docker.com/products/docker-desktop/)、[Skaffold](https://skaffold.dev/docs/install/)をインストールします。<br>Install [Git](https://git-scm.com/), [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [Skaffold](https://skaffold.dev/docs/install/)
+1. [Git](https://git-scm.com/)、[Docker Desktop](https://www.docker.com/products/docker-desktop/)、[Skaffold](https://skaffold.dev/docs/install/)をインストールします。
 
-1. Docker Desktop の Settings - Kubernetes で “Enable Kubernetes” を選択します。<br>Select “Enable Kubernetes” in Docker Desktop Settings - Kubernetes
+1. Docker Desktop の Settings - Kubernetes で “Enable Kubernetes” を選択します。
 
 1. Clone the repository.
 
@@ -76,26 +65,24 @@ There are still many areas for improvement in the implementation I did this time
    cd microservices-demo-rust/
    ```
 
-1. `kubectl get nodes` を実行して、docker-desktop コントロールプレーンに接続されていることを確認してください。<br>Run `kubectl get nodes` to verify you're connected to the docker-desktop control plane.
+1. `kubectl get nodes` を実行して、docker-desktop コントロールプレーンに接続されていることを確認してください。
 
-1. `skaffold run` を実行してください（初回は遅く、約 20 分かかる場合があります）。 これによりアプリケーションがビルドされ、デプロイされます。コードをリファクタリングする際に自動的にイメージを再ビルドする必要がある場合は、`skaffold dev` コマンドを実行してください。<br>Run `skaffold run` (first time will be slow, it can take ~20 minutes).
-   This will build and deploy the application. If you need to rebuild the images
-   automatically as you refactor the code, run `skaffold dev` command.
+1. `skaffold run` を実行してください（初回は遅く、約 20 分かかる場合があります）。
+   これによりアプリケーションがビルドされ、デプロイされます。コードをリファクタリングする際に自動的にイメージを再ビルドする必要がある場合は、`skaffold dev` コマンドを実行してください。
 
-1. `kubectl get pods` を実行して、Pod が準備完了して実行中であることを確認してください。<br>Run `kubectl get pods` to verify the Pods are ready and running.
+1. `kubectl get pods` を実行して、Pod が準備完了して実行中であることを確認してください。
 
-1. `kubectl port-forward deployment/frontend 8080:8080` を実行して、ポートをフロントエンド サービスに転送してください。<br>Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
+1. `kubectl port-forward deployment/frontend 8080:8080` を実行して、ポートをフロントエンド サービスに転送してください。
 
-1. http://localhost:8080 にアクセスして、ウェブフロントエンドにアクセスしてください。<br>Navigate to http://localhost:8080 to access the web frontend.
+1. http://localhost:8080 にアクセスして、ウェブフロントエンドにアクセスしてください。
 
 <br>
 
 - Cleanup
 
-  - `skaffold run` コマンドでアプリケーションをデプロイした場合、`skaffold delete` を実行してデプロイされたリソースをクリーンアップできます。<br>If you've deployed the application with `skaffold run` command, you can run
-    `skaffold delete` to clean up the deployed resources.
+  - `skaffold run` コマンドでアプリケーションをデプロイした場合、`skaffold delete` を実行してデプロイされたリソースをクリーンアップできます。
 
-### GKE での実行<br>Running on GKE
+### GKE での実行
 
 1. Ensure you have the following requirements:
 
