@@ -192,7 +192,7 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 ## Development
 
-The method for developing this project on a local PC is described in the [Rust Rewrite](/docs/rust/en/index.md).
+The method for developing this project on a local PC is described in the [Rewrite in Rust](/docs/rust/en/index.md).
 
 See also original [Development guide](/docs/development-guide.md).
 
