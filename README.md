@@ -200,10 +200,10 @@ See also original [Development guide](/docs/development-guide.md).
 
 ## Performance comparison
 
-I measured the response time by accessing [http://localhost:8080/](http://localhost:8080/) using the Thunder Client extension in VSCode after starting it with `skaffold run` on my local PC. The results of three measurements for both the original and Rust versions are as follows:
+I measured the response time by accessing [http://localhost:8080/](http://localhost:8080/) using the Thunder Client extension in VSCode after starting it with `skaffold run` on my local PC. The results of three measurements for both the original and Rust version are as follows:
 
-|             | Original | Rewrote in Rust |
-| ----------- | -------: | --------------: |
-| First time  |     52ms |            11ms |
-| Second time |     13ms |            10ms |
-| Third time  |     15ms |            12ms |
+|             | Original | Rust version |
+| ----------- | -------: | -----------: |
+| First time  |     52ms |         11ms |
+| Second time |     13ms |         10ms |
+| Third time  |     15ms |         12ms |
