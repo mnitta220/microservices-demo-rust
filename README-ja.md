@@ -35,7 +35,7 @@
 私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
 [axum](https://github.com/tokio-rs/axum) 、 [Tokio](https://tokio.rs/) 、[tonic](https://github.com/hyperium/tonic) などを使うのは初めてでしたたので、いろいろと調べるのに時間がかかりました。よりよいコーディングを求めて、何度も書き直しました。  
 今回、フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
-昨今、SPA(シングルページアプリケーション)が流行していますが、クライアントアプリが肥大化するので、私はあまり好きではありません。今回の開発は、React に触発されながらも、昔ながらの、サーバーサイドで HTML を生成する方法を採用しました。  
+昨今、SPA(シングルページアプリケーション)が流行していますが、クライアントアプリが肥大化するので、私はあまり好きではありません。今回の開発では、サーバーサイドで HTML を生成する昔ながらの方法を採用しました。  
 Rust は、私が一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
 実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
@@ -52,7 +52,7 @@ Rust は、私が一番好きな言語です。メモリ安全性とパフォー
 
 ### Rust 開発環境のセットアップ
 
-[Rust での開発](/docs/rust/jp/1.development/1-0.development.md)
+このプロジェクトを、Rust で開発する方法は、[Rust での開発](/docs/rust/jp/1.development/1-0.development.md) をご覧ください。
 
 ### Docker Desktop での実行
 
@@ -67,7 +67,7 @@ Rust は、私が一番好きな言語です。メモリ安全性とパフォー
    cd microservices-demo-rust/
    ```
 
-1. `kubectl get nodes` を実行して、docker-desktop コントロールプレーンに接続されていることを確認してください。
+1. `kubectl get nodes` を実行して、docker-desktop コントロールプレーンが起動していることを確認してください。
 
 1. `skaffold run` を実行してください（初回は遅く、約 30 分かかる場合があります）。
    これによりアプリケーションがビルドされ、デプロイされます。コードをリファクタリングする際に自動的にイメージを再ビルドする必要がある場合は、`skaffold dev` コマンドを実行してください。
@@ -199,7 +199,7 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 ## パフォーマンス比較
 
-私のローカル PC で `skaffold run` で起動し、http://localhost:8080/　にアクセスした応答時間を VSCode の Thunder Client 拡張機能で計測しました。  
+私のローカル PC で `skaffold run` で起動し、[http://localhost:8080/](http://localhost:8080/)　にアクセスした応答時間を VSCode の Thunder Client 拡張機能で計測しました。  
 オリジナルと Rust での書き換えで、それぞれ 3 回計測した結果が以下の通りです。
 
 |        | オリジナル | Rust での書き換え |

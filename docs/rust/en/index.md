@@ -8,7 +8,7 @@ This application has the architecture shown in the following diagram.
 
 Each service acts as a Kubernetes node. gRPC is used for communication between services.
 The **frontend**, **productcatalog**, **cart**, and **ad** were rewritten in Rust.  
-When rewriting it in Rust, I used the web framework [axum](https://github.com/tokio-rs/axum) for the frontend and [tonic](https://github.com/hyperium/tonic) for the gRPC library.
+When rewriting them in Rust, I used the web framework [axum](https://github.com/tokio-rs/axum) for the frontend and [tonic](https://github.com/hyperium/tonic) for the gRPC library.
 
 In rewriting, rather than simply replacing the original source code with Rust, there were some parts where I rewrote the code to be more efficient and omitted time-consuming implementation.
 

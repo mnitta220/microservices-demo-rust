@@ -51,7 +51,7 @@ There are still many areas for improvement in the implementation I did this time
 
 ### Development in Rust
 
-[Development in Rust](/docs/rust/en/1.development/1-0.development.md)
+For information on how to develop this project in Rust, please see the [Development in Rust](/docs/rust/en/1.development/1-0.development.md).
 
 ### Running on Docker Desktop
 
@@ -66,7 +66,7 @@ There are still many areas for improvement in the implementation I did this time
    cd microservices-demo-rust/
    ```
 
-1. Run `kubectl get nodes` to verify you're connected to the docker-desktop control plane.
+1. Run `kubectl get nodes` to verify docker-desktop control plane is running.
 
 1. Run `skaffold run` (first time will be slow, it can take ~30 minutes).
    This will build and deploy the application. If you need to rebuild the images
@@ -200,7 +200,7 @@ See also original [Development guide](/docs/development-guide.md).
 
 ## Performance comparison
 
-I measured the response time by accessing http://localhost:8080/ using the Thunder Client extension in VSCode after starting it with `skaffold run` on my local PC. The results of three measurements for both the original and Rust versions are as follows:
+I measured the response time by accessing [http://localhost:8080/](http://localhost:8080/) using the Thunder Client extension in VSCode after starting it with `skaffold run` on my local PC. The results of three measurements for both the original and Rust versions are as follows:
 
 |             | Original | Rewrote in Rust |
 | ----------- | -------: | --------------: |
