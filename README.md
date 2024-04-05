@@ -54,9 +54,9 @@ There are still many areas for improvement in the implementation I did this time
 
 ### Running on Docker Desktop
 
-1. [Git](https://git-scm.com/)、[Docker Desktop](https://www.docker.com/products/docker-desktop/)、[Skaffold](https://skaffold.dev/docs/install/)をインストールします。<br>Install [Git](https://git-scm.com/), [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [Skaffold](https://skaffold.dev/docs/install/)
+1. Install [Git](https://git-scm.com/), [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [Skaffold](https://skaffold.dev/docs/install/)
 
-1. Docker Desktop の Settings - Kubernetes で “Enable Kubernetes” を選択します。<br>Select “Enable Kubernetes” in Docker Desktop Settings - Kubernetes
+1. Select “Enable Kubernetes” in Docker Desktop Settings - Kubernetes
 
 1. Clone the repository.
 
@@ -193,7 +193,7 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 See the [Development guide](/docs/development-guide.md) to learn how to run and develop this app locally.
 
-See the [Rust での書き直し](/docs/rust/jp/index.md)
+See the [Rewrote in Rust](/docs/rust/en/index.md)
 
 <br>
 

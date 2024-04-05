@@ -9,20 +9,20 @@
 このプロジェクトは、Google が提供している **Online Boutique** ([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)) デモアプリケーションの一部を、[Rust](https://www.rust-lang.org/ja) で書き直したものです。  
 ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。[Kubernetes](https://kubernetes.io/) クラスター上で動作し、マイクロサービスが [gRPC](https://grpc.io/) で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
-次の表で、`Rewote` 欄に "**Rust**" と書かれているサービスを Rust で書き直しました。"**Rust**" と書かれていないサービスはオリジナルのままです。
+次の表で、`書き直し` 欄に "**Rust**" と書かれているサービスを Rust で書き直しました。"**Rust**" と書かれていないサービスはオリジナルのままです。
 
-| Service                                             | Original<br>Language | Rewote   | Description                                                                                                                                          |
-| --------------------------------------------------- | -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [frontend](/src/frontend)                           | Go                   | **Rust** | ウェブサイトを提供するための HTTP サーバを公開します。サインアップ/ログインは不要で、すべてのユーザーに対して自動的にセッション ID を生成します。    |
-| [cartservice](/src/cartservice)                     | C#                   | **Rust** | ユーザーのショッピングカート内の商品を Redis に保存して、それを取得します。                                                                          |
-| [productcatalogservice](/src/productcatalogservice) | Go                   | **Rust** | JSON ファイルから商品の一覧を提供し、商品を検索して個々の商品を取得する機能を提供します。                                                            |
-| [currencyservice](/src/currencyservice)             | JavaScript           |          | ある通貨の金額を別の通貨に変換します。ヨーロッパ中央銀行から取得した実際の値を使用します。これは最も高い QPS（1 秒あたりのクエリ数）のサービスです。 |
-| [paymentservice](/src/paymentservice)               | JavaScript           |          | 与えられたクレジットカード情報（モック）と金額で課金し、トランザクション ID を返します。                                                             |
-| [shippingservice](/src/shippingservice)             | Go                   |          | ショッピングカートに基づいて送料の見積もりを提供します。アイテムを指定された住所に発送します。（モック）                                             |
-| [emailservice](/src/emailservice)                   | Python               |          | ユーザーに注文確認のメールを送信します。（モック）                                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go                   |          | ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                 |
-| [recommendationservice](/src/recommendationservice) | Python               |          | カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                           |
-| [adservice](/src/adservice)                         | Java                 | **Rust** | 指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                     |
+| サービス                                            | オリジナル言語 | 書き直し | 説明                                                                                                                                                 |
+| --------------------------------------------------- | -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [frontend](/src/frontend)                           | Go             | **Rust** | ウェブサイトを提供するための HTTP サーバを公開します。サインアップ/ログインは不要で、すべてのユーザーに対して自動的にセッション ID を生成します。    |
+| [cartservice](/src/cartservice)                     | C#             | **Rust** | ユーザーのショッピングカート内の商品を Redis に保存して、それを取得します。                                                                          |
+| [productcatalogservice](/src/productcatalogservice) | Go             | **Rust** | JSON ファイルから商品の一覧を提供し、商品を検索して個々の商品を取得する機能を提供します。                                                            |
+| [currencyservice](/src/currencyservice)             | JavaScript     |          | ある通貨の金額を別の通貨に変換します。ヨーロッパ中央銀行から取得した実際の値を使用します。これは最も高い QPS（1 秒あたりのクエリ数）のサービスです。 |
+| [paymentservice](/src/paymentservice)               | JavaScript     |          | 与えられたクレジットカード情報（モック）と金額で課金し、トランザクション ID を返します。                                                             |
+| [shippingservice](/src/shippingservice)             | Go             |          | ショッピングカートに基づいて送料の見積もりを提供します。アイテムを指定された住所に発送します。（モック）                                             |
+| [emailservice](/src/emailservice)                   | Python         |          | ユーザーに注文確認のメールを送信します。（モック）                                                                                                   |
+| [checkoutservice](/src/checkoutservice)             | Go             |          | ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                 |
+| [recommendationservice](/src/recommendationservice) | Python         |          | カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                           |
+| [adservice](/src/adservice)                         | Java           | **Rust** | 指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                     |
 
 <br>
 
