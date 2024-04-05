@@ -67,7 +67,7 @@ There are still many areas for improvement in the implementation I did this time
 
 1. Run `kubectl get nodes` to verify you're connected to the docker-desktop control plane.
 
-1. Run `skaffold run` (first time will be slow, it can take ~20 minutes).
+1. Run `skaffold run` (first time will be slow, it can take ~30 minutes).
    This will build and deploy the application. If you need to rebuild the images
    automatically as you refactor the code, run `skaffold dev` command.
 

@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "rust-analyzer.linkedProjects": [
+      "./src/adservice/Cargo.toml",
+      "./src/cartservice/Cargo.toml",
+      "./src/frontend/Cargo.toml",
+      "./src/productcatalogservice/Cargo.toml",
+    ]
+  }
+}
