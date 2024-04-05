@@ -34,7 +34,8 @@ In the following table, services marked in the `Rewrote` column as "**Rust**" ha
 
 The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I wanted to see what it would be like to build a web system that runs on a Kubernetes cluster using Rust. The microservices-demo was a project of just the right size for learning and experimentation.  
 It took me a while to figure things out, as this was my first time using libraries like [axum](https://github.com/tokio-rs/axum), [Tokio](https://tokio.rs/), and [tonic](https://github.com/hyperium/tonic). I rewrote it several times seeking better coding practices.  
-Rust is my favorite language because it allows me to build systems with excellent memory safety and performance. I especially like the fact that it doesn't have a garbage collector. This project gave me the expected and satisfying results. I was also able to confirm that Rust is a very suitable language for frontend development, and that it excels in terms of development efficiency and productivity.  
+In the frontend development for this project, I adopted a method of dividing the screen into components, where each component generates HTML. This approach was inspired by [React](https://react.dev/). While single-page applications (SPAs) have become popular recently, I am not particularly fond of them due to the bloating of client-side applications. For this development, I chose a more traditional method of generating HTML on the server side.  
+Rust is my favorite language because it allows us to build systems with excellent memory safety and performance. I especially like the fact that it doesn't have a garbage collector. This project gave me the expected and satisfying results. I was also able to confirm that Rust is a very suitable language for frontend development, and that it excels in terms of development efficiency and productivity.  
 It seems that Rust is still used in few cases in actual system development. I hope that Rust adoption will increase in various system developments in the future.  
 There are still many areas for improvement in the implementation I did this time. If you have any feedback or suggestions for improvement, please let me know.
 
@@ -191,26 +192,18 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 ## Development
 
-See the [Development guide](/docs/development-guide.md) to learn how to run and develop this app locally.
+The method for developing this project on a local PC is described in the [Rust Rewrite](/docs/rust/en/index.md).
 
-See the [Rewrote in Rust](/docs/rust/en/index.md)
+See also original [Development guide](/docs/development-guide.md).
 
 <br>
 
-## パフォーマンス比較
+## Performance comparison
 
-http://localhost:8080/
+I measured the response time by accessing http://localhost:8080/ using the Thunder Client extension in VSCode after starting it with `skaffold run` on my local PC. The results of three measurements for both the original and Rust versions are as follows:
 
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     52ms |             9ms |
-| 2 回目 |     13ms |            10ms |
-| 3 回目 |     15ms |            11ms |
-
-http://localhost:8080/product/OLJCESPC7Z
-
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     17ms |            13ms |
-| 2 回目 |     15ms |            14ms |
-| 3 回目 |     15ms |            15ms |
+|             | Original | Rewrote in Rust |
+| ----------- | -------: | --------------: |
+| First time  |     52ms |            11ms |
+| Second time |     13ms |            10ms |
+| Third time  |     15ms |            12ms |

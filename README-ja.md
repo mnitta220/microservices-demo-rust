@@ -34,6 +34,8 @@
 
 私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
 [axum](https://github.com/tokio-rs/axum) 、 [Tokio](https://tokio.rs/) 、[tonic](https://github.com/hyperium/tonic) などを使うのは初めてでしたたので、いろいろと調べるのに時間がかかりました。よりよいコーディングを求めて、何度も書き直しました。  
+今回、フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
+昨今、SPA(シングルページアプリケーション)が流行していますが、クライアントアプリが肥大化するので、私はあまり好きではありません。今回の開発は、React に触発されながらも、昔ながらの、サーバーサイドで HTML を生成する方法を採用しました。  
 Rust は、私が一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
 実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
@@ -78,7 +80,7 @@ Rust は、私が一番好きな言語です。メモリ安全性とパフォー
 
 <br>
 
-- Cleanup
+- クリーンアップ
 
   - `skaffold run` コマンドでアプリケーションをデプロイした場合、`skaffold delete` を実行してデプロイされたリソースをクリーンアップできます。
 
@@ -187,28 +189,21 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 - replacing the in-cluster Redis cache with [Google Cloud Memorystore (Redis)](/kustomize/components/memorystore), [AlloyDB](/kustomize/components/alloydb) or [Google Cloud Spanner](/kustomize/components/spanner)
 - etc.
 
-## Development
+## 開発
 
-See the [Development guide](/docs/development-guide.md) to learn how to run and develop this app locally.
+このプロジェクトを、ローカル環境の PC で開発する場合の方法は、[Rust での書き直し](/docs/rust/jp/index.md)をご覧ください。
 
-See the [Rust での書き直し](/docs/rust/jp/index.md)
+オリジナルの [Development guide](/docs/development-guide.md) も併せてご覧ください。
 
 <br>
 
 ## パフォーマンス比較
 
-http://localhost:8080/
+私のローカル PC で `skaffold run` で起動し、http://localhost:8080/　にアクセスした応答時間を VSCode の Thunder Client 拡張機能で計測しました。  
+オリジナルと Rust での書き換えで、それぞれ 3 回計測した結果が以下の通りです。
 
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     52ms |             9ms |
-| 2 回目 |     13ms |            10ms |
-| 3 回目 |     15ms |            11ms |
-
-http://localhost:8080/product/OLJCESPC7Z
-
-|        | Original | Rewrote in Rust |
-| ------ | -------: | --------------: |
-| 1 回目 |     17ms |            13ms |
-| 2 回目 |     15ms |            14ms |
-| 3 回目 |     15ms |            15ms |
+|        | オリジナル | Rust での書き換え |
+| ------ | ---------: | ----------------: |
+| 1 回目 |       52ms |              11ms |
+| 2 回目 |       13ms |              10ms |
+| 3 回目 |       15ms |              12ms |
