@@ -4,7 +4,7 @@ use anyhow::Result;
 
 /// Component for rendering the order page
 pub struct OrderPage {
-    pub props: page::PageProps,
+    pub props: page::Props,
     pub page: page::Page,
 }
 
@@ -14,7 +14,7 @@ impl OrderPage {
         currency: String,
         input: crate::handlers::PlaceOrderInput,
     ) -> Result<Self> {
-        let mut props = page::PageProps::new(&session_id, &currency);
+        let mut props = page::Props::new(&session_id, &currency);
 
         // load and setting props
         {

@@ -4,13 +4,13 @@ use anyhow::Result;
 
 /// Component for rendering the cart page
 pub struct CartPage {
-    pub props: page::PageProps,
+    pub props: page::Props,
     pub page: page::Page,
 }
 
 impl CartPage {
     pub async fn new(session_id: String, currency: String) -> Result<Self> {
-        let mut props = page::PageProps::new(&session_id, &currency);
+        let mut props = page::Props::new(&session_id, &currency);
 
         // load and setting props
         {

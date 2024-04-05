@@ -8,7 +8,7 @@ use uuid::Uuid;
 // specify a sufficient size according to the characteristics of the system.
 const PAGE_BUFFER_SIZE: usize = 20_000;
 
-pub struct PageProps {
+pub struct Props {
     pub session_id: String,
     pub request_id: String,
     pub user_currency: String,
@@ -22,9 +22,9 @@ pub struct PageProps {
     pub order: Option<model::order::Order>,
 }
 
-impl PageProps {
+impl Props {
     pub fn new(session_id: &String, user_currency: &String) -> Self {
-        PageProps {
+        Props {
             session_id: session_id.clone(),
             request_id: Uuid::new_v4().to_string(),
             user_currency: user_currency.clone(),
@@ -54,7 +54,7 @@ impl Page {
     }
 
     // output HTML content to buffer.
-    pub fn write(&mut self, props: &crate::pages::page::PageProps) -> String {
+    pub fn write(&mut self, props: &crate::pages::page::Props) -> String {
         // buffer for outputting HTML content.
         let mut buf = String::with_capacity(PAGE_BUFFER_SIZE);
 

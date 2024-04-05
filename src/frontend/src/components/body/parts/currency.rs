@@ -1,4 +1,4 @@
-use crate::{components::Component, PageProps};
+use crate::{components::Component, Props};
 
 pub fn currency_logo(currency: &str) -> &'static str {
     match currency {
@@ -21,7 +21,7 @@ fn whitelisted_currencies(currency: &str) -> bool {
 pub struct CurrencyForm {}
 
 impl Component for CurrencyForm {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         if let Some(currency_codes) = &props.currency_codes {
             buf.push_str(r#"<span class="icon currency-icon"> "#);
             buf.push_str(currency_logo(props.user_currency.as_str()));

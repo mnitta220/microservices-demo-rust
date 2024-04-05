@@ -1,6 +1,6 @@
 use super::super::Component;
 use super::parts::{footer::Footer, header::BodyHeader};
-use crate::PageProps;
+use crate::Props;
 
 pub struct ProductBody {
     pub body_header: Box<dyn Component + Send>,
@@ -20,7 +20,7 @@ impl ProductBody {
 }
 
 impl Component for ProductBody {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         if let Some(product) = &props.product {
             let money = product.product.price_usd.as_ref().unwrap();
 

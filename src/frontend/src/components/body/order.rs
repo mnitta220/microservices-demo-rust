@@ -1,6 +1,6 @@
 use super::super::Component;
 use super::parts::{footer::Footer, header::BodyHeader};
-use crate::PageProps;
+use crate::Props;
 
 pub struct OrderBody {
     pub header: Box<dyn Component + Send>,
@@ -20,7 +20,7 @@ impl OrderBody {
 }
 
 impl Component for OrderBody {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         if let Some(o) = &props.order {
             let order = &o.order;
             let total_cost = &o.total_cost;

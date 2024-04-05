@@ -1,7 +1,7 @@
-use crate::{components::Component, model, PageProps};
+use crate::{components::Component, model, Props};
 
 impl Component for model::recommendation::RecommendationList {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         buf.push_str(r#"<section class="recommendations">"#);
         {
             buf.push_str(r#"<div class="container">"#);
@@ -29,7 +29,7 @@ impl Component for model::recommendation::RecommendationList {
 }
 
 impl Component for model::recommendation::RecommendationItem {
-    fn write(&self, _props: &PageProps, buf: &mut String) {
+    fn write(&self, _props: &Props, buf: &mut String) {
         buf.push_str(r#"<div class="col-md-3">"#);
         {
             buf.push_str(r#"<div>"#);

@@ -1,6 +1,6 @@
 use super::super::Component;
 use super::parts::{footer::Footer, header::BodyHeader};
-use crate::PageProps;
+use crate::Props;
 
 pub struct HomeBody {
     pub body_header: Box<dyn Component + Send>,
@@ -20,7 +20,7 @@ impl HomeBody {
 }
 
 impl Component for HomeBody {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         buf.push_str(r#"<body>"#);
         {
             self.body_header.write(props, buf);

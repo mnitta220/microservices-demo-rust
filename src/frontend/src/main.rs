@@ -8,7 +8,7 @@ use axum::{
 };
 use hostname;
 use once_cell::sync::OnceCell;
-use pages::page::PageProps;
+use pages::page::Props;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_cookies::CookieManagerLayer;

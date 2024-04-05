@@ -3,13 +3,13 @@ use crate::{components::body::product::ProductBody, pages::page};
 use anyhow::Result;
 
 pub struct ProductPage {
-    pub props: page::PageProps,
+    pub props: page::Props,
     pub page: page::Page,
 }
 
 impl ProductPage {
     pub async fn new(session_id: String, currency: String, product_id: String) -> Result<Self> {
-        let mut props = page::PageProps::new(&session_id, &currency);
+        let mut props = page::Props::new(&session_id, &currency);
 
         // load and setting props
         {

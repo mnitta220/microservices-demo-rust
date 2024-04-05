@@ -1,10 +1,10 @@
-use crate::{components::Component, PageProps};
+use crate::{components::Component, Props};
 use chrono::prelude::*;
 
 pub struct CheckoutForm {}
 
 impl Component for CheckoutForm {
-    fn write(&self, _props: &PageProps, buf: &mut String) {
+    fn write(&self, _props: &Props, buf: &mut String) {
         buf.push_str(r#"<form class="cart-checkout-form" action="/cart/checkout" method="POST">"#);
         {
             buf.push_str(r#"<div class="row">"#);

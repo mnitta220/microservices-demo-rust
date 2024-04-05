@@ -1,9 +1,9 @@
-use crate::{components::Component, PageProps};
+use crate::{components::Component, Props};
 
 pub struct Footer {}
 
 impl Component for Footer {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         buf.push_str(r#"<footer class="py-5">"#);
         {
             buf.push_str(r#"<div class="footer-top">"#);

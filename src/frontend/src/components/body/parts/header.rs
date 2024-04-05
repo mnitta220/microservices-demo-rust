@@ -1,5 +1,5 @@
 use super::currency::CurrencyForm;
-use crate::{components::Component, PageProps};
+use crate::{components::Component, Props};
 
 pub struct BodyHeader {
     pub currency_form: Box<dyn Component + Send>,
@@ -16,7 +16,7 @@ impl BodyHeader {
 }
 
 impl Component for BodyHeader {
-    fn write(&self, props: &PageProps, buf: &mut String) {
+    fn write(&self, props: &Props, buf: &mut String) {
         buf.push_str(r#"<header>"#);
         {
             buf.push_str(r#"<div class="navbar sub-navbar">"#);

@@ -1,9 +1,9 @@
-use crate::{components::Component, PageProps};
+use crate::{components::Component, Props};
 
 pub struct Head {}
 
 impl Component for Head {
-    fn write(&self, _props: &PageProps, buf: &mut String) {
+    fn write(&self, _props: &Props, buf: &mut String) {
         buf.push_str(r#"<head>"#);
         {
             buf.push_str(r#"<meta charset="UTF-8">"#);
