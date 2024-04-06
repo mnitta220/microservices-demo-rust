@@ -7,7 +7,7 @@
 [English](./README.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
 
 このプロジェクトは、Google が提供している **Online Boutique** ([microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)) デモアプリケーションの一部を、[Rust](https://www.rust-lang.org/ja) で書き直したものです。  
-ユーザーが商品を閲覧したり、カートに追加したり、購入したりできるウェブベースの E コマース アプリケーションです。[Kubernetes](https://kubernetes.io/) クラスター上で動作し、マイクロサービスが [gRPC](https://grpc.io/) で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
+ユーザーが商品を閲覧したり、カートに追加したり、購入したりできる Web ベースの E コマース アプリケーションです。[Kubernetes](https://kubernetes.io/) クラスター上で動作し、マイクロサービスが [gRPC](https://grpc.io/) で連携します。開発言語には、Go、C#、JavaScript、Java、Python が使われています。  
 11 個のマイクロサービスで構成されています。私の方で、この中の 4 個のサービスを Rust で書き直しました。  
 次の表で、`書き直し` 欄に "**Rust**" と書かれているサービスを Rust で書き直しました。"**Rust**" と書かれていないサービスはオリジナルのままです。
 
@@ -35,7 +35,7 @@
 私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した目的は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
 Rust の実装では、フロントエンドには Web フレームワークである [axum](https://github.com/tokio-rs/axum) を、 gRPC のライブラリには [tonic](https://github.com/hyperium/tonic) を使いました。  
 フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
-サーバーサイドで HTML を生成していながらも、React のようなコンポーネント指向であるという興味深いプログラムになりました。そうした実装内容の説明は、[Rust での書き直し](/docs/rust/jp/index.md)をご覧ください。  
+サーバーサイドで HTML を生成していながらも、React のようなコンポーネント指向であるというプログラムにしました。そうした実装内容の説明は、[Rust での書き直し](/docs/rust/jp/index.md)をご覧ください。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
 
 <br>

@@ -34,7 +34,7 @@ In the following table, services marked in the `Rewrote` column as "**Rust**" ha
 
 The purpose of rewriting [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust was to see how a web system running on a Kubernetes cluster would perform in Rust. **microservices-demo** was just the right size project for learning and experimentation.  
 For the Rust implementation, I used the [axum](https://github.com/tokio-rs/axum) web framework for the frontend and [tonic](https://github.com/hyperium/tonic) for the gRPC library.  
-On the frontend, I adopted a method of splitting the screen into components, where each component generates HTML. This was inspired by [React](https://react.dev/). Despite generating HTML on the server-side, it became an interesting program with a component-oriented approach similar to React. For more details on these implementations, please refer to [Rewriting in Rust](/docs/rust/en/index.md).  
+On the frontend, I adopted a method of splitting the screen into components, where each component generates HTML. This was inspired by [React](https://react.dev/). Despite generating HTML on the server-side, it became a program with a component-oriented approach similar to React. For more details on these implementations, please refer to [Rewriting in Rust](/docs/rust/en/index.md).  
 I believe there are still many areas for improvement in this implementation. If you have any suggestions or feedback, please feel free to share them.
 
 <br>
