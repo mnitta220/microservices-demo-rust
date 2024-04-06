@@ -22,7 +22,7 @@ In the following table, services marked in the `Rewrote` column as "**Rust**" ha
 | [emailservice](/src/emailservice)                   | Python               |          | Sends users an order confirmation email (mock).                                                                                   |
 | [checkoutservice](/src/checkoutservice)             | Go                   |          | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
 | [recommendationservice](/src/recommendationservice) | Python               |          | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java                 | **Rust** | Provides text ads based on given context words.                                                                                   |
+| [adservice](/src/adservice)                         | Java                 | **Rust** | Provides random text ads.                                                                                                         |
 
 <br>
 

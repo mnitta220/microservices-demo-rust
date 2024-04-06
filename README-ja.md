@@ -22,7 +22,7 @@
 | [emailservice](/src/emailservice)                   | Python         |          | ユーザーに注文確認のメールを送信します。（モック）                                                                                                   |
 | [checkoutservice](/src/checkoutservice)             | Go             |          | ユーザーのカートを取得し、注文を準備し、支払い、配送、およびメール通知を調整します。                                                                 |
 | [recommendationservice](/src/recommendationservice) | Python         |          | カートに入っている商品に基づいて、他の商品をお勧めします。                                                                                           |
-| [adservice](/src/adservice)                         | Java           | **Rust** | 指定されたコンテキストの単語に基づいてテキスト広告を提供します。                                                                                     |
+| [adservice](/src/adservice)                         | Java           | **Rust** | ランダムなテキスト広告を提供します。                                                                                                                 |
 
 <br>
 
