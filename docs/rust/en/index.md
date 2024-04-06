@@ -1,6 +1,6 @@
 English&nbsp;&nbsp;|&nbsp;&nbsp;[Japanese](../jp/index.md)
 
-# Rewrite in Rust
+# Rewriting in Rust
 
 This application has the architecture shown in the following diagram.
 

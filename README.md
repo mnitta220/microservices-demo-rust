@@ -32,12 +32,10 @@ In the following table, services marked in the `Rewrote` column as "**Rust**" ha
 
 ## Purpose
 
-The reason I rewrote [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust is that I wanted to see what it would be like to build a web system that runs on a Kubernetes cluster using Rust. The microservices-demo was a project of just the right size for learning and experimentation.  
-It took me a while to figure things out, as this was my first time using libraries like [axum](https://github.com/tokio-rs/axum), [Tokio](https://tokio.rs/), and [tonic](https://github.com/hyperium/tonic). I rewrote it several times seeking better coding practices.  
-In the frontend development for this project, I adopted a method of dividing the screen into components, where each component generates HTML. This approach was inspired by [React](https://react.dev/). While single-page applications (SPAs) have become popular recently, I am not particularly fond of them due to the bloating of client-side applications. For this development, I chose a more traditional method of generating HTML on the server side.  
-Rust is my favorite language because it allows us to build systems with excellent memory safety and performance. I especially like the fact that it doesn't have a garbage collector. This project gave me the expected and satisfying results. I was also able to confirm that Rust is a very suitable language for frontend development, and that it excels in terms of development efficiency and productivity.  
-It seems that Rust is still used in few cases in actual system development. I hope that Rust adoption will increase in various system developments in the future.  
-There are still many areas for improvement in the implementation I did this time. If you have any feedback or suggestions for improvement, please let me know.
+The purpose of rewriting [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) in Rust was to see how a web system running on a Kubernetes cluster would perform in Rust. **microservices-demo** was just the right size project for learning and experimentation.  
+For the Rust implementation, I used the [axum](https://github.com/tokio-rs/axum) web framework for the frontend and [tonic](https://github.com/hyperium/tonic) for the gRPC library.  
+On the frontend, I adopted a method of splitting the screen into components, where each component generates HTML. This was inspired by [React](https://react.dev/). Despite generating HTML on the server-side, it became an interesting program with a component-oriented approach similar to React. For more details on these implementations, please refer to [Rewriting in Rust](/docs/rust/en/index.md).  
+I believe there are still many areas for improvement in this implementation. If you have any suggestions or feedback, please feel free to share them.
 
 <br>
 
@@ -192,7 +190,7 @@ The [`/kustomize` folder](/kustomize) contains instructions for customizing the 
 
 ## Development
 
-The method for developing this project on a local PC is described in the [Rewrite in Rust](/docs/rust/en/index.md).
+The method for developing this project on a local PC is described in the [Rewriting in Rust](/docs/rust/en/index.md).
 
 See also original [Development guide](/docs/development-guide.md).
 

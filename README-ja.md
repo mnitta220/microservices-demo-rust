@@ -32,12 +32,10 @@
 
 ## 目的
 
-私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した理由は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
-[axum](https://github.com/tokio-rs/axum) 、 [Tokio](https://tokio.rs/) 、[tonic](https://github.com/hyperium/tonic) などを使うのは初めてでしたたので、いろいろと調べるのに時間がかかりました。よりよいコーディングを求めて、何度も書き直しました。  
-今回、フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
-昨今、SPA(シングルページアプリケーション)が流行していますが、クライアントアプリが肥大化するので、私はあまり好きではありません。今回の開発では、サーバーサイドで HTML を生成する昔ながらの方法を採用しました。  
-Rust は、私が一番好きな言語です。メモリ安全性とパフォーマンスに優れたシステムを作ることができます。特に、GC（ガベージコレクション）が実行されない点が気に入っています。今回の開発でも、期待通りの満足する結果が得られました。フロントエンド開発においても、非常に適した言語であり、開発効率や生産性の面でも優れているという確信を持つことができました。  
-実際のシステム開発では、Rust が使用されるケースは、まだ少ないようです。今後、様々なシステム開発で、Rust の採用が増えることを願っています。  
+私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した目的は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
+Rust の実装では、フロントエンドには Web フレームワークである [axum](https://github.com/tokio-rs/axum) を、 gRPC のライブラリには [tonic](https://github.com/hyperium/tonic) を使いました。  
+フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
+サーバーサイドで HTML を生成していながらも、React のようなコンポーネント指向であるという興味深いプログラムになりました。そうした実装内容の説明は、[Rust での書き直し](/docs/rust/jp/index.md)をご覧ください。  
 今回行った実装には、改善できる点がまだ多いだろうと思います。改善点やご意見がありましたら、ぜひお寄せください。
 
 <br>
