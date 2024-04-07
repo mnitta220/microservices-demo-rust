@@ -171,6 +171,11 @@ gcloud container clusters delete online-boutique \
 
 Deleting the cluster may take a few minutes.
 
+- If you update the source code and deploy it to GKE, please build the Docker image for the service, push it to the registry, and update the `image:` in [/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml).
+  ```
+  image: masahironitta/microservices-demo-rust-frontend:0.1.0
+  ```
+
 ## Use Terraform to provision a GKE cluster and deploy Online Boutique
 
 The [`/terraform` folder](/terraform) contains instructions for using [Terraform](https://www.terraform.io/intro) to replicate the steps from [**Quickstart (GKE)**](#quickstart-gke) above.

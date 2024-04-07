@@ -160,6 +160,7 @@ Rust の実装では、フロントエンドには Web フレームワークで�
    Web ブラウザで `http://EXTERNAL_IP` にアクセスし、Online Boutique のインスタンスにアクセスします。
 
 9. おめでとうございます！ デフォルトの Online Boutique がデプロイされました。 Online Boutique の別のバリエーション (例: Google Cloud Operations トレース、Istio など) をデプロイするには、[Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize) を参照してください。
+
 10. 完了したら、GKE クラスタを削除します。
 
 ```sh
@@ -168,6 +169,11 @@ gcloud container clusters delete online-boutique \
 ```
 
 クラスターの削除には数分かかる場合があります。
+
+- ソースコードを更新して、それを GKE にデプロイする場合は、そのサービスの Docker イメージをビルドしてレジストリに push して、[/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml)の `image:` を更新してください。
+  ```
+  image: masahironitta/microservices-demo-rust-frontend:0.1.0
+  ```
 
 ## Terraform を使用して GKE クラスタをプロビジョニングし、Online Boutique をデプロイする
 
