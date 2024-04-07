@@ -84,19 +84,19 @@ Rust の実装では、フロントエンドには Web フレームワークで�
 
 ### GKE での実行
 
-1. Ensure you have the following requirements:
+1. 次の要件を満たしていることを確認してください。
 
    - [Google Cloud project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
-   - Shell environment with `gcloud`, `git`, and `kubectl`.
+   - `gcloud`、 `git`、 `kubectl` コマンド。
 
-2. Clone the repository.
+2. リポジトリをクローンしてください。
 
    ```sh
    git clone https://github.com/mnitta220/microservices-demo-rust.git
    cd microservices-demo-rust/
    ```
 
-3. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
+3. Google Cloud プロジェクトとリージョンを設定し、Google Kubernetes Engine API が有効になっていることを確認します。
 
    ```sh
    export PROJECT_ID=<PROJECT_ID>
@@ -105,36 +105,36 @@ Rust の実装では、フロントエンドには Web フレームワークで�
      --project=${PROJECT_ID}
    ```
 
-   Substitute `<PROJECT_ID>` with the ID of your Google Cloud project.
+   `<PROJECT_ID>` を Google Cloud プロジェクトの ID に置き換えます。
 
-4. Confirm the services have been enabled for your project.
+4. サービスがプロジェクトで有効になっていることを確認します。
 
    ```sh
    gcloud services list --enabled --project=${PROJECT_ID}
    ```
 
-5. Create a GKE cluster and get the credentials for it.
+5. GKE クラスタを作成し、その認証情報を取得します。
 
    ```sh
    gcloud container clusters create-auto online-boutique \
      --project=${PROJECT_ID} --region=${REGION}
    ```
 
-   Creating the cluster may take a few minutes.
+   クラスターの作成には数分かかる場合があります。
 
-6. Deploy Online Boutique to the cluster.
+6. Online Boutique をクラスターにデプロイします。
 
    ```sh
    kubectl apply -f ./release/kubernetes-manifests.yaml
    ```
 
-7. Wait for the pods to be ready.
+7. Pod の準備ができるまで待ちます。
 
    ```sh
    kubectl get pods
    ```
 
-   After a few minutes, you should see the Pods in a `Running` state:
+   数分後、ポッドが `Running` 状態になるはずです。
 
    ```
    NAME                                     READY   STATUS    RESTARTS   AGE
@@ -151,41 +151,40 @@ Rust の実装では、フロントエンドには Web フレームワークで�
    shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
    ```
 
-8. Access the web frontend in a browser using the frontend's external IP.
+8. フロントエンドの外部 IP を使用して、ブラウザーで Web フロントエンドにアクセスします。
 
    ```sh
    kubectl get service frontend-external | awk '{print $4}'
    ```
 
-   Visit `http://EXTERNAL_IP` in a web browser to access your instance of Online Boutique.
+   Web ブラウザで `http://EXTERNAL_IP` にアクセスし、Online Boutique のインスタンスにアクセスします。
 
-9. Congrats! You've deployed the default Online Boutique. To deploy a different variation of Online Boutique (e.g., with Google Cloud Operations tracing, Istio, etc.), see [Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize).
-
-10. Once you are done with it, delete the GKE cluster.
+9. おめでとうございます！ デフォルトの Online Boutique がデプロイされました。 Online Boutique の別のバリエーション (例: Google Cloud Operations トレース、Istio など) をデプロイするには、[Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize) を参照してください。
+10. 完了したら、GKE クラスタを削除します。
 
 ```sh
 gcloud container clusters delete online-boutique \
   --project=${PROJECT_ID} --region=${REGION}
 ```
 
-Deleting the cluster may take a few minutes.
+クラスターの削除には数分かかる場合があります。
 
-## Use Terraform to provision a GKE cluster and deploy Online Boutique
+## Terraform を使用して GKE クラスタをプロビジョニングし、Online Boutique をデプロイする
 
-The [`/terraform` folder](/terraform) contains instructions for using [Terraform](https://www.terraform.io/intro) to replicate the steps from [**Quickstart (GKE)**](#quickstart-gke) above.
+[`/terraform`](/terraform) フォルダーには、[Terraform](https://www.terraform.io/intro) を使用して [**クイックスタート (GKE)**](#quickstart-gke) の手順を複製する手順が含まれています。
 
-## Other deployment variations
+## その他のデプロイバリエーション
 
-- **Istio/Anthos Service Mesh**: [See these instructions.](/kustomize/components/service-mesh-istio/README.md)
-- **non-GKE clusters (Minikube, Kind)**: see the [Development Guide](/docs/development-guide.md)
+- **Istio/Anthos Service Mesh**: [これらの手順を参照してください](/kustomize/components/service-mesh-istio/README.md)
+- **non-GKE clusters (Minikube, Kind)**: [開発ガイド](/docs/development-guide.md)をご覧ください。
 
-## Deploy Online Boutique variations with Kustomize
+## Kustomize を使用して Online Boutique のバリエーションをデプロイする
 
-The [`/kustomize` folder](/kustomize) contains instructions for customizing the deployment of Online Boutique with different variations such as:
+[`/kustomize`](/kustomize)フォルダーには、次のようなさまざまなバリエーションで Online Boutique のデプロイメントをカスタマイズするための手順が含まれています。
 
-- integrating with [Google Cloud Operations](/kustomize/components/google-cloud-operations/)
-- replacing the in-cluster Redis cache with [Google Cloud Memorystore (Redis)](/kustomize/components/memorystore), [AlloyDB](/kustomize/components/alloydb) or [Google Cloud Spanner](/kustomize/components/spanner)
-- etc.
+- [Google Cloud Operations](/kustomize/components/google-cloud-operations/) との統合
+- クラスタ内 Redis キャッシュを [Google Cloud Memorystore (Redis)](/kustomize/components/memorystore)、 [AlloyDB](/kustomize/components/alloydb) または [Google Cloud Spanner](/kustomize/components/spanner) に置き換える。
+- など
 
 ## 開発
 
