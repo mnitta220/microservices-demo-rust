@@ -82,7 +82,7 @@ spec:
               value: "adservice:9555"
             # ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
             - name: ENV_PLATFORM
-              value: "azure"
+              value: "local"
             - name: ENABLE_PROFILER
               value: "0"
           resources:
