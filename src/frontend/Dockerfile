@@ -19,9 +19,6 @@ WORKDIR /src
 COPY --from=build /src/target/release/frontend /src/frontend
 COPY --from=build /src/static /src/static
 
-# ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
-ENV ENV_PLATFORM=local
-
 EXPOSE 8080
 
 CMD ["/src/frontend"]
