@@ -2,7 +2,7 @@
 <img src="/docs/rust/img/logo.png" width="520" alt="Online Boutique" />
 </p>
 
-# microservice-demo-rust
+# microservices-demo-rust
 
 [English](./README.md)&nbsp;&nbsp;|&nbsp;&nbsp;Japanese
 
