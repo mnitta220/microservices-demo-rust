@@ -181,7 +181,7 @@ gcloud container clusters delete online-boutique \
 ## その他のデプロイバリエーション
 
 - **Istio/Anthos Service Mesh**: [これらの手順](/kustomize/components/service-mesh-istio/README.md) を参照してください。
-- **non-GKE clusters (Minikube, Kind)**: [開発ガイド](/docs/development-guide.md)をご覧ください。
+- **non-GKE clusters (Minikube, Kind)**: [Development guide](/docs/development-guide.md)をご覧ください。
 
 ## Kustomize を使用して Online Boutique のバリエーションをデプロイする
 
