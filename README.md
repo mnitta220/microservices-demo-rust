@@ -171,14 +171,9 @@ gcloud container clusters delete online-boutique \
 
 Deleting the cluster may take a few minutes.
 
-> When updating the source code and deploying it to GKE, build the Docker image for that service with the following command:<br> > `docker image build -t <image-name>:<tag-name> .`<br>
-> Then push it to your registry with the following command:<br> > `docker image push <image-name>:<tag-name>`<br>
-> Replace the `image:` in [/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml) with the new image. For example, if you want to update the frontend image, replace:<br> > `image: masahironitta/microservices-demo-rust-frontend:0.1.0`
+<br>
 
-- If you update the source code and deploy it to GKE, please build the Docker image for the service, push it to the registry, and update the `image:` in [/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml).
-  ```
-  image: masahironitta/microservices-demo-rust-frontend:0.1.0
-  ```
+> When updating the source code and deploying it to GKE, build the Docker image for that service with the following command:<br>`docker image build -t <image-name>:<tag-name> .`<br>Then push it to your registry with the following command:<br>`docker image push <image-name>:<tag-name>`<br>Replace the `image:` in [/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml) with the new image. For example, if you want to update the frontend image, replace:<br>`image: masahironitta/microservices-demo-rust-frontend:0.1.0`
 
 ## Use Terraform to provision a GKE cluster and deploy Online Boutique
 
