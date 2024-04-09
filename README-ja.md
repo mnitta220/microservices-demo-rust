@@ -32,7 +32,7 @@
 
 ## 目的
 
-私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した目的は、Kubernetes クラスタで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
+私が [microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo) を Rust で書き直した目的は、Kubernetes クラスターで動作する Web システムを Rust で作るとどうなるのか試してみたかったからです。microservices-demo は、学習と検証をするには、ちょうど良い規模のプロジェクトでした。  
 Rust の実装では、フロントエンドには Web フレームワークである [axum](https://github.com/tokio-rs/axum) を、 gRPC のライブラリには [tonic](https://github.com/hyperium/tonic) を使いました。  
 フロントエンドでは、画面をコンポーネントに分割して、コンポーネントが HTML を生成するという方法を採りました。これは、[React](https://react.dev/) に触発されたものです。  
 サーバーサイドで HTML を生成していながらも、React のようなコンポーネント指向であるというプログラムにしました。そうした実装内容の説明は、[Rust での書き直し](/docs/rust/jp/index.md)をご覧ください。  
@@ -170,10 +170,9 @@ gcloud container clusters delete online-boutique \
 
 クラスターの削除には数分かかる場合があります。
 
-- ソースコードを更新して、それを GKE にデプロイする場合は、そのサービスの Docker イメージをビルドしてレジストリに push して、[/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml)の `image:` を更新してください。
-  ```
-  image: masahironitta/microservices-demo-rust-frontend:0.1.0
-  ```
+<br>
+
+> ソースコードを更新して、それを GKE にデプロイする場合は、そのサービスの Docker イメージを次のコマンドでビルドし、<br>`docker image build -t <image-name>:<tag-name> .`<br>お使いのレジストリに push し、<br>`docker image push <image-name>:<tag-name>`<br>[/release/kubernetes-manifests.yaml](/release/kubernetes-manifests.yaml) の `image:` を書き換えてください。たとえば、frontend のイメージを更新したい場合は、<br>`image: masahironitta/microservices-demo-rust-frontend:0.1.0`<br>を書き換えてください。
 
 ## Terraform を使用して GKE クラスタをプロビジョニングし、Online Boutique をデプロイする
 
