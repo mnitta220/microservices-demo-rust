@@ -2,58 +2,58 @@ use crate::{components::Component, model, Props};
 
 impl Component for model::recommendation::RecommendationList {
     fn write(&self, props: &Props, buf: &mut String) {
-        buf.push_str(r#"<section class="recommendations">"#);
+        *buf += r#"<section class="recommendations">"#;
         {
-            buf.push_str(r#"<div class="container">"#);
+            *buf += r#"<div class="container">"#;
             {
-                buf.push_str(r#"<div class="row">"#);
+                *buf += r#"<div class="row">"#;
                 {
-                    buf.push_str(r#"<div class="col-xl-10 offset-xl-1">"#);
+                    *buf += r#"<div class="col-xl-10 offset-xl-1">"#;
                     {
-                        buf.push_str(r#"<h2>You May Also Like</h2>"#);
+                        *buf += r#"<h2>You May Also Like</h2>"#;
 
-                        buf.push_str(r#"<div class="row">"#);
+                        *buf += r#"<div class="row">"#;
                         for item in &self.items {
                             item.write(props, buf);
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
             }
-            buf.push_str(r#"</div>"#);
+            *buf += r#"</div>"#;
         }
-        buf.push_str(r#"</section>"#);
+        *buf += r#"</section>"#;
     }
 }
 
 impl Component for model::recommendation::RecommendationItem {
     fn write(&self, _props: &Props, buf: &mut String) {
-        buf.push_str(r#"<div class="col-md-3">"#);
+        *buf += r#"<div class="col-md-3">"#;
         {
-            buf.push_str(r#"<div>"#);
+            *buf += r#"<div>"#;
             {
-                buf.push_str(r#"<a href="/product/"#);
-                buf.push_str(&self.product.id);
-                buf.push_str(r#"">"#);
+                *buf += r#"<a href="/product/"#;
+                *buf += &self.product.id;
+                *buf += r#"">"#;
                 {
-                    buf.push_str(r#"<img alt src=""#);
-                    buf.push_str(&self.product.picture);
-                    buf.push_str(r#"">"#);
+                    *buf += r#"<img alt src=""#;
+                    *buf += &self.product.picture;
+                    *buf += r#"">"#;
                 }
-                buf.push_str(r#"</a>"#);
+                *buf += r#"</a>"#;
 
-                buf.push_str(r#"<div>"#);
+                *buf += r#"<div>"#;
                 {
-                    buf.push_str(r#"<h5>"#);
-                    buf.push_str(&self.product.name);
-                    buf.push_str(r#"</h5>"#);
+                    *buf += r#"<h5>"#;
+                    *buf += &self.product.name;
+                    *buf += r#"</h5>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
             }
-            buf.push_str(r#"</div>"#);
+            *buf += r#"</div>"#;
         }
-        buf.push_str(r#"</div>"#);
+        *buf += r#"</div>"#;
     }
 }

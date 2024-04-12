@@ -58,8 +58,8 @@ impl Page {
         // buffer for outputting HTML content.
         let mut buf = String::with_capacity(PAGE_BUFFER_SIZE);
 
-        buf.push_str(r#"<!DOCTYPE html>"#);
-        buf.push_str(r#"<html lang="en">"#);
+        buf += r#"<!DOCTYPE html>"#;
+        buf += r#"<html lang="en">"#;
         {
             self.head.write(props, &mut buf);
 
@@ -67,7 +67,7 @@ impl Page {
                 body.write(props, &mut buf);
             }
         }
-        buf.push_str(r#"</html>"#);
+        buf += r#"</html>"#;
 
         buf
     }

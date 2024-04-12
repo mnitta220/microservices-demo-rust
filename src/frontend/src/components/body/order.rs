@@ -25,105 +25,104 @@ impl Component for OrderBody {
             let order = &o.order;
             let total_cost = &o.total_cost;
 
-            buf.push_str(r#"<body>"#);
+            *buf += r#"<body>"#;
             {
                 self.header.write(props, buf);
 
-                buf.push_str(r#"<main role="main" class="order">"#);
+                *buf += r#"<main role="main" class="order">"#;
                 {
-                    buf.push_str(r#"<section class="container order-complete-section">"#);
+                    *buf += r#"<section class="container order-complete-section">"#;
                     {
-                        buf.push_str(r#"<div class="row">"#);
+                        *buf += r#"<div class="row">"#;
                         {
-                            buf.push_str(r#"<div class="col-12 text-center">"#);
+                            *buf += r#"<div class="col-12 text-center">"#;
                             {
-                                buf.push_str(r#"<h3>Your order is complete!</h3>"#);
+                                *buf += r#"<h3>Your order is complete!</h3>"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
 
-                            buf.push_str(r#"<div class="col-12 text-center">"#);
+                            *buf += r#"<div class="col-12 text-center">"#;
                             {
-                                buf.push_str(r#"<p>We've sent you a confirmation email.</p>"#);
+                                *buf += r#"<p>We've sent you a confirmation email.</p>"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<div class="row border-bottom-solid padding-y-24">"#);
+                        *buf += r#"<div class="row border-bottom-solid padding-y-24">"#;
                         {
-                            buf.push_str(r#"<div class="col-6 pl-md-0">"#);
+                            *buf += r#"<div class="col-6 pl-md-0">"#;
                             {
-                                buf.push_str(r#"Confirmation #"#);
+                                *buf += r#"Confirmation #"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
 
-                            buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
+                            *buf += r#"<div class="col-6 pr-md-0 text-right">"#;
                             {
-                                buf.push_str(&order.order_id);
+                                *buf += &order.order_id;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<div class="row border-bottom-solid padding-y-24">"#);
+                        *buf += r#"<div class="row border-bottom-solid padding-y-24">"#;
                         {
-                            buf.push_str(r#"<div class="col-6 pl-md-0">"#);
+                            *buf += r#"<div class="col-6 pl-md-0">"#;
                             {
-                                buf.push_str(r#"Tracking #"#);
+                                *buf += r#"Tracking #"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
 
-                            buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
+                            *buf += r#"<div class="col-6 pr-md-0 text-right">"#;
                             {
-                                buf.push_str(&order.shipping_tracking_id);
+                                *buf += &order.shipping_tracking_id;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<div class="row padding-y-24">"#);
+                        *buf += r#"<div class="row padding-y-24">"#;
                         {
-                            buf.push_str(r#"<div class="col-6 pl-md-0">"#);
+                            *buf += r#"<div class="col-6 pl-md-0">"#;
                             {
-                                buf.push_str(r#"Total Paid"#);
+                                *buf += r#"Total Paid"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
 
-                            buf.push_str(r#"<div class="col-6 pr-md-0 text-right">"#);
+                            *buf += r#"<div class="col-6 pr-md-0 text-right">"#;
                             {
-                                buf.push_str(&total_cost.money_for_display());
+                                *buf += &total_cost.money_for_display();
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<div class="row">"#);
+                        *buf += r#"<div class="row">"#;
                         {
-                            buf.push_str(r#"<div class="col-12 text-center">"#);
+                            *buf += r#"<div class="col-12 text-center">"#;
                             {
-                                buf.push_str(
-                                    r#"<a class="cymbal-button-primary" href="/" role="button">"#,
-                                );
+                                *buf +=
+                                    r#"<a class="cymbal-button-primary" href="/" role="button">"#;
                                 {
-                                    buf.push_str(r#"Continue Shopping"#);
+                                    *buf += r#"Continue Shopping"#;
                                 }
-                                buf.push_str(r#"</a>"#);
+                                *buf += r#"</a>"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</section>"#);
+                    *buf += r#"</section>"#;
 
                     if let Some(recommendations) = &props.recommendations {
                         recommendations.write(props, buf)
                     }
                 }
-                buf.push_str(r#"</main>"#);
+                *buf += r#"</main>"#;
 
                 self.footer.write(props, buf);
             }
-            buf.push_str(r#"</body>"#);
+            *buf += r#"</body>"#;
         }
     }
 }

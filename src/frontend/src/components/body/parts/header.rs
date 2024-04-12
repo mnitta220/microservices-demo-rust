@@ -17,63 +17,63 @@ impl BodyHeader {
 
 impl Component for BodyHeader {
     fn write(&self, props: &Props, buf: &mut String) {
-        buf.push_str(r#"<header>"#);
+        *buf += r#"<header>"#;
         {
-            buf.push_str(r#"<div class="navbar sub-navbar">"#);
+            *buf += r#"<div class="navbar sub-navbar">"#;
             {
-                buf.push_str(r#"<div class="container d-flex justify-content-between">"#);
+                *buf += r#"<div class="container d-flex justify-content-between">"#;
                 {
-                    buf.push_str(r#"<a href="/" class="navbar-brand d-flex align-items-center">"#);
+                    *buf += r#"<a href="/" class="navbar-brand d-flex align-items-center">"#;
                     {
-                        buf.push_str(r#"<img src="/static/icons/Hipster_NavLogo.svg" alt="" class="top-left-logo" />"#);
+                        *buf += r#"<img src="/static/icons/Hipster_NavLogo.svg" alt="" class="top-left-logo" />"#;
                     }
-                    buf.push_str(r#"</a>"#);
+                    *buf += r#"</a>"#;
 
-                    buf.push_str(r#"<div class="controls">"#);
+                    *buf += r#"<div class="controls">"#;
                     {
-                        buf.push_str(r#"<div class="h-controls">"#);
+                        *buf += r#"<div class="h-controls">"#;
                         {
-                            buf.push_str(r#"<div class="h-control">"#);
+                            *buf += r#"<div class="h-control">"#;
                             {
                                 self.currency_form.write(props, buf);
 
-                                buf.push_str(r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="icon arrow" />"#);
+                                *buf += r#"<img src="/static/icons/Hipster_DownArrow.svg" alt="" class="icon arrow" />"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<a href="/cart" class="cart-link">"#);
+                        *buf += r#"<a href="/cart" class="cart-link">"#;
                         {
-                            buf.push_str(r#"<img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />"#);
+                            *buf += r#"<img src="/static/icons/Hipster_CartIcon.svg" alt="Cart icon" class="logo" title="Cart" />"#;
 
                             if let Some(cart) = &props.cart {
                                 let cart_size = cart.cart_size();
                                 if cart_size > 0 {
-                                    buf.push_str(r#"<span class="cart-size-circle">"#);
-                                    buf.push_str(&cart_size.to_string());
-                                    buf.push_str(r#"</span>"#);
+                                    *buf += r#"<span class="cart-size-circle">"#;
+                                    *buf += &cart_size.to_string();
+                                    *buf += r#"</span>"#;
                                 }
                             }
                         }
-                        buf.push_str(r#"</a>"#);
+                        *buf += r#"</a>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
             }
-            buf.push_str(r#"</div>"#);
+            *buf += r#"</div>"#;
         }
-        buf.push_str(r#"</header>"#);
+        *buf += r#"</header>"#;
 
-        buf.push_str(r#"<div class=""#);
-        buf.push_str(&crate::PLATFORM_CSS.get().unwrap());
-        buf.push_str(r#"">"#);
+        *buf += r#"<div class=""#;
+        *buf += &crate::PLATFORM_CSS.get().unwrap();
+        *buf += r#"">"#;
         {
-            buf.push_str(r#"<span class="platform-flag">"#);
-            buf.push_str(&crate::PLATFORM_NAME.get().unwrap());
-            buf.push_str(r#"</span>"#);
+            *buf += r#"<span class="platform-flag">"#;
+            *buf += &crate::PLATFORM_NAME.get().unwrap();
+            *buf += r#"</span>"#;
         }
-        buf.push_str(r#"</div>"#);
+        *buf += r#"</div>"#;
     }
 }

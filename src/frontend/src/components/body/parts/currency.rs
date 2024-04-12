@@ -23,32 +23,30 @@ pub struct CurrencyForm {}
 impl Component for CurrencyForm {
     fn write(&self, props: &Props, buf: &mut String) {
         if let Some(currency_codes) = &props.currency_codes {
-            buf.push_str(r#"<span class="icon currency-icon"> "#);
-            buf.push_str(currency_logo(props.user_currency.as_str()));
-            buf.push_str(r#"</span>"#);
+            *buf += r#"<span class="icon currency-icon"> "#;
+            *buf += currency_logo(props.user_currency.as_str());
+            *buf += r#"</span>"#;
 
-            buf.push_str(
-          r#"<form method="POST" class="controls-form" action="/setCurrency" id="currency_form">"#,
-            );
+            *buf += r#"<form method="POST" class="controls-form" action="/setCurrency" id="currency_form">"#;
             {
-                buf.push_str(r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#);
+                *buf += r#"<select name="currency_code" onchange="document.getElementById('currency_form').submit();">"#;
 
                 for currency_code in currency_codes.currency_codes.iter() {
                     if whitelisted_currencies(currency_code.as_str()) {
-                        buf.push_str(r#"<option value=""#);
-                        buf.push_str(currency_code);
-                        buf.push_str(r#"""#);
+                        *buf += r#"<option value=""#;
+                        *buf += currency_code;
+                        *buf += r#"""#;
                         if *currency_code == props.user_currency {
-                            buf.push_str(r#" selected="selected""#);
+                            *buf += r#" selected="selected""#;
                         }
-                        buf.push_str(r#">"#);
-                        buf.push_str(currency_code);
-                        buf.push_str(r#"</option>"#);
+                        *buf += r#">"#;
+                        *buf += currency_code;
+                        *buf += r#"</option>"#;
                     }
                 }
-                buf.push_str(r#"</select>"#);
+                *buf += r#"</select>"#;
             }
-            buf.push_str(r#"</form>"#);
+            *buf += r#"</form>"#;
         }
     }
 }

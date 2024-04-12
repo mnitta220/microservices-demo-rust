@@ -3,69 +3,69 @@ use crate::{components::Component, model, Props};
 impl Component for model::cart::CartItem {
     fn write(&self, _props: &Props, buf: &mut String) {
         if let Some(m) = &self.product.price_usd {
-            buf.push_str(r#"<div class="row cart-summary-item-row">"#);
+            *buf += r#"<div class="row cart-summary-item-row">"#;
             {
-                buf.push_str(r#"<div class="col-md-4 pl-md-0">"#);
+                *buf += r#"<div class="col-md-4 pl-md-0">"#;
                 {
-                    buf.push_str(r#"<a href="/product/"#);
-                    buf.push_str(&self.product.id);
-                    buf.push_str(r#"">"#);
+                    *buf += r#"<a href="/product/"#;
+                    *buf += &self.product.id;
+                    *buf += r#"">"#;
                     {
-                        buf.push_str(r#"<img class="img-fluid" alt="" src=""#);
-                        buf.push_str(&self.product.picture);
-                        buf.push_str(r#"" />"#);
+                        *buf += r#"<img class="img-fluid" alt="" src=""#;
+                        *buf += &self.product.picture;
+                        *buf += r#"" />"#;
                     }
-                    buf.push_str(r#"</a>"#);
+                    *buf += r#"</a>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
 
-                buf.push_str(r#"<div class="col-md-8 pr-md-0">"#);
+                *buf += r#"<div class="col-md-8 pr-md-0">"#;
                 {
-                    buf.push_str(r#"<div class="row">"#);
+                    *buf += r#"<div class="row">"#;
                     {
-                        buf.push_str(r#"<div class="col">"#);
+                        *buf += r#"<div class="col">"#;
                         {
-                            buf.push_str(r#"<h4>"#);
-                            buf.push_str(&self.product.name);
-                            buf.push_str(r#"</h4>"#);
+                            *buf += r#"<h4>"#;
+                            *buf += &self.product.name;
+                            *buf += r#"</h4>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
 
-                    buf.push_str(r#"<div class="row cart-summary-item-row-item-id-row">"#);
+                    *buf += r#"<div class="row cart-summary-item-row-item-id-row">"#;
                     {
-                        buf.push_str(r#"<div class="col">"#);
+                        *buf += r#"<div class="col">"#;
                         {
-                            buf.push_str(r#"SKU #"#);
-                            buf.push_str(&self.product.id);
+                            *buf += r#"SKU #"#;
+                            *buf += &self.product.id;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
 
-                    buf.push_str(r#"<div class="row">"#);
+                    *buf += r#"<div class="row">"#;
                     {
-                        buf.push_str(r#"<div class="col">"#);
+                        *buf += r#"<div class="col">"#;
                         {
-                            buf.push_str(r#"Quantity: "#);
-                            buf.push_str(&self.quantity.to_string());
+                            *buf += r#"Quantity: "#;
+                            *buf += &self.quantity.to_string();
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
 
-                        buf.push_str(r#"<div class="col pr-md-0 text-right">"#);
+                        *buf += r#"<div class="col pr-md-0 text-right">"#;
                         {
-                            buf.push_str(r#"<strong>"#);
-                            buf.push_str(&m.money_for_display());
-                            buf.push_str(r#"</strong>"#);
+                            *buf += r#"<strong>"#;
+                            *buf += &m.money_for_display();
+                            *buf += r#"</strong>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
             }
-            buf.push_str(r#"</div>"#);
+            *buf += r#"</div>"#;
         }
     }
 }

@@ -21,57 +21,54 @@ impl HomeBody {
 
 impl Component for HomeBody {
     fn write(&self, props: &Props, buf: &mut String) {
-        buf.push_str(r#"<body>"#);
+        *buf += r#"<body>"#;
         {
             self.body_header.write(props, buf);
 
-            buf.push_str(r#"<main role="main" class="home">"#);
+            *buf += r#"<main role="main" class="home">"#;
             {
-                buf.push_str(r#"<div class="home-mobile-hero-banner d-lg-none"></div>"#);
+                *buf += r#"<div class="home-mobile-hero-banner d-lg-none"></div>"#;
 
-                buf.push_str(r#"<div class="container-fluid">"#);
+                *buf += r#"<div class="container-fluid">"#;
                 {
-                    buf.push_str(r#"<div class="row">"#);
+                    *buf += r#"<div class="row">"#;
                     {
-                        buf.push_str(
-                            r#"<div class="col-4 d-none d-lg-block home-desktop-left-image"></div>"#,
-                        );
-                        buf.push_str(r#"<div class="col-12 col-lg-8">"#);
+                        *buf += r#"<div class="col-4 d-none d-lg-block home-desktop-left-image"></div>"#;
+                        *buf += r#"<div class="col-12 col-lg-8">"#;
                         {
-                            buf.push_str(r#"<div class="row hot-products-row px-xl-6">"#);
+                            *buf += r#"<div class="row hot-products-row px-xl-6">"#;
                             {
-                                buf.push_str(r#"<div class="col-12">"#);
+                                *buf += r#"<div class="col-12">"#;
                                 {
-                                    buf.push_str(r#"<h3>Hot Products</h3>"#);
+                                    *buf += r#"<h3>Hot Products</h3>"#;
                                 }
-                                buf.push_str(r#"</div>"#);
+                                *buf += r#"</div>"#;
 
                                 if let Some(hot_products) = &props.hot_products {
                                     hot_products.write(props, buf);
                                 }
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
 
-                            buf.push_str(
-                                r#"<div class="row d-none d-lg-block home-desktop-footer-row">"#,
-                            );
+                            *buf +=
+                                r#"<div class="row d-none d-lg-block home-desktop-footer-row">"#;
                             {
-                                buf.push_str(r#"<div class="col-12 p-0">"#);
+                                *buf += r#"<div class="col-12 p-0">"#;
                                 {
                                     self.footer.write(props, buf);
                                 }
-                                buf.push_str(r#"</div>"#);
+                                *buf += r#"</div>"#;
                             }
-                            buf.push_str(r#"</div>"#);
+                            *buf += r#"</div>"#;
                         }
-                        buf.push_str(r#"</div>"#);
+                        *buf += r#"</div>"#;
                     }
-                    buf.push_str(r#"</div>"#);
+                    *buf += r#"</div>"#;
                 }
-                buf.push_str(r#"</div>"#);
+                *buf += r#"</div>"#;
             }
-            buf.push_str(r#"</main>"#);
+            *buf += r#"</main>"#;
         }
-        buf.push_str(r#"</body>"#);
+        *buf += r#"</body>"#;
     }
 }
