@@ -1,6 +1,4 @@
-use crate::model;
 use crate::{components::body::cart::CartBody, pages::page};
-use anyhow::Result;
 
 /// Component for rendering the cart page
 pub struct CartPage {
@@ -9,25 +7,7 @@ pub struct CartPage {
 }
 
 impl CartPage {
-    pub async fn new(session_id: String, currency: String) -> Result<Self> {
-        let mut props = page::Props::new(&session_id, &currency);
-
-        // load and setting props
-        {
-            // fetch currency codes
-            let currencies = model::currency::SupportedCurrencies::load().await?;
-            props.currency_codes = Some(currencies);
-
-            // fetch cart info
-            let cart = model::cart::Cart::load(&session_id, &currency).await?;
-            props.cart = Some(cart);
-
-            // fetch recommendation info
-            let recommendations =
-                model::recommendation::RecommendationList::load(None, &session_id).await?;
-            props.recommendations = Some(recommendations);
-        }
-
+    pub fn new(props: page::Props) -> Self {
         // Construct the components of the HTML page.
         let mut page = page::Page::new();
 
@@ -35,7 +15,7 @@ impl CartPage {
         let body = CartBody::new();
         page.body = Some(Box::new(body));
 
-        Ok(CartPage { props, page })
+        CartPage { props, page }
     }
 
     pub fn write(&mut self) -> String {

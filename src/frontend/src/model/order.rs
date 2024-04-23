@@ -8,7 +8,7 @@ pub struct Order {
 
 impl Order {
     pub async fn place_order(
-        input: crate::handlers::PlaceOrderInput,
+        input: crate::handlers::cart::PlaceOrderInput,
         session_id: &String,
         currency: &String,
     ) -> Result<Self> {
