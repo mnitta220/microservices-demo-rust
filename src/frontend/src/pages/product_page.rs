@@ -1,6 +1,4 @@
-use crate::model;
 use crate::{components::body::product::ProductBody, pages::page};
-use anyhow::Result;
 
 pub struct ProductPage {
     pub props: page::Props,
